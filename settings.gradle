@@ -1,0 +1,6 @@
+rootProject.name = 'Lastone'
+include 'core'
+include 'api-server'
+include 'notification-server'
+include 'chatting-server'
+
