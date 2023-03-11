@@ -40,13 +40,21 @@ subprojects {
     }
 
     dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.springframework.boot:spring-boot-starter-web'
-        compileOnly 'org.projectlombok:lombok'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         runtimeOnly 'com.mysql:mysql-connector-j'
+        compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+        /* 시큐리티 관련 설정 */
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'com.auth0:java-jwt:4.2.1'
+        implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+        /* redis 설정 */
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     }
 
     tasks.named('test') {
@@ -55,6 +63,9 @@ subprojects {
 
 
 }
+
+// core에만 적용되는 설정 추가
+
 
 project(':api-server') {
     dependencies {

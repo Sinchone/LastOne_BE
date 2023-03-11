@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
     //implementation project(':core')
 
     /* 시큐리티 관련 설정 */
