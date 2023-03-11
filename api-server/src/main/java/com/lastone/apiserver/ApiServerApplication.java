@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan("com.lastone.core")
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = {"com.lastone.core"})
-@SpringBootApplication()
+@SpringBootApplication(scanBasePackages = {"com.lastone.core"} )
 public class ApiServerApplication {
 
     public static void main(String[] args) {
