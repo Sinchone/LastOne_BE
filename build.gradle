@@ -85,7 +85,7 @@ subprojects {
         useJUnitPlatform()
     }
     bootJar {
-        enabled = false
+        enabled = true
     }
     jar {
         enabled = true
@@ -122,4 +122,10 @@ jar {
         attributes 'Main-Class': 'com.lastone.LastOneApplication'
     }
 
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter:2.7.9'
 }
