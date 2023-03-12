@@ -13,6 +13,30 @@ allprojects {
     version = "0.0.1-SNAPSHOT"
     sourceCompatibility = '11'
 
+    apply plugin: 'java'
+    //build.gradle에서 api() 사용하려면 java-library 사용
+    apply plugin: 'java-library'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+
+        /* 시큐리티 관련 설정 */
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'com.auth0:java-jwt:4.2.1'
+        implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+        /* redis 설정 */
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+        compileOnly 'org.projectlombok:lombok'
+        runtimeOnly 'com.mysql:mysql-connector-j'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
     repositories {
         mavenCentral()
     }
@@ -60,6 +84,12 @@ subprojects {
     tasks.named('test') {
         useJUnitPlatform()
     }
+    bootJar {
+        enabled = false
+    }
+    jar {
+        enabled = true
+    }
 
 
 }
@@ -82,3 +112,9 @@ project(':notification-server') {
     }
 }
 
+bootJar {
+    enabled = false
+}
+jar {
+    enabled = true
+}
