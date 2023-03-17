@@ -39,7 +39,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
             throw new IllegalArgumentException("카카오 email은 필수 입력 값입니다.");
         }
 
-        Member findMember = memberRepository.findByEmail(email);
+        Member findMember = memberRepository.findByEmail(email).orElseThrow(NullPointerException::new);
         if (findMember == null) {
             Member member = Member.builder()
                     .email(email)
