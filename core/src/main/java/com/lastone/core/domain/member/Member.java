@@ -1,6 +1,6 @@
 package com.lastone.core.domain.member;
 
-import com.lastone.core.domain.BaseTime;
+import com.lastone.core.repository.BaseTime;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,12 +24,6 @@ public class Member extends BaseTime {
     private String gender;
 
     private String profileUrl;
-
-    private int deadLift;
-
-    private int benchPress;
-
-    private int squat;
 
     private String workoutPurpose;
 
