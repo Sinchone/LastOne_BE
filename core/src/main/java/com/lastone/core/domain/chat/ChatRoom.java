@@ -54,7 +54,7 @@ public class ChatRoom {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public ChatRoom createChatRoom(ChatRoomCreateReqDto createReqDto) {
+    public ChatRoom create(ChatRoomCreateReqDto createReqDto) {
         this.hostId = createReqDto.getHostId();
         this.participationId = createReqDto.getParticipationId();
         this.recruitmentId = createReqDto.getRecruitmentId();
