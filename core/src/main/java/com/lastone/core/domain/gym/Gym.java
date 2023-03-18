@@ -1,12 +1,14 @@
 package com.lastone.core.domain.gym;
 
-import com.lastone.core.domain.BaseTime;
+import com.lastone.core.repository.BaseTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
+@ToString
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
