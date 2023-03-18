@@ -1,6 +1,6 @@
 package com.lastone.core.domain.member_gym;
 
-import com.lastone.core.domain.BaseTime;
+import com.lastone.core.repository.BaseTime;
 import lombok.*;
 
 import javax.persistence.*;
