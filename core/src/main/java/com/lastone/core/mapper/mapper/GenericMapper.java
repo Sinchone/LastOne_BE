@@ -1,4 +1,4 @@
-package com.lastone.core.util.mapper;
+package com.lastone.core.mapper.mapper;
 
 import org.mapstruct.MappingTarget;
 
