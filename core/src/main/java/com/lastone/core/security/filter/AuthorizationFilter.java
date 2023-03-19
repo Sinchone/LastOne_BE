@@ -1,10 +1,7 @@
 package com.lastone.core.security.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.lastone.core.domain.member.MemberRepository;
+import com.lastone.core.domain.member.Member;
+import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.security.UserDetailsImpl;
 import com.lastone.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -50,8 +46,15 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
+        /* 테스트 토큰 */
+        if (authorizationHeader.equals("test")) {
+            SecurityContextHolder.getContext().setAuthentication(createTestToken());
+            chain.doFilter(request, response);
+            return;
+        }
+
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            ;
             chain.doFilter(request, response);
             return;
         }
@@ -68,10 +71,23 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 
-        UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email));
+        UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email).orElseThrow(NullPointerException::new));
 
         UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);
         chain.doFilter(request, response);
+    }
+
+    private UsernamePasswordAuthenticationToken createTestToken() {
+        UserDetails userDetails = UserDetailsImpl.convert(Member.builder()
+                .email("테스트 유저")
+                .nickname("테스트 유저")
+                .gender("남자")
+                .build());
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 }
