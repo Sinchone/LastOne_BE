@@ -3,6 +3,7 @@ package com.lastone.core.security;
 import com.lastone.core.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Builder
+@Getter
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
