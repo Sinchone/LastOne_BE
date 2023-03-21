@@ -29,7 +29,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
-
+                /*
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
@@ -50,7 +50,10 @@ public class SecurityConfig {
                 .addFilterBefore(authorizationFilter,UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/test").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/").permitAll()
+                */
+        //.anyRequest().authenticated()
+                ;
 
         return http.build();
     }

@@ -1,6 +1,6 @@
 package com.lastone.core.domain.chat;
 
-import com.lastone.core.dto.ChatRoomCreateReqDto;
+import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,11 +25,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long hostId;
     private Long participationId;
-    private Long recruitmentId;
+
     @Enumerated(EnumType.STRING)
     private ChatStatus status;
     @CreatedDate
@@ -38,12 +38,15 @@ public class ChatRoom {
     private LocalDateTime updatedAt;
 
     @Builder
-    public ChatRoom(Long hostId, Long participationId, Long recruitmentId) {
+    public ChatRoom(Long hostId, Long participationId) {
         this.hostId = hostId;
         this.participationId = participationId;
-        this.recruitmentId = recruitmentId;
     }
-
+    public ChatRoom(ChatRoomCreateReqDto createReqDto) {
+        this.hostId = createReqDto.getHostId();
+        this.participationId = createReqDto.getParticipationId();
+        this.status = ChatStatus.NORMAL;
+    }
     @PrePersist
     public void preCreated() {
         this.createdAt = LocalDateTime.now();
@@ -52,13 +55,5 @@ public class ChatRoom {
     @PreUpdate
     public void preUpdated() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public ChatRoom createChatRoom(ChatRoomCreateReqDto createReqDto) {
-        this.hostId = createReqDto.getHostId();
-        this.participationId = createReqDto.getParticipationId();
-        this.recruitmentId = createReqDto.getRecruitmentId();
-        this.status = ChatStatus.NORMAL;
-        return this;
     }
 }

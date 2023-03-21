@@ -79,3 +79,7 @@ configurations {
     }
     querydsl.extendsFrom compileClasspath
 }
+
+clean.doLast {
+    delete file(querydslDir)
+}

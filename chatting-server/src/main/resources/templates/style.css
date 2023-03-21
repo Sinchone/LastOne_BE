@@ -1,0 +1,13 @@
+#chat-window {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid black;
+}
+
+#message-form {
+    margin-top: 10px;
+}
+
+#message-form input[type="text"], #message-form button {
+    margin: 5px;
+}

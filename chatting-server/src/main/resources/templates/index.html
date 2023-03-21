@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="chat-window"></div>
+<div id="message-form">
+  <input type="text" id="sender" placeholder="Your name">
+  <input type="text" id="content" placeholder="Type your message here...">
+  <button onclick="sendMessage()">Send</button>
+</div>
+<script src="https://cdn.jsdelivr.net/sockjs/1.1/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    let stompClient = null;
+
+    function connect() {
+        var socket = new SockJS('/chat');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/exchange/room', function(message) {
+                showMessage(JSON.parse(message.body));
+            });
+        });
+    }
+
+    function showMessage(message) {
+        let chatWindow = document.getElementById('chat-window');
+        chatWindow.innerHTML += '<p><strong>' + message.sender + ': </strong>' + message.content + '</p>';
+    }
+
+    function sendMessage() {
+        let senderInput = document.getElementById('sender');
+        let contentInput = document.getElementById('content');
+        let sender = senderInput.value.trim() || 'Anonymous';
+        let content = contentInput.value.trim();
+        if (content !== '') {
+            stompClient.send('/app/chat', {}, JSON.stringify({ sender: sender, content: content }));
+            contentInput.value = '';
+        }
+    }
+
+    connect();
+</script>
+</body>
+</html>
