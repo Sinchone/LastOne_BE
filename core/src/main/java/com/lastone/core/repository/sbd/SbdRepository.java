@@ -10,4 +10,6 @@ public interface SbdRepository extends JpaRepository<Sbd, Long> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM Sbd s WHERE s.member_id = :memberId ORDER BY s.sbd_id DESC LIMIT 1")
     Sbd findLatestRecordByMemberId(Long memberId);
+
+
 }
