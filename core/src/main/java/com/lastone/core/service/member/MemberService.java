@@ -1,25 +1,14 @@
 package com.lastone.core.service.member;
 
-import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
-import com.lastone.core.domain.sbd.Sbd;
-import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.dto.member.MemberDto;
-import com.lastone.core.dto.mypage.MyPageDto;
-import com.lastone.core.dto.mypage.MyPageUpdateDto;
-import com.lastone.core.dto.sbd.SbdDto;
-import com.lastone.core.mapper.mapper.SbdMapper;
-import com.lastone.core.repository.gym.GymRepository;
-import com.lastone.core.domain.member_gym.MemberGym;
-import com.lastone.core.repository.member_gym.MemberGymRepository;
-import com.lastone.core.mapper.mapper.GymMapper;
+import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.mapper.mapper.MemberMapper;
 import com.lastone.core.repository.member.MemberRepository;
-import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -155,5 +144,19 @@ public class MemberService {
     public MemberDto findById(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NullPointerException::new);
         return memberMapper.toDto(member);
+    }
+
+    public void update(MemberUpdateDto memberUpdateDto, MultipartFile profileImg) {
+        Member member = memberRepository.findById(memberUpdateDto.getId()).orElseThrow(NullPointerException::new);
+        // todo 이미지 파일 처리
+        member.update(memberUpdateDto);
+
+    }
+
+    public void isExist(Long memberId) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        if (member.isPresent()) {
+            throw new NullPointerException();
+        }
     }
 }

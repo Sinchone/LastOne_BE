@@ -21,5 +21,7 @@ public class MemberGym extends BaseTime {
 
     private Long gymId;
 
-
+    public void changeGymId(Long id) {
+        this.gymId = id;
+    }
 }

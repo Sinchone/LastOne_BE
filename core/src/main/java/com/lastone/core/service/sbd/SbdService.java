@@ -22,4 +22,12 @@ public class SbdService {
         Sbd sbd = sbdRepository.findLatestRecordByMemberId(memberId);
         return sbdMapper.toDto(sbd);
     }
+
+    public void updateByMemberId(SbdDto sbdDto, Long memberId) {
+        Sbd findSbd = sbdRepository.findLatestRecordByMemberId(memberId);
+        Sbd sbd = sbdMapper.toEntity(sbdDto);
+        if (!sbd.isEqualTo(findSbd)) {
+            sbdRepository.save(sbd);
+        }
+    }
 }

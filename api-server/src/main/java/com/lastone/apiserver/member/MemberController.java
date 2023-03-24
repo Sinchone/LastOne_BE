@@ -2,8 +2,7 @@ package com.lastone.apiserver.member;
 
 import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.dto.member.MemberDto;
-import com.lastone.core.dto.mypage.MyPageDto;
-import com.lastone.core.dto.mypage.MyPageUpdateDto;
+import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.dto.sbd.SbdDto;
 import com.lastone.core.security.UserDetailsImpl;
 import com.lastone.core.service.gym.GymService;
@@ -16,8 +15,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -35,45 +35,82 @@ public class MemberController {
     public ResponseEntity<Object> getMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long memberId = userDetails.getId();
         MemberDto member = memberService.findById(memberId);
-        return ResponseEntity.ok().body(member);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "회원 조회에 성공하였습니다.");
+        result.put("member", member);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/{memberId}")
     public ResponseEntity<Object> getMemberById(@PathVariable Long memberId) {
         MemberDto member = memberService.findById(memberId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "회원 조회에 성공하였습니다.");
+        result.put("member", member);
+
         return ResponseEntity.ok().body(member);
     }
 
     @GetMapping("/{memberId}/gym")
     public ResponseEntity<Object> getGymByMemberId(@PathVariable Long memberId) {
+        memberService.isExist(memberId);
         List<GymDto> gyms = gymService.findAllByMemberId(memberId);
-        return ResponseEntity.ok().body(gyms);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "헬스장 조회에 성공하였습니다.");
+        result.put("gyms", gyms);
+
+
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/{memberId}/sbd")
     public ResponseEntity<Object> getSbdByMemberId(@PathVariable Long memberId) {
+        memberService.isExist(memberId);
         SbdDto sbd = sbdService.findByMemberId(memberId);
-        return ResponseEntity.ok().body(sbd);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "삼대 운동 능력 조회에 성공하였습니다.");
+        result.put("sbd", sbd);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<Object> updateMember(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        validateAuthorization(userDetails.getId(), memberId);
-        memberService.
+    public ResponseEntity<Object> updateMember(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart(required = false) MemberUpdateDto memberUpdateDto, @RequestPart(required = false) MultipartFile profileImg) {
+        log.info("update url 접근");
 
+        validateAuthorization(userDetails.getId(), memberId);
+
+        // memberUpdateDto 확인
+        log.info("memberUpdateDto = {}", memberUpdateDto);
+
+        // todo memberUpdateDto 유효성 검증 로직 Bean validation 활용
+        memberService.update(memberUpdateDto, profileImg);
+        return ResponseEntity.ok().body("회원 수정 작업이 완료되었습니다.");
     }
 
+    @PutMapping("/{memberId}/gym")
+    public ResponseEntity<Object> updateGym(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody List<GymDto> gyms) {
+        validateAuthorization(userDetails.getId(), memberId);
+        gymService.updateByMemberId(gyms, memberId);
+        return ResponseEntity.ok().body("헬스장 수정 작업이 완료되었습니다.");
+    }
 
-    @PutMapping
-    public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart MyPageUpdateDto myPageUpdateDto, @RequestPart MultipartFile profileImg) throws IOException {
-        memberService.checkIdentity(userDetails.getId(), myPageUpdateDto.getId());
-        memberService.updateMyPage(myPageUpdateDto);
+    @PutMapping("/{memberId}/sbd")
+    public ResponseEntity<Object> updateSbd(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody SbdDto sbdDto) {
+        validateAuthorization(userDetails.getId(), memberId);
+        // todo 3대 운동 능력 범위 0~999 검증 추가
+        sbdService.updateByMemberId(sbdDto, memberId);
+        return ResponseEntity.ok().body("삼대 운동 능력 수정 작업이 완료되었습니다.");
 
-        return ResponseEntity.ok().build();
     }
 
     private void validateAuthorization(Long id, Long memberId) {
-        if (!id.equals(memberId)) {
+           if (!id.equals(memberId)) {
             throw new IllegalArgumentException("수정할 권한이 없습니다.");
         }
     }

@@ -1,6 +1,7 @@
 package com.lastone.core.domain.member;
 
 import com.lastone.core.dto.member.MemberDto;
+import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.repository.BaseTime;
 import io.netty.util.internal.StringUtil;
 import lombok.*;
@@ -36,15 +37,11 @@ public class Member extends BaseTime {
 
     private String status;
 
-    public void updateMember(MemberDto memberDto) {
-        if (StringUtils.hasText(memberDto.getNickname())) {
-            this.nickname = memberDto.getNickname();
-        }
-        if (StringUtils.hasText(memberDto.getGender())) {
-            this.gender = memberDto.getGender();
-        }
-        this.workoutPurpose = memberDto.getWorkoutPurpose();
-        this.workoutTime = memberDto.getWorkoutTime();
-        this.workoutDay = memberDto.getWorkoutDay();
+    public void update(MemberUpdateDto memberUpdateDto) {
+        this.nickname = memberUpdateDto.getNickname();
+        this.gender = memberUpdateDto.getGender();
+        this.workoutPurpose = memberUpdateDto.getWorkoutPurpose();
+        this.workoutTime = memberUpdateDto.getWorkoutTime();
+        this.workoutDay = memberUpdateDto.getWorkoutDay();
     }
 }

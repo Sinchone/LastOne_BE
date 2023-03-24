@@ -14,4 +14,7 @@ public interface SbdMapper extends GenericMapper<SbdDto, Sbd> {
 
     @Override
     List<SbdDto> toDto(List<Sbd> e);
+
+    @Override
+    Sbd toEntity(SbdDto dto);
 }

@@ -25,5 +25,12 @@ public class Sbd extends BaseTime {
 
     private int squat;
 
+    public boolean isEqualTo(Sbd sbd) {
+        if (this.deadLift == sbd.deadLift && this.benchPress == sbd.benchPress && this.squat == sbd.squat) {
+            return true;
+        }
+        return false;
+    }
+
 
 }
