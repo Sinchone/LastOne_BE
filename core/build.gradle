@@ -35,6 +35,8 @@ dependencies {
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
     /* mapstruct 설정 */
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    /* s3-bucket 설정 */
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
