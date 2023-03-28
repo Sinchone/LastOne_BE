@@ -1,6 +1,7 @@
 package com.lastone.apiserver.member;
 
 import com.lastone.core.dto.gym.GymDto;
+import com.lastone.core.dto.gym.GymUpdateDto;
 import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.dto.sbd.SbdDto;
@@ -12,9 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,6 @@ public class MemberController {
         result.put("message", "헬스장 조회에 성공하였습니다.");
         result.put("gyms", gyms);
 
-
         return ResponseEntity.ok().body(result);
     }
 
@@ -80,32 +81,36 @@ public class MemberController {
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<Object> updateMember(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart(required = false) MemberUpdateDto memberUpdateDto, @RequestPart(required = false) MultipartFile profileImg) {
-        log.info("update url 접근");
-
+    public ResponseEntity<Object> updateMember(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart(required = false) @Validated MemberUpdateDto memberUpdateDto, @RequestPart(required = false) MultipartFile profileImg) throws IOException {
         validateAuthorization(userDetails.getId(), memberId);
+        memberService.update(memberId, memberUpdateDto, profileImg);
 
-        // memberUpdateDto 확인
-        log.info("memberUpdateDto = {}", memberUpdateDto);
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "멤버 정보 수정이 완료되었습니다.");
 
-        // todo memberUpdateDto 유효성 검증 로직 Bean validation 활용
-        memberService.update(memberUpdateDto, profileImg);
-        return ResponseEntity.ok().body("회원 수정 작업이 완료되었습니다.");
+        return ResponseEntity.ok().body(result);
     }
 
     @PutMapping("/{memberId}/gym")
-    public ResponseEntity<Object> updateGym(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody List<GymDto> gyms) {
+    public ResponseEntity<Object> updateGym(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody GymUpdateDto gymUpdateDto) {
         validateAuthorization(userDetails.getId(), memberId);
-        gymService.updateByMemberId(gyms, memberId);
-        return ResponseEntity.ok().body("헬스장 수정 작업이 완료되었습니다.");
+        gymService.updateByMemberId(gymUpdateDto.getGyms(), memberId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "멤버의 헬스장 정보 수정이 완료되었습니다.");
+
+        return ResponseEntity.ok().body(result);
     }
 
     @PutMapping("/{memberId}/sbd")
-    public ResponseEntity<Object> updateSbd(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody SbdDto sbdDto) {
+    public ResponseEntity<Object> updateSbd(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody @Validated SbdDto sbdDto) {
         validateAuthorization(userDetails.getId(), memberId);
-        // todo 3대 운동 능력 범위 0~999 검증 추가
         sbdService.updateByMemberId(sbdDto, memberId);
-        return ResponseEntity.ok().body("삼대 운동 능력 수정 작업이 완료되었습니다.");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "멤버의 3대 운동 능력 수정 작업이 완료되었습니다.");
+
+        return ResponseEntity.ok().body(result);
 
     }
 
