@@ -1,6 +1,7 @@
 package com.lastone.core.domain.member_gym;
 
 import com.lastone.core.repository.BaseTime;
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,8 +18,10 @@ public class MemberGym extends BaseTime {
     @Column(name = "member_gym_id")
     private Long id;
 
+    @Column(nullable = false)
     private Long memberId;
 
+    @Column(nullable = false)
     private Long gymId;
 
     public void changeGymId(Long id) {
