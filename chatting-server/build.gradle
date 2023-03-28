@@ -11,16 +11,16 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.0.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    /* locator-core 는 webjar의 버전을 생략할 수 있음. */
     implementation 'org.webjars:webjars-locator-core'
-    implementation 'org.webjars:sockjs-client'
-    implementation 'org.webjars:stomp-websocket'
-    implementation 'org.webjars:bootstrap'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
+
 }
 
 test {
