@@ -102,7 +102,7 @@ public class MemberController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PutMapping("/{memberId}/sbd")
+    @PostMapping("/{memberId}/sbd")
     public ResponseEntity<Object> updateSbd(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody @Validated SbdDto sbdDto) {
         validateAuthorization(userDetails.getId(), memberId);
         sbdService.updateByMemberId(sbdDto, memberId);
