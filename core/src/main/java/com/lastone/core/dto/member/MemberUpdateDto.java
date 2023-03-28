@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Getter
 @Builder
@@ -11,10 +16,12 @@ import lombok.ToString;
 @AllArgsConstructor
 public class MemberUpdateDto {
 
-    private Long id;
-
+    @NotBlank
+    @Size(min = 2, max = 15)
     private String nickname;
 
+    @NotBlank
+    @Size(min = 1, max = 1)
     private String gender;
 
     private String profileUrl;

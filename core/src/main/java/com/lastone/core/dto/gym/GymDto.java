@@ -11,8 +11,6 @@ import lombok.ToString;
 @ToString
 public class GymDto {
 
-    private Long id;
-
     private String name;
 
     private String location;
