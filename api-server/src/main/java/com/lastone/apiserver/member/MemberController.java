@@ -86,7 +86,7 @@ public class MemberController {
         memberService.update(memberId, memberUpdateDto, profileImg);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("message", "멤버 정보 수정이 완료되었습니다.");
+        result.put("message", "회원 정보 수정이 완료되었습니다.");
 
         return ResponseEntity.ok().body(result);
     }
@@ -97,7 +97,7 @@ public class MemberController {
         gymService.updateByMemberId(gymUpdateDto.getGyms(), memberId);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("message", "멤버의 헬스장 정보 수정이 완료되었습니다.");
+        result.put("message", "회원의 헬스장 정보 수정이 완료되었습니다.");
 
         return ResponseEntity.ok().body(result);
     }
@@ -108,7 +108,7 @@ public class MemberController {
         sbdService.updateByMemberId(sbdDto, memberId);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("message", "멤버의 3대 운동 능력 수정 작업이 완료되었습니다.");
+        result.put("message", "회원의 3대 운동 능력 수정 작업이 완료되었습니다.");
 
         return ResponseEntity.ok().body(result);
 
