@@ -32,5 +32,7 @@ public class Sbd extends BaseTime {
         return false;
     }
 
-
+    public void assignMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
 }

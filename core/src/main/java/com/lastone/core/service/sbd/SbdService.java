@@ -26,8 +26,10 @@ public class SbdService {
     public void updateByMemberId(SbdDto sbdDto, Long memberId) {
         Sbd findSbd = sbdRepository.findLatestRecordByMemberId(memberId);
         Sbd sbd = sbdMapper.toEntity(sbdDto);
-        if (!sbd.isEqualTo(findSbd)) {
-            sbdRepository.save(sbd);
+        if (findSbd != null && sbd.isEqualTo(findSbd)) {
+            return;
         }
+        sbd.assignMemberId(memberId);
+        sbdRepository.save(sbd);
     }
 }
