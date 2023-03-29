@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <style>
+    .chats{
+      display: flex;
+      flex-direction: column;
+
+      gap: 10px;
+    }
+    .mine{
+      background: #e9e9e9;
+      border-radius: 5px;
+    }
+    .yours{
+      background: #efef87;
+      border-radius: 5px;
+    }
+    .nickname{
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .message{
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>CHAT ROOM</h1>
+<h2 th:text="'Room No. ' + ${chatRoomId}"></h2>
+<h2 th:text="'Nickname = ' + ${nickname}"></h2>
+
+<form>
+  <input type="text" id="message">
+  <input type="submit" value="전송" class="btn-send">
+</form>
+
+<div class="chats">
+  <div class="mine">
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:inline="javascript">
+  const chats = document.querySelector('.chats');
+  const messageContent = document.querySelector('#message');
+  const btnSend = document.querySelector('.btn-send');
+
+  const chatRoomId = [[${chatRoomId}]];
+  const nickname = [[${nickname}]];
+
+  const sockJS = new SockJS("/stomp/chat");
+  const stomp = Stomp.over(sockJS);
+
+  stomp.heartbeat.outgoing = 0; //Rabbit에선 heartbeat 안먹힌다고 함
+  stomp.heartbeat.incoming = 0; //Rabbit에선 heartbeat 안먹힌다고 함
+
+  function onError(e) {
+    console.log("STOMP ERROR", e);
+  }
+
+  function onDebug(m) {
+    console.log("STOMP DEBUG", m);
+  }
+
+  stomp.debug = onDebug;
+
+  stomp.connect('guest', 'guest', function (frame) {
+
+    console.log('STOMP Connected');
+
+    /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
+    stomp.subscribe("/sub/chat/room/" + 1, function (content) {
+
+      const payload = JSON.parse(content.body);
+
+      let className = payload.nickname == nickname? 'mine' : 'yours';
+      const sendTime = payload.sendTime;
+      console.log(sendTime)
+      const html = `<div class="${className}">
+                            <div class="nickname">${payload.senderId}</div>
+                            <div class="message">${payload.content}</div>
+                            <div class="message">${payload.sendTime}</div>
+                        </div>`
+
+      chats.insertAdjacentHTML('beforeend', html);
+
+      //밑의 인자는 Queue 생성 시 주는 옵션
+      //auto-delete : Consumer가 없으면 스스로 삭제되는 Queue
+      //durable : 서버와 연결이 끊겨도 메세지를 저장하고 있음
+      //exclusive : 동일한 이름의 Queue 생길 수 있음
+    },{'auto-delete':true, 'durable':false, 'exclusive':false});
+
+    //입장 메세지 전송
+    stomp.send(`/pub/chat/enter.${chatRoomId}`, {}, JSON.stringify({
+      memberId: 1,
+      nickname: nickname,
+      content : messageContent
+    }));
+
+  }, onError, '/');
+
+  //메세지 전송 버튼 click
+  btnSend.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const message = messageContent.value;
+    messageContent.value = '';
+
+    stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
+      senderId: 1,
+      receiverId: 5,
+      content: message
+    }));
+  });
+</script>
+</body>
+</html>
