@@ -1,8 +1,8 @@
 package com.lastone.chat.controller;
 
+import com.lastone.chat.dto.ChatMessageResDto;
+import com.lastone.chat.service.ChatMessageService;
 import com.lastone.core.dto.message.ChatMessageReqDto;
-import com.lastone.core.dto.message.ChatMessageResDto;
-import com.lastone.core.service.chatmessage.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
