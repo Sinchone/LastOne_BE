@@ -11,9 +11,115 @@
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
-  <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <!--<link rel="stylesheet" type="text/css" href="./css/style.css">-->
 </head>
+<style>
+  body{
+    height: 100%;
+  }
+  .user{
+    border-bottom: 1px solid #716d6d;
+    padding: 10px;
+    width:95%;
+  }
+  .user_data{
+    background-color: #f8f9fa!important;
+    border-top: 5px solid #716d6d;
+    max-height: calc(100vh);
 
+  }
+  .profile_name{
+    background-color: #f8f9fa!important;
+    width:100%;
+    padding: 10px;
+    border-bottom: 5px solid #716d6d;
+  }
+  .user a:hover{
+    text-decoration: none;
+    color: #212529;
+  }
+  .user a{
+    color: #212529;
+  }
+
+  .chat_section{
+    padding-top: 15px;
+  }
+  .incoming_msg_img {
+    display: inline-block;
+    width: 6%;
+  }
+  .received_msg {
+    display: inline-block;
+    padding: 0 0 0 10px;
+    vertical-align: top;
+    width: 92%;
+  }
+  .received_withd_msg p {
+    background: #ebebeb none repeat scroll 0 0;
+    border-radius: 6px;
+    color: #646464;
+    font-size: 14px;
+    margin: 0;
+    padding: 5px 10px 5px 12px;
+    width: 100%;
+  }
+  .time_date {
+    color: #747474;
+    display: block;
+    font-size: 10px;
+    margin: 8px 0 0;
+  }
+  .received_withd_msg { width: 57%;}
+  .mesgs {
+    float: left;
+    padding: 30px 15px 0 25px;
+    width: 60%;
+  }
+
+  .sent_msg p {
+    background: #050f8f none repeat scroll 0 0;
+    border-radius: 6px;
+    font-size: 14px;
+    margin: 0; color:#fff;
+    padding: 5px 10px 5px 12px;
+    width:100%;
+  }
+  .mine{ overflow:hidden; margin:26px 0 26px;}
+  .sent_msg {
+    float: right;
+    width: 60%;
+  }
+  .input_msg_write input {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    color: #4c4c4c;
+    font-size: 15px;
+    min-height: 48px;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .type_msg {border-top: 1px solid #c4c4c4; position: relative;}
+  .msg_send_btn {
+    background: #05728f none repeat scroll 0 0;
+    border: medium none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 17px;
+    height: 33px;
+    position: absolute;
+    right: 0;
+    top: 11px;
+    width: 33px;
+  }
+  .messaging { padding: 0 0 50px 0;}
+  .msg_history {
+    height: 516px;
+    overflow-y: auto;
+  }
+</style>
 <body>
   <div class="container-fluid">
     <div class="row">
@@ -25,27 +131,6 @@
 
           <div class="container-fluid chat_section" id="chat-box">
 
-            <!-- 받은메시지 시작 -->
-            <div class="incoming_msg">
-              <div class="received_msg">
-                <div class="received_wit hd_msg">
-                  <p>Lorem Ipsum refers to text that the DTP (Desktop Publishing) industry use as replacement text when
-                    the real text is not </p>
-                  <span class="time_date"> 11:18 | Today</span>
-                </div>
-              </div>
-            </div>
-            <!-- 받은메시지 끝 -->
-
-            <!-- 보낸메시지 시작 -->
-            <div class="outgoing_msg">
-              <div class="sent_msg">
-                <p>Lorem Ipsum refers to text that the DTP (Desktop Publishing) industry use as replacement text when
-                  the real text is not </p>
-                <span class="time_date"> 11:19 | Today</span>
-              </div>
-            </div>
-            <!-- 보낸메시지 끝 -->
           </div>
 
           <div class="type_msg">
@@ -63,7 +148,105 @@
   </div>
 
   </div>
-  <script src="js/chat.js"></script>
+  <script>
+
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <script th:inline="javascript">
+    let chatBox = document.querySelector("#chat-box");
+    let messageContent = document.querySelector("#chat-outgoing-msg");
+    const chatRoomId = 1;
+    let myId = 50;
+
+    function getMessageBox(sender, msgInput, sendTime) {
+      if(sender === 'mine') {
+        return `<div class="yours">
+              <div class="received_msg">
+                <div class="received_withd_msg">
+                  <p> ${msgInput} </p>
+                  <span class="time_date"> ${sendTime}</span>
+                </div>
+              </div>
+            </div>`;
+      }else {
+        return `<div class="mine">
+              <div class="sent_msg">
+                <p> ${msgInput} </p>
+                <span class="time_date"> ${sendTime}</span>
+              </div>
+            </div>`;
+      }
+    }
+    const sockJS = new SockJS("/stomp/chat");
+    const stomp = Stomp.over(sockJS);
+
+    stomp.heartbeat.outgoing = 0; //Rabbit에선 heartbeat 안먹힌다고 함
+    stomp.heartbeat.incoming = 0; //Rabbit에선 heartbeat 안먹힌다고 함
+
+    function onError(e) {
+      console.log("STOMP ERROR", e);
+    }
+
+    function onDebug(m) {
+      console.log("STOMP DEBUG", m);
+    }
+
+    stomp.debug = onDebug;
+
+    stomp.connect('guest', 'guest', function (frame) {
+      console.log('STOMP Connected');
+      /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
+      stomp.subscribe("/sub/chat/room/" + 1, function (content) {
+        console.log("구독 좋아요----좋댓구---")
+        const payload = JSON.parse(content.body);
+        let sender = myId % 2 === 0? 'mine' : 'yours';
+
+        const html = getMessageBox(sender, payload.content, payload.sendTime);
+
+        chatBox.insertAdjacentHTML('beforeend', html);
+
+        //밑의 인자는 Queue 생성 시 주는 옵션
+        //auto-delete : Consumer가 없으면 스스로 삭제되는 Queue
+        //durable : 서버와 연결이 끊겨도 메세지를 저장하고 있음
+        //exclusive : 동일한 이름의 Queue 생길 수 있음
+      },{'auto-delete':true, 'durable':false, 'exclusive':false});
+
+    }, onError, '/');
+
+    document.querySelector("#chat-send").addEventListener("click", (event) => {
+      event.preventDefault();
+      myId++;
+      const message = messageContent.value;
+      messageContent.value = '';
+
+      stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
+        senderId: 1,
+        receiverId: 5,
+        content: message
+      }));
+
+      console.log(myId);
+    });
+
+    document.querySelector("#chat-outgoing-msg").addEventListener("keydown", (event) => {
+      if(event.keyCode === 13) {
+        event.preventDefault();
+        myId++;
+        const message = messageContent.value;
+        messageContent.value = '';
+
+        stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
+          senderId: 1,
+          receiverId: 5,
+          content: message
+        }));
+      }
+      console.log(myId);
+    });
+  </script>
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
