@@ -1,6 +1,6 @@
-package com.lastone.core.dto.message;
+package com.lastone.chat.dto;
 
-import com.lastone.core.domain.chat.ChatMessage;
+import com.lastone.chat.persistence.ChatMessage;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
