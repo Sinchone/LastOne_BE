@@ -1,6 +1,5 @@
 package com.lastone.core.domain.chat;
 
-import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,9 +51,11 @@ public class ChatRoom {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public ChatRoom(ChatRoomCreateReqDto createReqDto) {
-        this.hostId = createReqDto.getHostId();
-        this.participationId = createReqDto.getParticipationId();
-        this.status = ChatStatus.NORMAL;
+    public static ChatRoom create(Long hostId, Long participationId) {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.hostId = hostId;
+        chatRoom.participationId = participationId;
+        chatRoom.status = ChatStatus.NORMAL;
+        return chatRoom;
     }
 }
