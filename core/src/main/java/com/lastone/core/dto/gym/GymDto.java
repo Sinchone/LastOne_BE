@@ -1,14 +1,12 @@
 package com.lastone.core.dto.gym;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @ToString
+@NoArgsConstructor
 public class GymDto {
 
     private String name;
