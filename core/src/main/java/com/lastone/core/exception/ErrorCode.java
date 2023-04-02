@@ -23,7 +23,9 @@ public enum ErrorCode {
   JWT_ENCODE_FAILURE(500, "J002", "DTO encode failure"),
 
   FILE_FETCH_FAILURE(500, "S001", "File fetch failure (from storage)"),
-
+  /* Chatting */
+  ALREADY_DELETED_CHAT_ROOM(404, "CR001", "지워진 채팅방입니다."),
+  BLOCKED_CHAT_ROOM(404, "CR002", "차단된 채팅방입니다.")
   ;
   private final String code;
   private final String message;
