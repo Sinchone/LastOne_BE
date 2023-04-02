@@ -3,6 +3,7 @@ package com.lastone.core.mapper.mapper;
 import com.lastone.core.domain.sbd.Sbd;
 import com.lastone.core.dto.sbd.SbdDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ public interface SbdMapper extends GenericMapper<SbdDto, Sbd> {
     @Override
     List<SbdDto> toDto(List<Sbd> e);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "memberId", ignore = true)
     @Override
     Sbd toEntity(SbdDto dto);
 }
