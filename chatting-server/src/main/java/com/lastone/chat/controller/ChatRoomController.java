@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,5 +27,10 @@ public class ChatRoomController {
     public ResponseEntity<Long> createChatRoom(@RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
         Long userId = 5L;
         return ResponseEntity.ok(chatRoomService.createRoom(userId, chatRoomCreateReqDto));
+    }
+    @DeleteMapping("/{roomId}")
+    public void deleteChatRoom(@PathVariable Long roomId) {
+        Long userId = 5L;
+        chatRoomService.deleteRoom(roomId, userId);
     }
 }
