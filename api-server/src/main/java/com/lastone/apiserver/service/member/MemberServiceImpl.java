@@ -1,11 +1,11 @@
-package com.lastone.core.service.member;
+package com.lastone.apiserver.service.member;
 
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.mapper.mapper.MemberMapper;
 import com.lastone.core.repository.member.MemberRepository;
-import com.lastone.core.service.s3.S3Service;
+import com.lastone.apiserver.service.s3.S3ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,17 +18,18 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
     private final MemberMapper memberMapper;
 
-    private final S3Service s3Service;
+    private final S3ServiceImpl s3Service;
 
 
     public MemberDto findById(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NullPointerException::new);
+        log.info("isEdited= {}", member.getIsEdited());
         return memberMapper.toDto(member);
     }
 
@@ -37,10 +38,19 @@ public class MemberService {
         isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
 
         if (profileImg != null) {
-            s3Service.delete(member.getProfileUrl());
+            if (member.getProfileUrl() != null) {
+                s3Service.delete(member.getProfileUrl());
+            }
             memberUpdateDto.setProfileUrl(s3Service.upload(profileImg));
         }
         member.update(memberUpdateDto);
+    }
+
+    public void isExist(Long memberId) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        if (member.isEmpty()) {
+            throw new NullPointerException();
+        }
     }
 
     private void isDuplicatedNickname(String updateNickname, String nickname) {
@@ -50,13 +60,6 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
         if (findMember.isPresent()) {
             throw new IllegalArgumentException("이미 해당 닉네임을 지닌 회원이 존재합니다.");
-        }
-    }
-
-    public void isExist(Long memberId) {
-        Optional<Member> member = memberRepository.findById(memberId);
-        if (member.isEmpty()) {
-            throw new NullPointerException();
         }
     }
 }
