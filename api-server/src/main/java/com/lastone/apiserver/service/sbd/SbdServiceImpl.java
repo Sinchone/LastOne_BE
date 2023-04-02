@@ -1,4 +1,4 @@
-package com.lastone.core.service.sbd;
+package com.lastone.apiserver.service.sbd;
 
 import com.lastone.core.domain.sbd.Sbd;
 import com.lastone.core.dto.sbd.SbdDto;
@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class SbdService {
+public class SbdServiceImpl implements SbdService {
 
     private final SbdRepository sbdRepository;
 
@@ -26,7 +26,14 @@ public class SbdService {
     public void updateByMemberId(SbdDto sbdDto, Long memberId) {
         Sbd findSbd = sbdRepository.findLatestRecordByMemberId(memberId);
         Sbd sbd = sbdMapper.toEntity(sbdDto);
-        if (findSbd != null && sbd.isEqualTo(findSbd)) {
+        if (sbd == null) {
+            sbd = Sbd.builder()
+                    .benchPress(0)
+                    .deadLift(0)
+                    .squat(0)
+                    .build();
+        }
+        if (findSbd != null && findSbd.isEqualTo(sbd)) {
             return;
         }
         sbd.assignMemberId(memberId);
