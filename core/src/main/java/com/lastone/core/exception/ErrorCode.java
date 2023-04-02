@@ -14,7 +14,7 @@ public enum ErrorCode {
   INVALID_TYPE_VALUE(400, "C005", "Invalid Type Value"),
 
   HANDLE_ACCESS_DENIED(403, "B006", "Access is Denied"),
-  UNAUTHORIZED(401, "U002", "Not Authorized on user"),
+  UNAUTHORIZED(401, "U002", "권한이 없습니다."),
 
   NOT_FOUND_USER(404, "U001", "No such User"),
   NOT_FOUND_POST(404, "P001", "No such Post"),
@@ -25,7 +25,8 @@ public enum ErrorCode {
   FILE_FETCH_FAILURE(500, "S001", "File fetch failure (from storage)"),
   /* Chatting */
   ALREADY_DELETED_CHAT_ROOM(404, "CR001", "지워진 채팅방입니다."),
-  BLOCKED_CHAT_ROOM(404, "CR002", "차단된 채팅방입니다.")
+  BLOCKED_CHAT_ROOM(401, "CR002", "차단된 채팅방입니다."),
+  NOT_FOUNT_ROOM(404, "CR003", "채팅방을 찾을 수 없습니다.")
   ;
   private final String code;
   private final String message;
