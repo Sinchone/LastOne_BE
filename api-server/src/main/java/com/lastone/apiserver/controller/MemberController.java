@@ -1,14 +1,16 @@
-package com.lastone.apiserver.member;
+package com.lastone.apiserver.controller;
 
 import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.dto.gym.GymUpdateDto;
 import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
+import com.lastone.core.dto.mypage.MyPageDto;
+import com.lastone.core.dto.mypage.MyPageUpdateDto;
 import com.lastone.core.dto.sbd.SbdDto;
 import com.lastone.core.security.UserDetailsImpl;
-import com.lastone.core.service.gym.GymService;
-import com.lastone.core.service.member.MemberService;
-import com.lastone.core.service.sbd.SbdService;
+import com.lastone.apiserver.service.gym.GymService;
+import com.lastone.apiserver.service.member.MemberService;
+import com.lastone.apiserver.service.sbd.SbdService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,76 @@ public class MemberController {
     private final GymService gymService;
 
     private final SbdService sbdService;
+
+
+    @GetMapping("/mypage")
+    public ResponseEntity<Object> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long memberId = userDetails.getId();
+        MyPageDto myPage = createMyPage(memberId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "마이페이지 회원 정보입니다.");
+        result.put("myPage", myPage);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/{memberId}/mypage")
+    public ResponseEntity<Object> getMyPageByMemberId(@PathVariable Long memberId) {
+        MyPageDto myPage = createMyPage(memberId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "마이페이지 회원 정보입니다.");
+        result.put("myPage", myPage);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    private MyPageDto createMyPage(Long memberId) {
+        memberService.isExist(memberId);
+        MemberDto member = memberService.findById(memberId);
+        log.info("isEdited = {}", member.getIsEdited());
+        List<GymDto> gyms = gymService.findAllByMemberId(memberId);
+        SbdDto sbd = sbdService.findByMemberId(memberId);
+
+        return MyPageDto.builder()
+                .member(member)
+                .gyms(gyms)
+                .sbd(sbd)
+                .build();
+    }
+
+    @PutMapping("/mypage")
+    public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
+                                               @RequestPart(required = false) MultipartFile profileImg) throws IOException {
+        Long memberId = userDetails.getId();
+        log.info("mypage = {}", myPage.toString());
+        log.info("sbd = {}", myPage.getSbd());
+        memberService.update(memberId, myPage.getMember(), profileImg);
+        gymService.updateByMemberId(myPage.getGyms(), memberId);
+        sbdService.updateByMemberId(myPage.getSbd(), memberId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "마이페이지 수정 작업이 완료되었습니다.");
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @GetMapping
     public ResponseEntity<Object> getMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -81,7 +153,9 @@ public class MemberController {
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<Object> updateMember(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart(required = false) @Validated MemberUpdateDto memberUpdateDto, @RequestPart(required = false) MultipartFile profileImg) throws IOException {
+    public ResponseEntity<Object> updateMember(@PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestPart(required = false) @Validated MemberUpdateDto memberUpdateDto,
+                                               @RequestPart(required = false) MultipartFile profileImg) throws IOException {
         validateAuthorization(userDetails.getId(), memberId);
         memberService.update(memberId, memberUpdateDto, profileImg);
 
