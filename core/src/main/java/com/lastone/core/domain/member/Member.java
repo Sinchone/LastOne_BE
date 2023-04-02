@@ -3,8 +3,10 @@ package com.lastone.core.domain.member;
 import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.repository.BaseTime;
+import com.lastone.core.util.BooleanToYNConverter;
 import io.netty.util.internal.StringUtil;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -39,6 +41,10 @@ public class Member extends BaseTime {
 
     private String status;
 
+    @Convert(converter = BooleanToYNConverter.class)
+    @ColumnDefault("false")
+    private Boolean isEdited;
+
     public void update(MemberUpdateDto memberUpdateDto) {
         this.nickname = memberUpdateDto.getNickname();
         this.gender = memberUpdateDto.getGender();
@@ -46,5 +52,6 @@ public class Member extends BaseTime {
         this.workoutPurpose = memberUpdateDto.getWorkoutPurpose();
         this.workoutTime = memberUpdateDto.getWorkoutTime();
         this.workoutDay = memberUpdateDto.getWorkoutDay();
+        this.isEdited = true;
     }
 }
