@@ -1,7 +1,6 @@
-package com.lastone.core.service.s3;
+package com.lastone.apiserver.service.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -10,16 +9,13 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class S3Service {
+public class S3ServiceImpl implements S3Service {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;

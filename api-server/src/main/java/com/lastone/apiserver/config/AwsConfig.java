@@ -1,4 +1,4 @@
-package com.lastone.core.config;
+package com.lastone.apiserver.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
