@@ -1,9 +1,6 @@
 package com.lastone.core.dto.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
@@ -14,6 +11,7 @@ import javax.validation.constraints.Size;
 @Builder
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class MemberUpdateDto {
 
     @NotBlank
