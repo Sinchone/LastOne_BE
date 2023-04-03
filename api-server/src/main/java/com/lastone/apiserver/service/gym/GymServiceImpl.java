@@ -8,13 +8,12 @@ import com.lastone.core.repository.gym.GymRepository;
 import com.lastone.core.repository.member_gym.MemberGymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class GymServiceImpl implements GymService {
 
@@ -32,11 +31,11 @@ public class GymServiceImpl implements GymService {
             GymDto gymDto = gymMapper.toDto(gymRepository.findById(memberGym.getGymId()).orElse(null));
             gymDtos.add(gymDto);
         }
-
         return gymDtos;
     }
 
-    public void updateByMemberId(List<GymDto> gyms, Long memberId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateByMemberId(Long memberId, List<GymDto> gyms) {
         List<Long> gymIds = saveAndGetGymIds(gyms);
         List<MemberGym> memberGyms = memberGymRepository.findAllByMemberIdAndDelete(memberId);
         for (MemberGym memberGym : memberGyms) {

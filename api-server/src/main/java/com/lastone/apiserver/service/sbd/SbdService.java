@@ -4,7 +4,7 @@ import com.lastone.core.dto.sbd.SbdDto;
 
 public interface SbdService {
 
-    public SbdDto findByMemberId(Long memberId);
+    SbdDto findByMemberId(Long memberId);
 
-    public void updateByMemberId(SbdDto sbdDto, Long memberId);
+    void updateByMemberId(Long memberId, SbdDto sbdDto);
 }

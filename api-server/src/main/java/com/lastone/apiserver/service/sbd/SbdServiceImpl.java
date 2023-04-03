@@ -6,11 +6,10 @@ import com.lastone.core.mapper.mapper.SbdMapper;
 import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SbdServiceImpl implements SbdService {
 
@@ -23,7 +22,8 @@ public class SbdServiceImpl implements SbdService {
         return sbdMapper.toDto(sbd);
     }
 
-    public void updateByMemberId(SbdDto sbdDto, Long memberId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateByMemberId(Long memberId, SbdDto sbdDto) {
         Sbd findSbd = sbdRepository.findLatestRecordByMemberId(memberId);
         Sbd sbd = sbdMapper.toEntity(sbdDto);
         if (sbd == null) {

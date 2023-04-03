@@ -9,14 +9,14 @@ import com.lastone.apiserver.service.s3.S3ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
@@ -29,10 +29,10 @@ public class MemberServiceImpl implements MemberService {
 
     public MemberDto findById(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NullPointerException::new);
-        log.info("isEdited= {}", member.getIsEdited());
         return memberMapper.toDto(member);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void update(Long memberId, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
         Member member = memberRepository.findById(memberId).orElseThrow(NullPointerException::new);
         isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
@@ -44,13 +44,6 @@ public class MemberServiceImpl implements MemberService {
             memberUpdateDto.setProfileUrl(s3Service.upload(profileImg));
         }
         member.update(memberUpdateDto);
-    }
-
-    public void isExist(Long memberId) {
-        Optional<Member> member = memberRepository.findById(memberId);
-        if (member.isEmpty()) {
-            throw new NullPointerException();
-        }
     }
 
     private void isDuplicatedNickname(String updateNickname, String nickname) {
