@@ -23,7 +23,7 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
-    @GetMapping("/mypage")
+    @GetMapping
     public ResponseEntity<Object> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long memberId = userDetails.getId();
         MyPageDto myPage = myPageService.getMyPage(memberId);
@@ -36,7 +36,7 @@ public class MyPageController {
         return ResponseEntity.ok().body(baseResponse);
     }
 
-    @GetMapping("/mypage/{memberId}")
+    @GetMapping("{memberId}")
     public ResponseEntity<Object> getMyPageByMemberId(@PathVariable Long memberId) {
         MyPageDto myPage = myPageService.getMyPage(memberId);
 
@@ -48,7 +48,7 @@ public class MyPageController {
         return ResponseEntity.ok().body(baseResponse);
     }
 
-    @PutMapping("/mypage")
+    @PutMapping
     public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
                                                @RequestPart(required = false) MultipartFile profileImg) throws IOException {
