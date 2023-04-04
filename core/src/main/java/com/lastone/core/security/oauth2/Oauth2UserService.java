@@ -32,19 +32,14 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         KakaoOauth2UserInfo kakaoOauth2UserInfo = new KakaoOauth2UserInfo(oAuth2User.getAttributes());
 
         String email = kakaoOauth2UserInfo.getEmail();
-        String nickname = kakaoOauth2UserInfo.getNickname();
         String gender = kakaoOauth2UserInfo.getGender();
 
-        if (email == null) {
-            throw new IllegalArgumentException("카카오 email은 필수 입력 값입니다.");
-        }
 
         try {
             Member findMember = memberRepository.findByEmail(email).orElseThrow(NullPointerException::new);
         } catch (NullPointerException e) {
             Member member = Member.builder()
                     .email(email)
-                    .nickname(nickname)
                     .gender(gender)
                     .build();
             memberRepository.save(member);
