@@ -58,4 +58,7 @@ public class ChatRoom {
         chatRoom.status = ChatStatus.NORMAL;
         return chatRoom;
     }
+    public void delete() {
+        this.status = ChatStatus.DELETED;
+    }
 }

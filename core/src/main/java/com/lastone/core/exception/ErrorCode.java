@@ -14,7 +14,7 @@ public enum ErrorCode {
   INVALID_TYPE_VALUE(400, "C005", "Invalid Type Value"),
 
   HANDLE_ACCESS_DENIED(403, "B006", "Access is Denied"),
-  UNAUTHORIZED(401, "U002", "Not Authorized on user"),
+  UNAUTHORIZED(401, "U002", "권한이 없습니다."),
 
   NOT_FOUND_USER(404, "U001", "No such User"),
   NOT_FOUND_POST(404, "P001", "No such Post"),
@@ -27,11 +27,15 @@ public enum ErrorCode {
   /* Chatting */
   ALREADY_DELETED_CHAT_ROOM(404, "CR001", "지워진 채팅방입니다."),
   BLOCKED_CHAT_ROOM(404, "CR002", "차단된 채팅방입니다."),
+  NOT_FOUNT_ROOM(404, "CR003", "채팅방을 찾을 수 없습니다."),
 
   /* MyPage 예외 */
   MEMBER_NOT_FOUND(404, "M001", "해당 회원은 존재하지 않는 회원입니다."),
   MEMBER_ALREADY_EXIST(409, "M002", "해당 닉네임을 지닌 회원이 이미 존재합니다."),
   MYPAGE_INPUT_FAILURE(400, "M003", "마이페이지 정보 입력 형태가 잘못되었습니다. Json 형식을 확인해주세요.")
+
+
+  
 
   ;
   private final String code;
