@@ -23,9 +23,12 @@ public enum ErrorCode {
   JWT_ENCODE_FAILURE(500, "J002", "DTO encode failure"),
 
   FILE_FETCH_FAILURE(500, "S001", "File fetch failure (from storage)"),
-  /* Chatting */
-  ALREADY_DELETED_CHAT_ROOM(404, "CR001", "지워진 채팅방입니다."),
-  BLOCKED_CHAT_ROOM(404, "CR002", "차단된 채팅방입니다.")
+
+  /* MyPage 예외 */
+  MEMBER_NOT_FOUND(404, "M001", "해당 회원은 존재하지 않는 회원입니다."),
+  MEMBER_ALREADY_EXIST(409, "M002", "해당 닉네임을 지닌 회원이 이미 존재합니다."),
+  MYPAGE_INPUT_FAILURE(400, "M003", "마이페이지 정보 입력 형태가 잘못되었습니다. Json 형식을 확인해주세요.")
+
   ;
   private final String code;
   private final String message;
