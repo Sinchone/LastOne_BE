@@ -1,13 +1,10 @@
 package com.lastone.core.domain.member;
 
-import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.repository.BaseTime;
 import com.lastone.core.util.BooleanToYNConverter;
-import io.netty.util.internal.StringUtil;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 

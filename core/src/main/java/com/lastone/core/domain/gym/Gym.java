@@ -25,8 +25,4 @@ public class Gym extends BaseTime {
     private String latitude;
 
     private String longitude;
-
-
-
-
 }

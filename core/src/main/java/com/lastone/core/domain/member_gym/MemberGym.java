@@ -1,5 +1,7 @@
 package com.lastone.core.domain.member_gym;
 
+import com.lastone.core.domain.gym.Gym;
+import com.lastone.core.domain.member.Member;
 import com.lastone.core.repository.BaseTime;
 import com.lastone.core.util.BooleanToYNConverter;
 import lombok.*;
@@ -20,19 +22,21 @@ public class MemberGym extends BaseTime {
     @Column(name = "member_gym_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
-    @Column(nullable = false)
-    private Long gymId;
+    @ManyToOne
+    @JoinColumn(name = "gym_id", nullable = false)
+    private Gym gym;
 
     @Convert(converter = BooleanToYNConverter.class)
     @ColumnDefault("false")
     private boolean isDeleted;
 
-    public void changeGymId(Long id) {
-        this.gymId = id;
-    }
+//    public void changeGymId(Long id) {
+//        this.gymId = id;
+//    }
 
     public void delete() {
         this.isDeleted = true;

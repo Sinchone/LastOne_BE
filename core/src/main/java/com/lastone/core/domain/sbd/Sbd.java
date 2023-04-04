@@ -1,5 +1,6 @@
 package com.lastone.core.domain.sbd;
 
+import com.lastone.core.domain.member.Member;
 import com.lastone.core.repository.BaseTime;
 import lombok.*;
 
@@ -17,7 +18,9 @@ public class Sbd extends BaseTime {
     @Column(name = "sbd_id")
     private Long id;
 
-    private Long memberId;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     private int deadLift;
 
@@ -32,7 +35,7 @@ public class Sbd extends BaseTime {
         return false;
     }
 
-    public void assignMemberId(Long memberId) {
-        this.memberId = memberId;
+    public void assignMember(Member member) {
+        this.member = member;
     }
 }
