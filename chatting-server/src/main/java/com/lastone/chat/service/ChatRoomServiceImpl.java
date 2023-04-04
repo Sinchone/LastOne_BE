@@ -1,5 +1,6 @@
 package com.lastone.chat.service;
 
+import com.lastone.chat.exception.CannotFountChatRoom;
 import com.lastone.chat.exception.ChatException;
 import com.lastone.core.repository.ChatRoomRepository;
 import com.lastone.core.domain.chat.ChatRoom;
@@ -8,6 +9,7 @@ import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import com.lastone.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,12 +42,23 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
         return chatRoomOptional.get().getId();
     }
+
+    @Override
+    @Transactional
+    public void deleteRoom(Long roomId, Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(CannotFountChatRoom::new);
+        isRoomValidation(chatRoom.getStatus());
+        if(chatRoom.getParticipationId() != userId
+        || chatRoom.getHostId() != userId) {
+            throw new ChatException(ErrorCode.UNAUTHORIZED);
+        }
+        chatRoom.delete();
+        chatRoomRepository.save(chatRoom);
+    }
+
     private void isRoomValidation(ChatStatus roomStatus) {
         if(roomStatus.equals(ChatStatus.BLOCKED)) {
             throw new ChatException(ErrorCode.BLOCKED_CHAT_ROOM);
-        }
-        if(roomStatus.equals(ChatStatus.DELETED)) {
-            throw new ChatException(ErrorCode.ALREADY_DELETED_CHAT_ROOM);
         }
     }
     private Map<String, Long> userIdSort(Long loginedMemberId, Long otherMemberId) {
