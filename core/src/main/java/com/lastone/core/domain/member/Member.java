@@ -1,7 +1,10 @@
 package com.lastone.core.domain.member;
 
-import com.lastone.core.domain.BaseTime;
+import com.lastone.core.dto.member.MemberUpdateDto;
+import com.lastone.core.repository.BaseTime;
+import com.lastone.core.util.BooleanToYNConverter;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -17,14 +20,10 @@ public class Member extends BaseTime {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "gym1_id")
-    private Long gym1Id;
-
-    @Column(name = "gym2_id")
-    private Long gym2Id;
-
+    @Column(unique = true)
     private String nickname;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String gender;
@@ -39,4 +38,17 @@ public class Member extends BaseTime {
 
     private String status;
 
+    @Convert(converter = BooleanToYNConverter.class)
+    @ColumnDefault("false")
+    private Boolean isEdited;
+
+    public void update(MemberUpdateDto memberUpdateDto) {
+        this.nickname = memberUpdateDto.getNickname();
+        this.gender = memberUpdateDto.getGender();
+        this.profileUrl = memberUpdateDto.getProfileUrl();
+        this.workoutPurpose = memberUpdateDto.getWorkoutPurpose();
+        this.workoutTime = memberUpdateDto.getWorkoutTime();
+        this.workoutDay = memberUpdateDto.getWorkoutDay();
+        this.isEdited = true;
+    }
 }

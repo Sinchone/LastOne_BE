@@ -1,14 +1,15 @@
 package com.lastone.core.domain.gym;
 
-import com.lastone.core.domain.BaseTime;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.lastone.core.repository.BaseTime;
+import lombok.*;
 
 import javax.persistence.*;
 
+@ToString
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Gym extends BaseTime {
 
@@ -24,8 +25,4 @@ public class Gym extends BaseTime {
     private String latitude;
 
     private String longitude;
-
-
-
-
 }

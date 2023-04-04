@@ -12,8 +12,8 @@ import java.util.*;
 
 public class JwtProvider {
 
-    private static final int ACCESS_TOKEN_TIME = 10 * 60 * 1000;
-    private static final int REFRESH_TOKEN_TIME = 30 * 60 * 1000;
+    private static final int ACCESS_TOKEN_TIME = 3 * 60 * 60 * 1000;
+    private static final int REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000;
     private static final String secretKey = "test";
     private static final Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
 

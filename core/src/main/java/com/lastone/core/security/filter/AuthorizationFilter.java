@@ -77,7 +77,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 
-        UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email));
+        UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email).orElseThrow(NullPointerException::new));
 
         UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);
