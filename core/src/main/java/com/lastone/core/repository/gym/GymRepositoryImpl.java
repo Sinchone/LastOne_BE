@@ -2,7 +2,6 @@ package com.lastone.core.repository.gym;
 
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.dto.gym.GymDto;
-import com.lastone.core.mapper.mapper.GymMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -11,8 +10,6 @@ import static com.lastone.core.domain.gym.QGym.gym;
 
 @RequiredArgsConstructor
 public class GymRepositoryImpl implements  GymRepositoryCustom{
-
-    private final GymMapper gymMapper;
     private final JPAQueryFactory queryFactory;
     @Override
     public Gym findByGymDto(GymDto gymDto) {
