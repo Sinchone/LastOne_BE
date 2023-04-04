@@ -3,10 +3,8 @@ package com.lastone.apiserver.service.member;
 import com.lastone.apiserver.exception.MemberAlreadyExistException;
 import com.lastone.apiserver.exception.MemberNotFountException;
 import com.lastone.core.domain.member.Member;
-import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.exception.ErrorCode;
-import com.lastone.core.mapper.mapper.MemberMapper;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.apiserver.service.s3.S3ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
         if (updateNickname.equals(nickname)) {
             return;
         }
-        Optional<com.lastone.core.domain.member.Member> findMember = memberRepository.findByNickname(updateNickname);
+        Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
         if (findMember.isPresent()) {
             throw new MemberAlreadyExistException(ErrorCode.MEMBER_ALREADY_EXIST);
         }
