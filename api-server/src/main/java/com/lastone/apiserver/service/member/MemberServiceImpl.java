@@ -1,8 +1,11 @@
 package com.lastone.apiserver.service.member;
 
+import com.lastone.apiserver.exception.MemberAlreadyExistException;
+import com.lastone.apiserver.exception.MemberNotFountException;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.member.MemberUpdateDto;
+import com.lastone.core.exception.ErrorCode;
 import com.lastone.core.mapper.mapper.MemberMapper;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.apiserver.service.s3.S3ServiceImpl;
@@ -22,19 +25,15 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
-    private final MemberMapper memberMapper;
-
     private final S3ServiceImpl s3Service;
 
 
-    public MemberDto findById(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NullPointerException::new);
-        return memberMapper.toDto(member);
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFountException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void update(Long memberId, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
-        Member member = memberRepository.findById(memberId).orElseThrow(NullPointerException::new);
+    public void update(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
         isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
 
         if (profileImg != null) {
@@ -50,9 +49,9 @@ public class MemberServiceImpl implements MemberService {
         if (updateNickname.equals(nickname)) {
             return;
         }
-        Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
+        Optional<com.lastone.core.domain.member.Member> findMember = memberRepository.findByNickname(updateNickname);
         if (findMember.isPresent()) {
-            throw new IllegalArgumentException("이미 해당 닉네임을 지닌 회원이 존재합니다.");
+            throw new MemberAlreadyExistException(ErrorCode.MEMBER_ALREADY_EXIST);
         }
     }
 }

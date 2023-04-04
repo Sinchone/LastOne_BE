@@ -1,14 +1,14 @@
 package com.lastone.apiserver.service.member;
 
-import com.lastone.core.dto.member.MemberDto;
+import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface MemberService {
 
-    MemberDto findById(Long memberId);
+    Member findById(Long memberId);
 
-    void update(Long memberId, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException;
+    void update(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException;
 
 }

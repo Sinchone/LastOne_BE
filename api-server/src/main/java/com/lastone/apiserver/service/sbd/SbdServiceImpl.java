@@ -1,8 +1,10 @@
 package com.lastone.apiserver.service.sbd;
 
+import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.sbd.Sbd;
 import com.lastone.core.dto.sbd.SbdDto;
 import com.lastone.core.mapper.mapper.SbdMapper;
+import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,18 @@ public class SbdServiceImpl implements SbdService {
 
     private final SbdRepository sbdRepository;
 
+    private final MemberRepository memberRepository;
+
     private final SbdMapper sbdMapper;
 
-    public SbdDto findByMemberId(Long memberId) {
-        Sbd sbd = sbdRepository.findLatestRecordByMemberId(memberId);
+    public SbdDto findByMember(Member member) {
+        Sbd sbd = sbdRepository.findLatestRecordByMemberId(member.getId());
         return sbdMapper.toDto(sbd);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateByMemberId(Long memberId, SbdDto sbdDto) {
-        Sbd findSbd = sbdRepository.findLatestRecordByMemberId(memberId);
+    public void updateByMember(Member member, SbdDto sbdDto) {
+        Sbd findSbd = sbdRepository.findLatestRecordByMemberId(member.getId());
         Sbd sbd = sbdMapper.toEntity(sbdDto);
         if (sbd == null) {
             sbd = Sbd.builder()
@@ -36,7 +40,7 @@ public class SbdServiceImpl implements SbdService {
         if (findSbd != null && findSbd.isEqualTo(sbd)) {
             return;
         }
-        sbd.assignMemberId(memberId);
+        sbd.assignMember(member);
         sbdRepository.save(sbd);
     }
 }

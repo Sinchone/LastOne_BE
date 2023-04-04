@@ -1,6 +1,7 @@
 package com.lastone.apiserver.service.gym;
 
 import com.lastone.core.domain.gym.Gym;
+import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.member_gym.MemberGym;
 import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.mapper.mapper.GymMapper;
@@ -23,50 +24,50 @@ public class GymServiceImpl implements GymService {
 
     private final GymMapper gymMapper;
 
-    public List<GymDto> findAllByMemberId(Long memberId) {
-        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberIdAndDelete(memberId);
+    public List<GymDto> findAllByMember(Member member) {
+        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberAndDelete(member);
         List<GymDto> gymDtos = new ArrayList<>();
 
         for (MemberGym memberGym : memberGyms) {
-            GymDto gymDto = gymMapper.toDto(gymRepository.findById(memberGym.getGymId()).orElse(null));
+            GymDto gymDto = gymMapper.toDto(memberGym.getGym());
             gymDtos.add(gymDto);
         }
         return gymDtos;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateByMemberId(Long memberId, List<GymDto> gyms) {
-        List<Long> gymIds = saveAndGetGymIds(gyms);
-        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberIdAndDelete(memberId);
+    public void updateByMember(Member member, List<GymDto> gymDtos) {
+        List<Gym> gyms = saveAndGetGyms(gymDtos);
+        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberAndDelete(member);
         for (MemberGym memberGym : memberGyms) {
-            Long gymId = memberGym.getGymId();
-            if (gymIds.contains(gymId)) {
-                gymIds.remove(gymId);
+            Gym gym = memberGym.getGym();
+            if (gyms.contains(gym)) {
+                gyms.remove(gym);
                 continue;
             }
             memberGym.delete();
         }
-        for (Long gymId : gymIds) {
+        for (Gym gym : gyms) {
             memberGymRepository.save(MemberGym.builder()
-                    .memberId(memberId)
-                    .gymId(gymId)
+                    .member(member)
+                    .gym(gym)
                     .build());
         }
     }
 
-    private List<Long> saveAndGetGymIds(List<GymDto> gyms) {
-        List<Long> gymIds = new ArrayList<>();
-        for (GymDto gym : gyms) {
-            gymIds.add(saveGym(gym));
+    private List<Gym> saveAndGetGyms(List<GymDto> gymDtos) {
+        List<Gym> gyms = new ArrayList<>();
+        for (GymDto gymDto : gymDtos) {
+            gyms.add(saveGym(gymDto));
         }
-        return gymIds;
+        return gyms;
     }
 
-    private Long saveGym(GymDto gymDto) {
+    private Gym saveGym(GymDto gymDto) {
         Gym gym = gymRepository.findByGymDto(gymDto);
         if (gym == null) {
             gym = gymRepository.save(gymMapper.toEntity(gymDto));
         }
-        return gym.getId();
+        return gym;
     }
 }
