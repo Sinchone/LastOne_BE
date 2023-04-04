@@ -1,12 +1,8 @@
 package com.lastone.core.dto.member;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lastone.core.dto.gym.GymDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import javax.persistence.Convert;
 
 @Getter
 @Builder

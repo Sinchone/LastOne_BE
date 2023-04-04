@@ -1,11 +1,10 @@
 package com.lastone.core.dto.member;
 
+import com.lastone.core.util.validator.member.WorkoutDay;
+import com.lastone.core.util.validator.member.WorkoutTime;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Getter
 @Builder
@@ -18,17 +17,19 @@ public class MemberUpdateDto {
     @Size(min = 2, max = 15)
     private String nickname;
 
-    @NotBlank
-    @Size(min = 1, max = 1)
+    @Pattern(regexp = "^(남성|여성)$", message = "성별은 남성 또는 여성만 가능합니다.")
     private String gender;
 
-    private String profileUrl;
-
+    @Size(max = 20, message = "운동 목표는 최대 20자 까지 작성 가능합니다.")
     private String workoutPurpose;
 
+    @WorkoutTime
     private String workoutTime;
 
+    @WorkoutDay
     private String workoutDay;
+
+    private String profileUrl;
 
     public void setProfileUrl(String url) {
         this.profileUrl = url;
