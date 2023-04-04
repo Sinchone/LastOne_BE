@@ -27,7 +27,9 @@ public class MyPageController {
         Long memberId = userDetails.getId();
         MyPageDto myPage = myPageService.getMyPage(memberId);
 
-        return ResponseEntity.ok().body(new SuccessResponse("마이페이지 정보조회에 성공하였습니다.", myPage));
+        return ResponseEntity.ok().body(SuccessResponse.builder()
+                .message("마이페이지 정보 조회에 성공하였습니다.")
+                .data(myPage));
     }
 
 
@@ -35,7 +37,9 @@ public class MyPageController {
     public ResponseEntity<Object> getMyPageByMemberId(@PathVariable Long memberId) {
         MyPageDto myPage = myPageService.getMyPage(memberId);
 
-        return ResponseEntity.ok().body(new SuccessResponse("마이페이지 정보 조회에 성공하였습니다.", myPage));
+        return ResponseEntity.ok().body(SuccessResponse.builder()
+                .message("마이페이지 정보 조회에 성공하였습니다.")
+                .data(myPage));
     }
 
     @PutMapping
@@ -43,10 +47,9 @@ public class MyPageController {
                                                @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
                                                @RequestPart(required = false) MultipartFile profileImg) throws IOException {
         Long memberId = userDetails.getId();
-        log.info("{}, {}, {}",myPage.getMember().toString(), myPage.getGyms().toString(), myPage.getSbd().toString());
         myPageService.updateMyPage(memberId, myPage, profileImg);
 
-
-        return ResponseEntity.ok().body(new SuccessResponse("마이페이지 수정 작업에 성공하였습니다."));
+        return ResponseEntity.ok().body(SuccessResponse.builder()
+                .message("마이페이지 수정 작업에 성공하였습니다."));
     }
 }
