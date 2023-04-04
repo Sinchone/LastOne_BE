@@ -1,5 +1,6 @@
 package com.lastone.core.repository.member_gym;
 
+import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.member_gym.MemberGym;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,6 @@ import java.util.List;
 
 public interface MemberGymRepository extends JpaRepository<MemberGym, Long> {
 
-    @Query("select m from MemberGym m where m.memberId = :memberId and m.isDeleted = false")
-    List<MemberGym> findAllByMemberIdAndDelete(@Param("memberId") Long memberId);
+    @Query("select m from MemberGym m where m.member = :member and m.isDeleted = false")
+    List<MemberGym> findAllByMemberAndDelete(@Param("member") Member member);
 }
