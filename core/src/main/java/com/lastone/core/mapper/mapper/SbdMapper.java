@@ -17,7 +17,7 @@ public interface SbdMapper extends GenericMapper<SbdDto, Sbd> {
     List<SbdDto> toDto(List<Sbd> e);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "memberId", ignore = true)
+    @Mapping(target = "member", ignore = true)
     @Override
     Sbd toEntity(SbdDto dto);
 }
