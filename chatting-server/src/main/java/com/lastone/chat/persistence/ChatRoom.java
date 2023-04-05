@@ -1,45 +1,33 @@
-package com.lastone.core.domain.chat;
+package com.lastone.chat.persistence;
 
+import com.lastone.core.domain.chat.ChatStatus;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
-@Entity
-@Table(name = "chat_room")
+@Document(value = "chat_room")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private Long hostId;
-    private Long participationId;
-    @Enumerated(EnumType.STRING)
+    private String id;
+    private List<Long> participations;
     private ChatStatus status;
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    @Builder
-    public ChatRoom(Long hostId, Long participationId) {
-        this.hostId = hostId;
-        this.participationId = participationId;
-    }
 
     @PrePersist
     public void preCreated() {
@@ -53,8 +41,7 @@ public class ChatRoom {
 
     public static ChatRoom create(Long hostId, Long participationId) {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.hostId = hostId;
-        chatRoom.participationId = participationId;
+        chatRoom.participations = new ArrayList<>(Arrays.asList(hostId, participationId));
         chatRoom.status = ChatStatus.NORMAL;
         return chatRoom;
     }
