@@ -1,11 +1,7 @@
 package com.lastone.core.security.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lastone.core.domain.member.Member;
-import com.lastone.core.domain.member.MemberRepository;
+import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.security.UserDetailsImpl;
 import com.lastone.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -43,7 +40,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        log.info("AuthorizatonFilter 접근, request uri = {}", request.getRequestURI());
+        log.info("AuthorizatonFilter 접근, request uri = {}", request.getRequestURL());
 
         if (request.getServletPath().equals("/token/refresh") || request.getServletPath().equals("/token/logout")) {
             chain.doFilter(request, response);
@@ -53,14 +50,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
         /* 테스트 토큰 */
-        if (authorizationHeader.equals("test")) {
+        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.equals("test")) {
             SecurityContextHolder.getContext().setAuthentication(createTestToken());
             chain.doFilter(request, response);
             return;
         }
 
 
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        /*if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
@@ -80,7 +77,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email).orElseThrow(NullPointerException::new));
 
         UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);*/
         chain.doFilter(request, response);
     }
 

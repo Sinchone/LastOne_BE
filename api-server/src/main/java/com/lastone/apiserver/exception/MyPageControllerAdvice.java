@@ -1,14 +1,13 @@
 package com.lastone.apiserver.exception;
 
-import com.lastone.core.dto.response.FailureResponse;
-import com.lastone.core.dto.response.FailureResponse.ValidationError;
+import com.lastone.core.dto.FailureResponse;
+import com.lastone.core.dto.FailureResponse.ValidationError;
 import com.lastone.core.exception.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
