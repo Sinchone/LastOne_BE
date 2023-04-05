@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @EntityScan("com.lastone.core")
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = {"com.lastone.core"})
+@EnableJpaRepositories(basePackages = {"com.lastone.core", "com.lastone.chat"})
 @EnableMongoAuditing
 @EnableMongoRepositories
 @SpringBootApplication(scanBasePackages = {"com.lastone.core","com.lastone.chat"} )

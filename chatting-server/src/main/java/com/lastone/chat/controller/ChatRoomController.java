@@ -3,6 +3,7 @@ package com.lastone.chat.controller;
 import com.lastone.chat.service.ChatRoomService;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,5 +33,11 @@ public class ChatRoomController {
     public void deleteChatRoom(@PathVariable Long roomId) {
         Long userId = 5L;
         chatRoomService.deleteRoom(roomId, userId);
+    }
+    @GetMapping
+    public ResponseEntity<Object> getList(Pageable pageable) {
+        Long userId = 5L;
+        chatRoomService.getList(userId, pageable);
+        return ResponseEntity.ok("");
     }
 }

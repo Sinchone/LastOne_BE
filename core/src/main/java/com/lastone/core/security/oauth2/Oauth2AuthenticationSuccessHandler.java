@@ -31,7 +31,7 @@ public class Oauth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
         CustomOauth2User user = (CustomOauth2User) authentication.getPrincipal();
 
         Map<String, String> tokens = JwtProvider.createToken(user.getName(), request.getRequestURI());
-
+        log.info(request.getRequestURI());
         response.addCookie(makeCookieForAccessToken(tokens.get("accessToken")));
         response.addCookie(makeCookieForRefreshToken(tokens.get("refreshToken")));
 

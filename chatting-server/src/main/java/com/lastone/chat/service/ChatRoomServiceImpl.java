@@ -1,30 +1,55 @@
 package com.lastone.chat.service;
 
+import com.lastone.chat.dto.chatroom.ChatRoomListDto;
+import com.lastone.chat.dto.chatroom.ChatRoomResDto;
+import com.lastone.chat.dto.chatroom.MessageColumn;
 import com.lastone.chat.exception.CannotFountChatRoom;
 import com.lastone.chat.exception.ChatException;
-import com.lastone.core.repository.ChatRoomRepository;
+import com.lastone.chat.repository.ChatMessageRepository;
+import com.lastone.core.repository.chatroom.ChatRoomRepository;
 import com.lastone.core.domain.chat.ChatRoom;
 import com.lastone.core.domain.chat.ChatStatus;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import com.lastone.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
-
+    private final ChatMessageRepository messageRepository;
+    private final MongoTemplate mongoTemplate;
     /**
      * 채팅방을 생성하기 전, 이미 해당 참여자가 있는지 확인
      * 없다면 채팅방 생성
      * 있다면 해당 채팅방의 번호 반환
      */
+    private final String senderId = MessageColumn.SENDERID.getWord();
+    private final String receiverId = MessageColumn.RECEIVERID.getWord();
+    private final String roomId = MessageColumn.ROOMID.getWord();
+    private final String content = MessageColumn.CONTENT.getWord();
+    private final String createdAt = MessageColumn.CREATEDAT.getWord();
+
     @Override
     public Long createRoom(Long userId, ChatRoomCreateReqDto createReqDto) {
         Map<String, Long> userIdMap = userIdSort(userId, createReqDto.getParticipationId());
@@ -54,6 +79,38 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
         chatRoom.delete();
         chatRoomRepository.save(chatRoom);
+    }
+
+    @Override
+    public Page<ChatRoomResDto> getList(Long userId, Pageable pageable) {
+        Sort sortCondition = pageable.getSort();
+
+        Query query = new Query();
+        Criteria criteria =
+                new Criteria(senderId)
+                    .is(userId)
+                    .orOperator(
+                        new Criteria(receiverId)
+                    ).is(userId);
+        GroupOperation groupByRoomId = group(roomId).push(content).as(content);
+        ProjectionOperation projection = Aggregation.project() //대상선정
+                .and(roomId).as(roomId)
+                .and(content).as(content)
+                .and(createdAt).as(createdAt)
+                ;
+
+        SortOperation sort = Aggregation.sort(Sort.by(Sort.Order.desc(createdAt)));
+        MatchOperation matchStage = Aggregation.match(criteria);
+        Aggregation aggregation = Aggregation.newAggregation(
+                groupByRoomId, projection, matchStage, sort
+        );
+        List<ChatRoomListDto> messages = mongoTemplate.aggregate(
+                        aggregation,
+                        "messages",
+                        ChatRoomListDto.class)
+                .getMappedResults();
+
+        return null;
     }
 
     private void isRoomValidation(ChatStatus roomStatus) {
