@@ -1,4 +1,4 @@
-package com.lastone.chat.dto.chatroom;
+package com.lastone.chat.persistence;
 
 import lombok.Getter;
 
