@@ -158,7 +158,7 @@
   <script th:inline="javascript">
     let chatBox = document.querySelector("#chat-box");
     let messageContent = document.querySelector("#chat-outgoing-msg");
-    const chatRoomId = 1;
+    const chatRoomId = window.location.href.split("/")[4];
     let myId = 50;
 
     function getMessageBox(sender, msgInput, sendTime) {
@@ -199,7 +199,7 @@
     stomp.connect('guest', 'guest', function (frame) {
       console.log('STOMP Connected');
       /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
-      stomp.subscribe("/sub/chat/room/" + 1, function (content) {
+      stomp.subscribe("/sub/chat/room/" + chatRoomId, function (content) {
         console.log("구독 좋아요----좋댓구---")
         const payload = JSON.parse(content.body);
         let sender = myId % 2 === 0? 'mine' : 'yours';
