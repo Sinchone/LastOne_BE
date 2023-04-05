@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ChatRoomService {
-    Long createRoom(Long userId, ChatRoomCreateReqDto createReqDto);
-    void deleteRoom(Long roomId, Long userId);
+    String createRoom(Long userId, ChatRoomCreateReqDto createReqDto);
+    void deleteRoom(String roomId, Long userId);
 
     Page<ChatRoomResDto> getList(Long userId, Pageable pageable);
 }

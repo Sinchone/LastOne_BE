@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/chat-room")
@@ -25,12 +26,13 @@ public class ChatRoomController {
         return "chat/chat";
     }
     @PostMapping
-    public ResponseEntity<Long> createChatRoom(@RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
+    public ResponseEntity<String> createChatRoom(@RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
         Long userId = 5L;
         return ResponseEntity.ok(chatRoomService.createRoom(userId, chatRoomCreateReqDto));
     }
     @DeleteMapping("/{roomId}")
-    public void deleteChatRoom(@PathVariable Long roomId) {
+    @ResponseBody
+    public void deleteChatRoom(@PathVariable String roomId) {
         Long userId = 5L;
         chatRoomService.deleteRoom(roomId, userId);
     }

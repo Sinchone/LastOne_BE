@@ -28,6 +28,8 @@ public enum ErrorCode {
   ALREADY_DELETED_CHAT_ROOM(404, "CR001", "지워진 채팅방입니다."),
   BLOCKED_CHAT_ROOM(404, "CR002", "차단된 채팅방입니다."),
   NOT_FOUNT_ROOM(404, "CR003", "채팅방을 찾을 수 없습니다."),
+  NOT_CHAT_PARTICIPANT(403, "CR004", "채팅방에 참여한 사용자가 아닙니다."),
+
 
   /* MyPage 예외 */
   MEMBER_NOT_FOUND(404, "M001", "해당 회원은 존재하지 않는 회원입니다."),
