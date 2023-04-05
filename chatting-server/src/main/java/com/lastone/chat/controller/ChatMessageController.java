@@ -18,7 +18,7 @@ public class ChatMessageController {
     private final ChatMessageService messageService;
 
     @MessageMapping("chat/message/{chatRoomId}")
-    public void sendMessage(@DestinationVariable Long chatRoomId, ChatMessageReqDto chatMessage) {
+    public void sendMessage(@DestinationVariable String chatRoomId, ChatMessageReqDto chatMessage) {
         ChatMessageResDto message = messageService.createMessage(chatRoomId, chatMessage);
         log.info("chatMessage  : " + chatMessage.getContent());
         template.convertAndSend("/sub/chat/room/" + chatRoomId, message);
