@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -22,9 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -40,7 +37,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        log.info("AuthorizatonFilter 접근, request uri = {}", request.getRequestURL());
+        log.info("AuthorizatonFilter 접근, request uri = {}", request.getRequestURI());
 
         if (request.getServletPath().equals("/token/refresh") || request.getServletPath().equals("/token/logout")) {
             chain.doFilter(request, response);
@@ -50,14 +47,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
         /* 테스트 토큰 */
-        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.equals("test")) {
+        if (authorizationHeader.equals("test")) {
             SecurityContextHolder.getContext().setAuthentication(createTestToken());
             chain.doFilter(request, response);
             return;
         }
 
 
-        /*if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
@@ -77,7 +74,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email).orElseThrow(NullPointerException::new));
 
         UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);*/
+        SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);
         chain.doFilter(request, response);
     }
 
