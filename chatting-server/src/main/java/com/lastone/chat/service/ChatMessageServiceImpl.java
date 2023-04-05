@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatMessageRepository messageRepository;
     @Override
-    public ChatMessageResDto createMessage(Long roomId, ChatMessageReqDto messageReqDto) {
+    public ChatMessageResDto createMessage(String roomId, ChatMessageReqDto messageReqDto) {
         ChatMessage chatMessage = new ChatMessage(roomId, messageReqDto);
         return new ChatMessageResDto(messageRepository.save(chatMessage));
     }
