@@ -29,14 +29,16 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
+
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
                 .rememberMe().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
                 .and()
-                .oauth2Login().disable();
-                /*.authorizationEndpoint().baseUri("/oauth2/authorize")
+                .oauth2Login()
+                .authorizationEndpoint().baseUri("/oauth2/authorize")
                 .and()
                 .redirectionEndpoint().baseUri("/oauth2/callback/**")
                 .and()
@@ -46,17 +48,9 @@ public class SecurityConfig {
 
                 .and()
                 .addFilterBefore(authorizationFilter,UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login()
                 .authorizeRequests()
-
-                .anyRequest().permitAll()
                 .antMatchers("/test").permitAll()
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
-                ;
-                */
-
-
+                .anyRequest().authenticated();
 
         return http.build();
     }
