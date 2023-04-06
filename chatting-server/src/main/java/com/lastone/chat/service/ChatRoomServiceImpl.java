@@ -1,7 +1,5 @@
 package com.lastone.chat.service;
 
-import com.lastone.chat.dto.chatroom.ChatRoomListDto;
-import com.lastone.chat.dto.chatroom.ChatRoomResDto;
 import com.lastone.chat.persistence.MessageColumn;
 import com.lastone.chat.persistence.RoomColumn;
 import com.lastone.chat.exception.ChatException;
@@ -12,26 +10,15 @@ import com.lastone.core.domain.chat.ChatStatus;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import com.lastone.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 
 @Service
 @RequiredArgsConstructor
@@ -91,36 +78,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         mongoTemplate.save(chatRoomOptional);
     }
 
-    @Override
-    public Page<ChatRoomResDto> getList(Long userId, Pageable pageable) {
-        Sort sortCondition = pageable.getSort();
 
-        Query query = new Query();
-        Criteria criteria =
-                new Criteria(senderId)
-                    .is(userId)
-                    .orOperator(
-                        new Criteria(receiverId)
-                    ).is(userId);
-        GroupOperation groupByRoomId = group(roomId).push(content).as(content);
-        ProjectionOperation projection = Aggregation.project() //대상선정
-                .and(roomId).as(roomId)
-                .and(content).as(content)
-                .and(createdAt).as(createdAt);
-
-        SortOperation sort = Aggregation.sort(Sort.by(Sort.Order.desc(createdAt)));
-        MatchOperation matchStage = Aggregation.match(criteria);
-        Aggregation aggregation = Aggregation.newAggregation(
-                groupByRoomId, projection, matchStage, sort
-        );
-        List<ChatRoomListDto> messages = mongoTemplate.aggregate(
-                        aggregation,
-                        "messages",
-                        ChatRoomListDto.class)
-                .getMappedResults();
-
-        return null;
-    }
 
     private void isRoomValidation(ChatStatus roomStatus) {
         if(roomStatus.equals(ChatStatus.BLOCKED)) {
