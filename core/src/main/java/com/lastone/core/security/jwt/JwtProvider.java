@@ -5,42 +5,52 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class JwtProvider {
 
-    private static final int ACCESS_TOKEN_TIME = 3 * 60 * 60 * 1000;
-    private static final int REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000;
-    private static final String secretKey = "test";
-    private static final Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+    @Value("${token.time.access}")
+    private long accessTokenDuration;
 
-    public static Map<String, String> createToken(String email, String requestUri) {
+    @Value("${token.time.refresh}")
+    private long refreshTokenDuration;
+
+    @Value("${token.secretkey}")
+    private String secretKey;
+
+    private final Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+
+
+    public TokenResponse createToken(String email, String requestUri) {
 
         String accessToken = JWT.create()
                 .withSubject(email)
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenDuration))
                 .withIssuer(requestUri)
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withSubject(email)
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenDuration))
                 .withIssuer(requestUri)
                 .sign(algorithm);
 
-        HashMap<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-
-        return tokens;
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
-    public static String verifyToken(String token) {
+    public TokenInfo verifyToken(String token) {
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(token);
-        return decodedJWT.getSubject();
+
+        return TokenInfo.builder()
+                .subject(decodedJWT.getSubject())
+                .expiredAt(decodedJWT.getExpiresAt())
+                .build();
     }
 }
