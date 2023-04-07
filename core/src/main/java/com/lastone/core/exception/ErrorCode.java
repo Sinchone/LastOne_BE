@@ -32,9 +32,11 @@ public enum ErrorCode {
   /* MyPage 예외 */
   MEMBER_NOT_FOUND(404, "M001", "해당 회원은 존재하지 않는 회원입니다."),
   MEMBER_ALREADY_EXIST(409, "M002", "해당 닉네임을 지닌 회원이 이미 존재합니다."),
-  MYPAGE_INPUT_FAILURE(400, "M003", "마이페이지 정보 입력 형태가 잘못되었습니다. Json 형식을 확인해주세요.")
+  MYPAGE_INPUT_FAILURE(400, "M003", "마이페이지 정보 입력 형태가 잘못되었습니다. Json 형식을 확인해주세요."),
 
 
+  /* Oauth2 예외 */
+  OAUTH2_REGISTER_NOT_FOUND(404, "A001", "해당 registerId는 지원되지 않습니다.")
   
 
   ;
