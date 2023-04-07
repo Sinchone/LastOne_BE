@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -62,10 +61,6 @@ public class MyPageControllerAdvice extends ResponseEntityExceptionHandler {
 
     private FailureResponse buildResponse(ErrorCode errorCode) {
         return new FailureResponse(errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage());
-    }
-
-    private FailureResponse buildResponse(ErrorCode errorCode, String message) {
-        return new FailureResponse(null, errorCode.getStatus(), errorCode.getCode(), message);
     }
 
     private FailureResponse buildResponse(ErrorCode errorCode, String message, List<ValidationError> ve) {
