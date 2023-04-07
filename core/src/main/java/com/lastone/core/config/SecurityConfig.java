@@ -1,8 +1,6 @@
 package com.lastone.core.config;
 
 import com.lastone.core.security.filter.AuthorizationFilter;
-import com.lastone.core.security.oauth2.Oauth2AuthenticationSuccessHandler;
-import com.lastone.core.security.oauth2.Oauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -20,9 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final Oauth2UserService oauth2UserService;
-    private final Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final AuthorizationFilter authorizationFilter;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,19 +34,11 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
-                .oauth2Login()
-                .authorizationEndpoint().baseUri("/oauth2/authorize")
-                .and()
-                .redirectionEndpoint().baseUri("/oauth2/callback/**")
-                .and()
-                .userInfoEndpoint().userService(oauth2UserService)
-                .and()
-                .successHandler(oauth2AuthenticationSuccessHandler)
-
-                .and()
                 .addFilterBefore(authorizationFilter,UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/test").permitAll()
+                .antMatchers("/api/token/**").permitAll()
+                .antMatchers("/api/oauth2/login/**").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();
