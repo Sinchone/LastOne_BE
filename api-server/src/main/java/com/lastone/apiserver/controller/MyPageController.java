@@ -29,7 +29,8 @@ public class MyPageController {
 
         return ResponseEntity.ok().body(SuccessResponse.builder()
                 .message("마이페이지 정보 조회에 성공하였습니다.")
-                .data(myPage));
+                .data(myPage)
+                .build());
     }
 
 
@@ -39,7 +40,8 @@ public class MyPageController {
 
         return ResponseEntity.ok().body(SuccessResponse.builder()
                 .message("마이페이지 정보 조회에 성공하였습니다.")
-                .data(myPage));
+                .data(myPage)
+                .build());
     }
 
     @PutMapping
@@ -50,6 +52,7 @@ public class MyPageController {
         myPageService.updateMyPage(memberId, myPage, profileImg);
 
         return ResponseEntity.ok().body(SuccessResponse.builder()
-                .message("마이페이지 수정 작업에 성공하였습니다."));
+                .message("마이페이지 수정 작업에 성공하였습니다.")
+                .build());
     }
 }
