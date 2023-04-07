@@ -1,13 +1,14 @@
 package com.lastone.core.security.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lastone.core.domain.member.Member;
-import com.lastone.core.domain.member.MemberRepository;
+import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.security.UserDetailsImpl;
+import com.lastone.core.security.exception.AlreadyLogoutException;
+import com.lastone.core.security.exception.AuthorizationHeaderException;
+import com.lastone.core.security.exception.NotFoundMemberException;
 import com.lastone.core.security.jwt.JwtProvider;
+import com.lastone.core.security.jwt.TokenType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,16 +18,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -35,65 +36,81 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Component
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
-
     private final MemberRepository memberRepository;
-
     private final RedisTemplate redisTemplate;
+    private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        log.info("AuthorizatonFilter 접근, request uri = {}", request.getRequestURI());
-
-        if (request.getServletPath().equals("/token/refresh") || request.getServletPath().equals("/token/logout")) {
+        if (isPossibleToPassFilter(request.getHeader(AUTHORIZATION))) {
             chain.doFilter(request, response);
             return;
         }
 
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-
-        /* 테스트 토큰 */
-        if (authorizationHeader.equals("test")) {
-            SecurityContextHolder.getContext().setAuthentication(createTestToken());
-            chain.doFilter(request, response);
-            return;
-        }
-
-
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        // redis에 해당 access 토큰 정보가 있으면 권한 처리 x
-        String token = authorizationHeader.substring("Bearer ".length());
-        String isLogout = (String) redisTemplate.opsForValue().get(token);
-        if (!ObjectUtils.isEmpty(isLogout)) {
-            throw new IllegalArgumentException("만료된 토큰입니다.");
-        }
-
-        String email = JwtProvider.verifyToken(token);
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
-
-        UserDetails userDetails = UserDetailsImpl.convert(memberRepository.findByEmail(email).orElseThrow(NullPointerException::new));
-
-        UsernamePasswordAuthenticationToken AuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(AuthenticationToken);
+        UsernamePasswordAuthenticationToken AuthorizeToken = getAuthorizeToken(request.getHeader(AUTHORIZATION));
+        SecurityContextHolder.getContext().setAuthentication(AuthorizeToken);
         chain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken createTestToken() {
-        UserDetails userDetails = UserDetailsImpl.convert(Member.builder()
-                .email("테스트 유저")
-                .nickname("테스트 유저")
-                .gender("남자")
-                .build());
+    private boolean isPossibleToPassFilter(String header) {
+        return ObjectUtils.isEmpty(header);
+    }
 
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
+    private UsernamePasswordAuthenticationToken getAuthorizeToken(String header) {
+        if (header.contains(TokenType.TEST_TOKEN.getTokenHeader())) {
+            return createTestToken(header);
+        }
+        if (header.startsWith(TokenType.BEARER_TOKEN.getTokenHeader())) {
+            return createBearerToken(header);
+        }
+        else {
+            throw new AuthorizationHeaderException(ErrorCode.AUTHORIZATION_NOT_FOUND);
+        }
+    }
+
+    private UsernamePasswordAuthenticationToken createBearerToken(String header) {
+        String token = header.substring(TokenType.BEARER_TOKEN.getTokenHeader().length());
+        String isLogout = (String) redisTemplate.opsForValue().get(token);
+        if (StringUtils.hasText(isLogout)) {
+            throw new AlreadyLogoutException(ErrorCode.ALREADY_LOGOUT_TOKEN);
+        }
+        String email = jwtProvider.verifyToken(token).getSubject();
+        UserDetails userdetails = UserDetailsImpl.convert(memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundMemberException(ErrorCode.MEMBER_NOT_FOUND_IN_TOKEN)));
+        Collection<SimpleGrantedAuthority> authorities = createMemberAuthorities();
+
+        return new UsernamePasswordAuthenticationToken(userdetails, null, authorities);
+    }
+
+    private UsernamePasswordAuthenticationToken createTestToken(String header) {
+        Optional<Member> findMember = memberRepository.findByEmail(header);
+        if (findMember.isEmpty()) {
+            findMember = createTestMember(header);
+        }
+        UserDetails userDetails = UserDetailsImpl.convert(findMember.get());
+        Collection<SimpleGrantedAuthority> authorities = createMemberAuthorities();
 
         return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
+
+    private Collection<SimpleGrantedAuthority> createMemberAuthorities() {
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
+        return authorities;
+    }
+
+    private Optional<Member> createTestMember(String header) {
+        String uuid = UUID.randomUUID().toString();
+        Member member = memberRepository.save(Member.builder()
+                .gender("남성")
+                .nickname("test" + uuid)
+                .email(header)
+                .workoutDay("월,화,수")
+                .workoutPurpose("다이어트")
+                .workoutTime("15:30")
+                .build());
+        return Optional.of(member);
+    }
 }
+
