@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessageResDto {
-    private Long roomId;
+    private String roomId;
     private Long senderId;
     private Long receiverId;
     private String content;
