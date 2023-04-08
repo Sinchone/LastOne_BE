@@ -137,8 +137,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                                             .last(createdAt).as(createdAt)
                                             .sum(ArithmeticOperators.Subtract.valueOf(1)
                                                     .subtract(ConvertOperators.ToLong.toLong("$"+ isRead))
-                                            ).as("notReadCount")
-                ;
+                                            ).as("notReadCount");
         SortOperation latestSort = Aggregation.sort(Sort.Direction.DESC, createdAt);
         SkipOperation skipItem = Aggregation.skip(elementsToSkip);
         LimitOperation itemLimit = new LimitOperation(pageable.getPageSize());
