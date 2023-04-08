@@ -204,7 +204,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public ChatRoomDetailDto getOne(String roomId, Long userId) {
         ChatRoom chatRoom = roomRepository.findById(roomId).orElseThrow(CannotFountChatRoom::new);
         Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
-//        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFountChatMember::new);
+//        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
         /**
          * Todo - 회원로그인 완료시 삭제할 로직
          */
