@@ -203,6 +203,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoomDetailDto getOne(String roomId, Long userId) {
         ChatRoom chatRoom = roomRepository.findById(roomId).orElseThrow(CannotFountChatRoom::new);
+        isRoomValidation(chatRoom.getStatus());
+        if(chatRoom.getStatus().equals(ChatStatus.DELETED)) throw new ChatException(ErrorCode.NOT_FOUNT_ROOM);
+
         Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
 //        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
         /**
