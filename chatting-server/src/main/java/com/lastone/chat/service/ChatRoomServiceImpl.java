@@ -36,6 +36,7 @@ import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -201,6 +202,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * @return
      */
     @Override
+    @Transactional
     public ChatRoomDetailDto getOne(String roomId, Long userId) {
         ChatRoom chatRoom = roomRepository.findById(roomId).orElseThrow(CannotFountChatRoom::new);
         isRoomValidation(chatRoom.getStatus());
@@ -220,6 +222,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .build();
 
         List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
+
+        Query query = new Query();
+        query.addCriteria(
+                Criteria.where(MessageColumn.ROOMID.getWord()).is(roomId)
+                    .and(MessageColumn.SENDERID.getWord()).is(otherUserId)
+        );
+
+        mongoTemplate.updateMulti(
+                query, Update.update(MessageColumn.ISREAD.getWord(), true),
+                MessageColumn.COLLECTION_NAME.getWord()
+        );
         return new ChatRoomDetailDto(messages, otherUser);
     }
 
