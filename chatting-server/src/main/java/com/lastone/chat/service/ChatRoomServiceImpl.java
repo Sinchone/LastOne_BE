@@ -73,7 +73,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                         .all(userIds));
         Optional<ChatRoom> chatRoomOptional = Optional.ofNullable(mongoTemplate.findOne(query, ChatRoom.class));
         if(chatRoomOptional.isEmpty()) {
-            ChatRoom createChatRoom = ChatRoom.create(hostId, participationId);
+            ChatRoom createChatRoom = new ChatRoom(hostId, participationId);
             ChatRoom save = mongoTemplate.save(createChatRoom);
             return save.getId();
         }else {
@@ -170,7 +170,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             Optional<Member> otherUserInfo = memberRepository.findById(otherUserId);
             ChatRoomResDto roomResDto;
             if(otherUserInfo.isPresent()) {
-                roomResDto = ChatRoomResDto.create(roomFindDto, otherUserInfo.get());
+                roomResDto = new ChatRoomResDto(roomFindDto, otherUserInfo.get());
                 resDtos.add(roomResDto);
             }else {
                 /**
@@ -184,7 +184,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                         .gender("남성")
                         .nickname("테스트 닉네임" + randomUserNumber)
                         .build();
-                roomResDto = ChatRoomResDto.create(roomFindDto, testMember);
+                roomResDto = new ChatRoomResDto(roomFindDto, otherUserInfo.get());
                 resDtos.add(roomResDto);
 //                continue;
             }
