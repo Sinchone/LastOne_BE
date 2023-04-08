@@ -1,12 +1,17 @@
 package com.lastone.chat.service;
 
+import com.lastone.chat.dto.ChatRoomDetailDto;
 import com.lastone.chat.dto.ChatRoomFindDto;
 import com.lastone.chat.dto.ChatRoomResDto;
+import com.lastone.chat.exception.CannotFountChatRoom;
+import com.lastone.chat.persistence.ChatMessage;
 import com.lastone.chat.persistence.MessageColumn;
 import com.lastone.chat.persistence.RoomColumn;
 import com.lastone.chat.exception.ChatException;
 import com.lastone.chat.exception.NotParticipantChatRoom;
 import com.lastone.chat.persistence.ChatRoom;
+import com.lastone.chat.repository.ChatMessageRepository;
+import com.lastone.chat.repository.ChatRoomRepository;
 import com.lastone.core.domain.chat.ChatStatus;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
@@ -31,6 +36,7 @@ import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +52,8 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
     private final MemberRepository memberRepository;
+    private final ChatRoomRepository roomRepository;
+    private final ChatMessageRepository messageRepository;
     private final MongoTemplate mongoTemplate;
 
     /**
@@ -65,7 +73,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                         .all(userIds));
         Optional<ChatRoom> chatRoomOptional = Optional.ofNullable(mongoTemplate.findOne(query, ChatRoom.class));
         if(chatRoomOptional.isEmpty()) {
-            ChatRoom createChatRoom = ChatRoom.create(hostId, participationId);
+            ChatRoom createChatRoom = new ChatRoom(hostId, participationId);
             ChatRoom save = mongoTemplate.save(createChatRoom);
             return save.getId();
         }else {
@@ -93,7 +101,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .filter(paticipant -> paticipant == userId )
                 .findFirst().orElseThrow(NotParticipantChatRoom::new);
         chatRoom.delete();
-        mongoTemplate.save(chatRoomOptional);
+        mongoTemplate.save(chatRoomOptional.get());
     }
     private Aggregation makeRoomSearchAggregation(Long userId, Pageable pageable) {
         String JOIN_AS = "room";
@@ -129,8 +137,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                                             .last(createdAt).as(createdAt)
                                             .sum(ArithmeticOperators.Subtract.valueOf(1)
                                                     .subtract(ConvertOperators.ToLong.toLong("$"+ isRead))
-                                            ).as("notReadCount")
-                ;
+                                            ).as("notReadCount");
         SortOperation latestSort = Aggregation.sort(Sort.Direction.DESC, createdAt);
         SkipOperation skipItem = Aggregation.skip(elementsToSkip);
         LimitOperation itemLimit = new LimitOperation(pageable.getPageSize());
@@ -163,7 +170,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             Optional<Member> otherUserInfo = memberRepository.findById(otherUserId);
             ChatRoomResDto roomResDto;
             if(otherUserInfo.isPresent()) {
-                roomResDto = ChatRoomResDto.create(roomFindDto, otherUserInfo.get());
+                roomResDto = new ChatRoomResDto(roomFindDto, otherUserInfo.get());
                 resDtos.add(roomResDto);
             }else {
                 /**
@@ -177,12 +184,55 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                         .gender("남성")
                         .nickname("테스트 닉네임" + randomUserNumber)
                         .build();
-                roomResDto = ChatRoomResDto.create(roomFindDto, testMember);
+                roomResDto = new ChatRoomResDto(roomFindDto, otherUserInfo.get());
                 resDtos.add(roomResDto);
 //                continue;
             }
         }
         return new PageImpl<>(resDtos, pageable, totalCount);
+    }
+
+    /**
+     * 채팅방 상세에 입장할 때의 정보
+     * 회원 로그인이 완성된다면 변경
+     * 실제 회원이 없기 때문에 테스트 멤버 객체를 담아 줌
+     * @param roomId
+     * @param userId
+     * @return
+     */
+    @Override
+    @Transactional
+    public ChatRoomDetailDto getOne(String roomId, Long userId) {
+        ChatRoom chatRoom = roomRepository.findById(roomId).orElseThrow(CannotFountChatRoom::new);
+        isRoomValidation(chatRoom.getStatus());
+        if(chatRoom.getStatus().equals(ChatStatus.DELETED)) throw new ChatException(ErrorCode.NOT_FOUNT_ROOM);
+
+        Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
+//        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
+        /**
+         * Todo - 회원로그인 완료시 삭제할 로직
+         */
+        long randomUserNumber = (long)(Math.random() * 100 + 1);
+        Member otherUser = Member.builder()
+                .id(randomUserNumber)
+                .email("테스트 Email" + randomUserNumber)
+                .gender("남성")
+                .nickname("테스트 닉네임" + randomUserNumber)
+                .build();
+
+        List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
+
+        Query query = new Query();
+        query.addCriteria(
+                Criteria.where(MessageColumn.ROOMID.getWord()).is(roomId)
+                    .and(MessageColumn.SENDERID.getWord()).is(otherUserId)
+        );
+
+        mongoTemplate.updateMulti(
+                query, Update.update(MessageColumn.ISREAD.getWord(), true),
+                MessageColumn.COLLECTION_NAME.getWord()
+        );
+        return new ChatRoomDetailDto(messages, otherUser);
     }
 
     /**

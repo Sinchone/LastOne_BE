@@ -1,5 +1,6 @@
 package com.lastone.chat.controller;
 
+import com.lastone.chat.dto.ChatRoomDetailDto;
 import com.lastone.chat.dto.ChatRoomResDto;
 import com.lastone.chat.service.ChatRoomService;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
@@ -24,7 +25,11 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     @GetMapping("/{roomId}")
     public String getRoom(@PathVariable String roomId, Model model) {
+        Long userId = 5L;
+        ChatRoomDetailDto chatRoomDetail = chatRoomService.getOne(roomId, userId);
+        model.addAttribute("userId", userId);
         model.addAttribute("roomId", roomId);
+        model.addAttribute("info", chatRoomDetail);
         return "chat/chat";
     }
     @PostMapping

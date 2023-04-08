@@ -26,7 +26,7 @@ public enum ErrorCode {
 
   /* Chatting */
   ALREADY_DELETED_CHAT_ROOM(404, "CR001", "지워진 채팅방입니다."),
-  BLOCKED_CHAT_ROOM(404, "CR002", "차단된 채팅방입니다."),
+  BLOCKED_CHAT_ROOM(403, "CR002", "차단된 채팅방입니다."),
   NOT_FOUNT_ROOM(404, "CR003", "채팅방을 찾을 수 없습니다."),
   NOT_CHAT_PARTICIPANT(403, "CR004", "채팅방에 참여한 사용자가 아닙니다."),
 
