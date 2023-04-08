@@ -39,11 +39,9 @@ public class ChatRoom {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static ChatRoom create(Long hostId, Long participationId) {
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.participations = new ArrayList<>(Arrays.asList(hostId, participationId));
-        chatRoom.status = ChatStatus.NORMAL;
-        return chatRoom;
+    public ChatRoom (Long hostId, Long participationId) {
+        this.participations = new ArrayList<>(Arrays.asList(hostId, participationId));
+        this.status = ChatStatus.NORMAL;
     }
     public void delete() {
         this.status = ChatStatus.DELETED;

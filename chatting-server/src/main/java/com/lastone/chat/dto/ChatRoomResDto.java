@@ -32,16 +32,14 @@ public class ChatRoomResDto {
     private LocalDateTime lastChatTime;
     private Long notReadCount;
 
-    public static ChatRoomResDto create(ChatRoomFindDto roomFindDto, Member member) {
-        ChatRoomResDto resDto = new ChatRoomResDto();
-        resDto.roomId = roomFindDto.getId();
-        resDto.lastChat = roomFindDto.getContent();
-        resDto.lastChatTime = roomFindDto.getCreatedAt();
-        resDto.notReadCount = roomFindDto.getNotReadCount();
-        resDto.otherUserId = member.getId();
-        resDto.profileUrl = member.getProfileUrl();
-        resDto.nickname = member.getNickname();
-        return resDto;
+    public ChatRoomResDto(ChatRoomFindDto roomFindDto, Member member) {
+        this.roomId = roomFindDto.getId();
+        this.lastChat = roomFindDto.getContent();
+        this.lastChatTime = roomFindDto.getCreatedAt();
+        this.notReadCount = roomFindDto.getNotReadCount();
+        this.otherUserId = member.getId();
+        this.profileUrl = member.getProfileUrl();
+        this.nickname = member.getNickname();
     }
 
 }
