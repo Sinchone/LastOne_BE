@@ -126,8 +126,10 @@
     <div class="col-sm-12">
       <div id="user_chat_data" class="user_chat_data">
         <div class="profile_name">
-          &nbsp;&nbsp;&nbsp;&nbsp;<img src="./img/profile.png" class="mr-3 rounded-circle"> &nbsp;&nbsp; Sankar
-          Mahadevan</div>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <img src="./img/profile.png" class="mr-3 rounded-circle"> &nbsp;&nbsp;
+            <p th:text="${info.nickname}"></p>
+        </div>
 
         <div class="container-fluid chat_section" id="chat-box">
 
@@ -159,11 +161,14 @@
   let chatBox = document.querySelector("#chat-box");
   let messageContent = document.querySelector("#chat-outgoing-msg");
   const chatRoomId = window.location.href.split("/")[4];
-  let myId = 50;
+  let myId = Number("[[${userId}]]");
+  let messages = JSON.parse('[[${info.messages}]]');
+  // 초기 메세지 목록 그리기
+  initChat__drawMessages(messages);
 
   function getMessageBox(sender, msgInput, sendTime) {
-    if(sender === 'mine') {
-      return `<div class="yours">
+    if(sender !== 'mine') {
+      return `<div class="others">
               <div class="received_msg">
                 <div class="received_withd_msg">
                   <p> ${msgInput} </p>
@@ -202,39 +207,27 @@
     stomp.subscribe("/sub/chat/room/" + chatRoomId, function (content) {
       console.log("구독 좋아요----좋댓구---")
       const payload = JSON.parse(content.body);
-      let sender = myId % 2 === 0? 'mine' : 'yours';
-
+      let sender = payload.senderId == myId ? 'mine' : 'others';
       const html = getMessageBox(sender, payload.content, payload.sendTime);
-
-      chatBox.insertAdjacentHTML('beforeend', html);
-
-      //밑의 인자는 Queue 생성 시 주는 옵션
-      //auto-delete : Consumer가 없으면 스스로 삭제되는 Queue
-      //durable : 서버와 연결이 끊겨도 메세지를 저장하고 있음
-      //exclusive : 동일한 이름의 Queue 생길 수 있음
+      chatBox.insertAdjacentHTML('beforeend',html);
     },{'auto-delete':true, 'durable':false, 'exclusive':false});
-
   }, onError, '/');
 
   document.querySelector("#chat-send").addEventListener("click", (event) => {
     event.preventDefault();
-    myId++;
     const message = messageContent.value;
     messageContent.value = '';
 
     stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
-      senderId: 1,
-      receiverId: 5,
+      senderId: 5,
+      receiverId: 1,
       content: message
     }));
-
-    console.log(myId);
   });
 
   document.querySelector("#chat-outgoing-msg").addEventListener("keydown", (event) => {
     if(event.keyCode === 13) {
       event.preventDefault();
-      myId++;
       const message = messageContent.value;
       messageContent.value = '';
 
@@ -244,8 +237,16 @@
         content: message
       }));
     }
-    console.log(myId);
   });
+  function initChat__drawMessages(messages) {
+    if (messages.length == 0) return;
+    console.log(typeof  myId);
+    messages.forEach((message) => {
+      let sender = message.senderId === myId ? 'mine' : 'others';
+      let html = getMessageBox(sender, message.content, message.sendTime);
+      chatBox.insertAdjacentHTML("beforeend", html);
+    });
+  }
 </script>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
