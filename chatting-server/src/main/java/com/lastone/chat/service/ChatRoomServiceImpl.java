@@ -101,7 +101,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .filter(paticipant -> paticipant == userId )
                 .findFirst().orElseThrow(NotParticipantChatRoom::new);
         chatRoom.delete();
-        mongoTemplate.save(chatRoomOptional);
+        mongoTemplate.save(chatRoomOptional.get());
     }
     private Aggregation makeRoomSearchAggregation(Long userId, Pageable pageable) {
         String JOIN_AS = "room";
