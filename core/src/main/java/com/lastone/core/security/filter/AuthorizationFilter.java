@@ -3,7 +3,7 @@ package com.lastone.core.security.filter;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.exception.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
-import com.lastone.core.security.UserDetailsImpl;
+import com.lastone.core.security.principal.UserDetailsImpl;
 import com.lastone.core.security.exception.AlreadyLogoutException;
 import com.lastone.core.security.exception.AuthorizationHeaderException;
 import com.lastone.core.security.exception.NotFoundMemberException;
