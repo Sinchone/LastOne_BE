@@ -4,7 +4,7 @@ import com.lastone.apiserver.service.mypage.MyPageService;
 import com.lastone.core.dto.mypage.MyPageDto;
 import com.lastone.core.dto.mypage.MyPageUpdateDto;
 import com.lastone.core.dto.response.SuccessResponse;
-import com.lastone.core.security.UserDetailsImpl;
+import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

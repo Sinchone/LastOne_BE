@@ -1,14 +1,13 @@
 package com.lastone.core.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BaseResponse {
+    int statusCode;
 
-    private String message;
-
-    private Object data;
-
+    public BaseResponse(int statusCode) {
+        this.statusCode = statusCode;
+    }
 }
