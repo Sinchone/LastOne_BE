@@ -1,4 +1,4 @@
-package com.lastone.core.security;
+package com.lastone.core.security.principal;
 
 import com.lastone.core.domain.member.Member;
 import lombok.AllArgsConstructor;
@@ -7,10 +7,8 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 @Builder
 @Getter
