@@ -1,11 +1,10 @@
-package com.lastone.core.dto;
+package com.lastone.core.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.validation.FieldError;
 
 import java.util.List;
@@ -17,7 +16,7 @@ public class FailureResponse extends BaseResponse {
 
     private String errorCode;
     private String message;
-    @JsonInclude
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ValidationError> errors;
 
     public FailureResponse(int statusCode, String errorCode, String message) {
