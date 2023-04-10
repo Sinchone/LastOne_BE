@@ -41,7 +41,9 @@ public enum ErrorCode {
 
   ALREADY_LOGOUT_TOKEN(401, "ST001", "해당 토큰은 이미 로그아웃 처리 된 토큰입니다."),
 
-  MEMBER_NOT_FOUND_IN_TOKEN(404, "ST002", "해당 토큰 안에 등록된 멤버 정보가 없습니다.");
+  MEMBER_NOT_FOUND_IN_TOKEN(404, "ST002", "해당 토큰 안에 등록된 멤버 정보가 없습니다."),
+
+  NOT_FOUND_REFRESH_TOKEN(404, "ST003", "서버에 해당 리프레시 토큰이 존재하지 않습니다.");
   
 
   ;
