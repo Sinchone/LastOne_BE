@@ -2,6 +2,7 @@ package com.lastone.core.security.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lastone.core.dto.response.FailureResponse;
 import com.lastone.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,8 @@ public class JwtExceptionHandler {
         for (JwtVerificationErrorCode errorCode : JwtVerificationErrorCode.values()) {
             if(e.getClass().getSimpleName().equals(errorCode.getName())) {
                 response.setStatus(errorCode.getStatus());
-                ErrorData errorData = ErrorData.create(errorCode.getCode(), errorCode.getMessage());
-                String result = objectMapper.writeValueAsString(errorData);
+                FailureResponse failureResponse = new FailureResponse(errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage());
+                String result = objectMapper.writeValueAsString(failureResponse);
                 response.getWriter().write(result);
             }
         }
@@ -28,8 +29,8 @@ public class JwtExceptionHandler {
     public void createSecurityErrorResponse(HttpServletResponse response, SecurityException e) throws IOException {
         ErrorCode errorCode = e.getErrorCode();
         response.setStatus(errorCode.getStatus());
-        ErrorData errorData = ErrorData.create(errorCode.getCode(), errorCode.getMessage());
-        String result = objectMapper.writeValueAsString(errorData);
+        FailureResponse failureResponse = new FailureResponse(errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage());
+        String result = objectMapper.writeValueAsString(failureResponse);
         response.getWriter().write(result);
     }
 }
