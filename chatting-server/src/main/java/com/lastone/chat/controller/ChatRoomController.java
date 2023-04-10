@@ -1,8 +1,12 @@
 package com.lastone.chat.controller;
 
+import com.lastone.chat.dto.ChatRoomDetailDto;
+import com.lastone.chat.dto.ChatRoomResDto;
 import com.lastone.chat.service.ChatRoomService;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,8 +24,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     @GetMapping("/{roomId}")
-    public String getRoom(@PathVariable Long roomId, Model model) {
+    public String getRoom(@PathVariable String roomId, Model model) {
+        Long userId = 5L;
+        ChatRoomDetailDto chatRoomDetail = chatRoomService.getOne(roomId, userId);
+        model.addAttribute("userId", userId);
         model.addAttribute("roomId", roomId);
+        model.addAttribute("info", chatRoomDetail);
         return "chat/chat";
     }
     @PostMapping
@@ -34,5 +42,17 @@ public class ChatRoomController {
     public void deleteChatRoom(@PathVariable String roomId) {
         Long userId = 5L;
         chatRoomService.deleteRoom(roomId, userId);
+    }
+
+    /**
+     * Todo - 회원번호 받는 부분 추가하기
+     * @param pageable
+     * @return
+     */
+    @GetMapping
+    @ResponseBody
+    public Page<ChatRoomResDto> getList(Pageable pageable) {
+        Long userId = 5L;
+        return chatRoomService.getList(userId, pageable);
     }
 }

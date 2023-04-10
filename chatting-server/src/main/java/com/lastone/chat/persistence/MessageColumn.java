@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum MessageColumn {
+    COLLECTION_NAME("messages"),
     ID("id"),
     SENDERID("senderId"),
     ROOMID("roomId"),

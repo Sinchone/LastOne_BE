@@ -1,7 +1,11 @@
 package com.lastone.chat.persistence;
 
 import com.lastone.core.dto.message.ChatMessageReqDto;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,6 +13,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Document(value = "messages")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ChatMessage {
     @Id
     private String id;

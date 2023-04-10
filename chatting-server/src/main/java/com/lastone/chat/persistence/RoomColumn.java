@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 public enum RoomColumn {
-    ID("id"),
+    COLLECTION_NAME("chat_room"),
+    ID("_id"),
     PARTICIPATIONS("participations"),
     STATUS("status"),
     CREATEDAT("createdAt"),
