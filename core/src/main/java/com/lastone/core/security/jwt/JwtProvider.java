@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
+
 import java.util.*;
 
 @Component
@@ -29,6 +30,7 @@ public class JwtProvider {
     }
 
     public TokenResponse createToken(String email, String requestUri) {
+
 
         String accessToken = JWT.create()
                 .withSubject(email)

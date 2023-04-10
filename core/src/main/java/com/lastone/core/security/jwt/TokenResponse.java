@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+
 @Builder
 public class TokenResponse {
     private String accessToken;

@@ -1,9 +1,7 @@
-package com.lastone.core.security.oauth2;
+package com.lastone.core.oauth2.kakao;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -32,8 +30,8 @@ public class KakaoOauth2UserInfo {
     public String getGender() {
         String gender = (String) kakaoAccount.get("gender");
         if (gender.equals("male")) {
-            return "남";
+            return "남성";
         }
-        return "여";
+        return "여성";
     }
 }
