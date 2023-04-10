@@ -1,6 +1,7 @@
 package com.lastone.apiserver.service.token;
 
 import com.lastone.core.dto.token.TokenLogoutDto;
+import com.lastone.core.security.exception.NotFoundRefreshTokenException;
 import com.lastone.core.security.jwt.JwtProvider;
 import com.lastone.core.security.jwt.TokenInfo;
 import com.lastone.core.security.jwt.TokenResponse;
@@ -34,9 +35,10 @@ public class TokenServiceImpl implements TokenService {
 
     private void logoutRefreshToken(String refreshToken) {
         String email = jwtProvider.verifyToken(refreshToken).getSubject();
-        if (redisTemplate.opsForValue().get("refresh_token:" + email) != null) {
-            redisTemplate.delete("refresh_token:" + email);
+        if (redisTemplate.opsForValue().get("refresh_token:" + email) == null) {
+            throw new NotFoundRefreshTokenException();
         }
+        redisTemplate.delete("refresh_token:" + email);
     }
 
     private void logoutAccessToken(String accessToken) {
