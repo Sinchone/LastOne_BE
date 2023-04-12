@@ -1,6 +1,6 @@
 package com.lastone.core.oauth2;
 
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.oauth2.kakao.KakaoOauth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -4,7 +4,7 @@ import com.lastone.apiserver.exception.MemberAlreadyExistException;
 import com.lastone.apiserver.exception.MemberNotFountException;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.member.MemberUpdateDto;
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.apiserver.service.s3.S3ServiceImpl;
 import lombok.RequiredArgsConstructor;

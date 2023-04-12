@@ -15,7 +15,7 @@ import com.lastone.chat.repository.ChatRoomRepository;
 import com.lastone.core.domain.chat.ChatStatus;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

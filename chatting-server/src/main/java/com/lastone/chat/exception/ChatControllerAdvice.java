@@ -2,7 +2,7 @@ package com.lastone.chat.exception;
 
 import com.lastone.core.dto.FailureResponse;
 import com.lastone.core.dto.FailureResponse.ValidationError;
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.common.response.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.lastone.chat.exception;
 
-import com.lastone.core.exception.ErrorCode;
-import com.lastone.core.exception.LastOneException;
+import com.lastone.core.common.response.ErrorCode;
+import com.lastone.core.common.exception.LastOneException;
 
 public class ChatException extends LastOneException {
     public ChatException(String message, ErrorCode errorCode) {

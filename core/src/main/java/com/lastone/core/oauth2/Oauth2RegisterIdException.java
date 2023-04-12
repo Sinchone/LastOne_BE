@@ -1,6 +1,6 @@
 package com.lastone.core.oauth2;
 
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.common.response.ErrorCode;
 
 public class Oauth2RegisterIdException extends Oauth2Exception{
 
