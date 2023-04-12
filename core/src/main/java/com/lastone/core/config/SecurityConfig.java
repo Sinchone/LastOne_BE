@@ -1,6 +1,7 @@
 package com.lastone.core.config;
 
 import com.lastone.core.security.filter.AuthorizationFilter;
+import com.lastone.core.security.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,6 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     private final AuthorizationFilter authorizationFilter;
 
@@ -35,6 +38,7 @@ public class SecurityConfig {
 
                 .and()
                 .addFilterBefore(authorizationFilter,UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, AuthorizationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/test").permitAll()
                 .antMatchers("/api/token/**").permitAll()

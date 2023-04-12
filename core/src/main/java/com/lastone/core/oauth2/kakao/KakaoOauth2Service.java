@@ -27,14 +27,11 @@ import java.util.concurrent.TimeUnit;
 public class KakaoOauth2Service implements Oauth2Service {
 
     private final MemberRepository memberRepository;
-
     private final RedisTemplate<String, String> redisTemplate;
     private final KakaoConfig kakaoConfig;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
-
-    @Value("${token.time.refresh}")
-    private Long refreshTokenDuration;
+    private final JwtProvider jwtProvider;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -48,9 +45,9 @@ public class KakaoOauth2Service implements Oauth2Service {
                     .gender(profile.getGender())
                     .build());
         }
-        TokenResponse tokens = JwtProvider.createToken(profile.getEmail(), requestURI);
+        TokenResponse tokens = jwtProvider.createToken(profile.getEmail(), requestURI);
         redisTemplate.opsForValue()
-                .set("refresh_token:" + profile.getEmail(), tokens.getRefreshToken(), refreshTokenDuration, TimeUnit.MILLISECONDS);
+                .set("refresh_token:" + profile.getEmail(), tokens.getRefreshToken(), jwtProvider.getRefreshTokenDuration(), TimeUnit.MILLISECONDS);
         return tokens;
     }
 

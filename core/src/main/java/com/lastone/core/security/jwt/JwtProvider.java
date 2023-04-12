@@ -4,22 +4,35 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import javax.annotation.PostConstruct;
 
 import java.util.*;
 
+@Component
+@Getter
 public class JwtProvider {
 
     @Value("${token.time.access}")
-    private static long accessTokenDuration;
+    private long accessTokenDuration;
 
     @Value("${token.time.refresh}")
-    private static long refreshTokenDuration;
+    private long refreshTokenDuration;
 
-    private static final String secretKey = "test";
-    private static final Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+    @Value("${token.secretkey}")
+    private String secretKey;
 
-    public static TokenResponse createToken(String email, String requestUri) {
+    private Algorithm algorithm;
+
+    @PostConstruct
+    private void setAlgorithm() {
+        this.algorithm = Algorithm.HMAC256(secretKey.getBytes());
+    }
+
+    public TokenResponse createToken(String email, String requestUri) {
+
 
         String accessToken = JWT.create()
                 .withSubject(email)
@@ -33,19 +46,19 @@ public class JwtProvider {
                 .withIssuer(requestUri)
                 .sign(algorithm);
 
-
-        return new TokenResponse(accessToken, refreshToken);
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
-    public static Map<String, Object> verifyToken(String token) {
+    public TokenInfo verifyToken(String token) {
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(token);
 
-        Map<String, Object> tokenInfo = new HashMap<>();
-        tokenInfo.put("expireDate", decodedJWT.getExpiresAt());
-        tokenInfo.put("subject", decodedJWT.getSubject());
-        return tokenInfo;
+        return TokenInfo.builder()
+                .subject(decodedJWT.getSubject())
+                .expiredAt(decodedJWT.getExpiresAt())
+                .build();
     }
-
-
 }
