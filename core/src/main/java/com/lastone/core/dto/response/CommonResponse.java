@@ -1,0 +1,66 @@
+package com.lastone.core.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.lastone.core.exception.ErrorCode;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class CommonResponse<T> {
+    @JsonIgnore
+    private int status;
+    private Result result;
+    private T data;
+    private String message;
+    private String errorCode;
+
+    public static <T> CommonResponse<T> success(T data) {
+        return success(data, null);
+    }
+    public static <T> CommonResponse<T> success(T data, String message) {
+        return (CommonResponse<T>) CommonResponse.builder()
+                .result(Result.SUCCESS)
+                .data(data)
+                .message(message)
+                .build();
+    }
+
+    public static <T> CommonResponse<T> success(int status, T data, String message) {
+        return (CommonResponse<T>) CommonResponse.builder()
+                .result(Result.SUCCESS)
+                .data(data)
+                .message(message)
+                .status(status)
+                .build();
+    }
+
+    public static CommonResponse fail(ErrorCode errorCode) {
+        return CommonResponse.builder()
+                .result(Result.FAIL)
+                .status(errorCode.getStatus())
+                .message(errorCode.getMessage())
+                .errorCode(errorCode.getCode())
+                .build();
+    }
+
+    public static CommonResponse fail(ErrorCode errorCode, int status) {
+        return CommonResponse.builder()
+                .result(Result.FAIL)
+                .message(errorCode.getMessage())
+                .errorCode(errorCode.getCode())
+                .status(status)
+                .build();
+    }
+    public enum Result {
+        SUCCESS, FAIL
+    }
+}
