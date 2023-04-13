@@ -1,7 +1,8 @@
 package com.lastone.core.security.exception;
 
-import com.lastone.core.exception.ErrorCode;
-import com.lastone.core.exception.LastOneException;
+
+import com.lastone.core.common.exception.LastOneException;
+import com.lastone.core.common.response.ErrorCode;
 
 public class SecurityException extends LastOneException {
 

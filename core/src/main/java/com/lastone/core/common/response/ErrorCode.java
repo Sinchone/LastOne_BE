@@ -1,4 +1,4 @@
-package com.lastone.core.exception;
+package com.lastone.core.common.response;
 
 import lombok.Getter;
 

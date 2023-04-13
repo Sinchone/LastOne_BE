@@ -1,8 +1,8 @@
 package com.lastone.apiserver.exception;
 
-import com.lastone.core.dto.response.FailureResponse;
-import com.lastone.core.dto.response.FailureResponse.ValidationError;
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.dto.FailureResponse;
+import com.lastone.core.dto.FailureResponse.ValidationError;
+import com.lastone.core.common.response.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +53,7 @@ public class MyPageControllerAdvice extends ResponseEntityExceptionHandler {
         List<ValidationError> ve = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(ValidationError::of)
+                .map(FailureResponse.ValidationError::of)
                 .collect(Collectors.toList());
         return ResponseEntity.status(errorCode.getStatus())
                 .body(buildResponse(errorCode, errorCode.getMessage(), ve));

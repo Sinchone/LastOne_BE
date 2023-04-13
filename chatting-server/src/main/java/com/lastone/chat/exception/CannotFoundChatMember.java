@@ -1,6 +1,6 @@
 package com.lastone.chat.exception;
 
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.common.response.ErrorCode;
 
 public class CannotFoundChatMember extends ChatException {
 

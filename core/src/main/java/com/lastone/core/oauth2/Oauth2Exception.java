@@ -1,7 +1,7 @@
 package com.lastone.core.oauth2;
 
-import com.lastone.core.exception.ErrorCode;
-import com.lastone.core.exception.LastOneException;
+import com.lastone.core.common.response.ErrorCode;
+import com.lastone.core.common.exception.LastOneException;
 
 public class Oauth2Exception extends LastOneException {
     public Oauth2Exception(String message, ErrorCode errorCode) {

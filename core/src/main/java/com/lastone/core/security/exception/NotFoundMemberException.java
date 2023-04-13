@@ -1,6 +1,7 @@
 package com.lastone.core.security.exception;
 
-import com.lastone.core.exception.ErrorCode;
+
+import com.lastone.core.common.response.ErrorCode;
 
 public class NotFoundMemberException extends SecurityException{
     public NotFoundMemberException(String message, ErrorCode errorCode) {

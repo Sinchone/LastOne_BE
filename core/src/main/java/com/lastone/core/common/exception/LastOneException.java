@@ -1,4 +1,6 @@
-package com.lastone.core.exception;
+package com.lastone.core.common.exception;
+
+import com.lastone.core.common.response.ErrorCode;
 
 public class LastOneException extends RuntimeException {
     private ErrorCode errorCode;
