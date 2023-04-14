@@ -22,6 +22,14 @@ public class CommonResponse<T> {
     public static <T> CommonResponse<T> success(T data) {
         return success(data, null);
     }
+
+    public static <T> CommonResponse<T> success(String message) {
+        return (CommonResponse<T>) CommonResponse.builder()
+                        .result(Result.SUCCESS)
+                        .message(message)
+                        .build();
+    }
+
     public static <T> CommonResponse<T> success(T data, String message) {
         return (CommonResponse<T>) CommonResponse.builder()
                 .result(Result.SUCCESS)

@@ -1,11 +1,11 @@
 package com.lastone.chat.controller;
 
 import com.lastone.chat.dto.ChatRoomDetailDto;
-import com.lastone.chat.dto.ChatRoomResDto;
 import com.lastone.chat.service.ChatRoomService;
+import com.lastone.core.common.response.CommonResponse;
+import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,15 +33,26 @@ public class ChatRoomController {
         return "chat/chat";
     }
     @PostMapping
-    public ResponseEntity<String> createChatRoom(@RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
+    public ResponseEntity<CommonResponse> createChatRoom(@RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
         Long userId = 5L;
-        return ResponseEntity.ok(chatRoomService.createRoom(userId, chatRoomCreateReqDto));
+        SuccessCode successCode = SuccessCode.CREATED_CHAT_ROOM;
+
+        return ResponseEntity.status(successCode.getStatus())
+                .body(CommonResponse.success(
+                        chatRoomService.createRoom(userId, chatRoomCreateReqDto),
+                        successCode.getMessage())
+        );
     }
     @DeleteMapping("/{roomId}")
     @ResponseBody
-    public void deleteChatRoom(@PathVariable String roomId) {
+    public ResponseEntity<CommonResponse> deleteChatRoom(@PathVariable String roomId) {
         Long userId = 5L;
+        SuccessCode successCode = SuccessCode.DELETED_CHAT_ROOM;
+
         chatRoomService.deleteRoom(roomId, userId);
+
+        return ResponseEntity.status(successCode.getStatus())
+                .body(CommonResponse.success(successCode.getMessage()));
     }
 
     /**
@@ -51,8 +62,15 @@ public class ChatRoomController {
      */
     @GetMapping
     @ResponseBody
-    public Page<ChatRoomResDto> getList(Pageable pageable) {
+    public ResponseEntity<CommonResponse> getList(Pageable pageable) {
         Long userId = 5L;
-        return chatRoomService.getList(userId, pageable);
+        SuccessCode successCode = SuccessCode.GET_CHAT_ROOM_LIST;
+
+        return ResponseEntity.ok(
+                CommonResponse.success(
+                        chatRoomService.getList(userId, pageable),
+                        successCode.getMessage()
+                )
+        );
     }
 }
