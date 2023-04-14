@@ -7,6 +7,7 @@ import com.lastone.core.repository.BaseTime;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,12 +40,12 @@ public class Recruitment extends BaseTime {
 
     private String description;
 
-    private String startedAt;
+    @Column(columnDefinition = "DATETIME")
+    private LocalDateTime startedAt;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private RecruitmentStatus recruitmentStatus;
-
     @Enumerated(EnumType.STRING)
     private PreferGender preferGender;
 
