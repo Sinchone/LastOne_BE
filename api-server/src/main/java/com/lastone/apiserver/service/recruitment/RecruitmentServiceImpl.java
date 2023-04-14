@@ -21,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Transactional
@@ -53,11 +56,13 @@ public class RecruitmentServiceImpl implements RecruitmentService {
                 .gym(gym)
                 .workoutPart(recruitmentCreateDto.getWorkoutPart())
                 .description(recruitmentCreateDto.getDescription())
-                .startedAt(startedAtToString(recruitmentCreateDto.getStartedAt()))
+                .startedAt(startedAtToLocalDateTime(recruitmentCreateDto.getStartedAt()))
                 .recruitmentStatus(RecruitmentStatus.RECRUITING)
                 .preferGender(recruitmentCreateDto.getPreferGender())
                 .build();
-        recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
+        if (imgFiles.isEmpty()) {
+            recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
+        }
         recruitmentRepository.save(recruitment);
     }
 
@@ -71,14 +76,16 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         return recruitmentImgs;
     }
 
-    private String startedAtToString(StartedAtDto startedAt) {
+    private LocalDateTime startedAtToLocalDateTime(StartedAtDto startedAt) {
         StringBuffer sb = new StringBuffer();
-        return sb.append(startedAt.getDate())
+        String time = sb.append(startedAt.getDate())
                 .append(" ")
                 .append(startedAt.getMeridiem().getText())
                 .append(" ")
                 .append(startedAt.getTime())
                 .toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd a h:mm", Locale.KOREAN);
+        return LocalDateTime.parse(time, formatter);
     }
 
     private Gym findGym(GymDto gymdto) {
