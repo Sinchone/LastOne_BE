@@ -9,6 +9,8 @@ import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.dto.recruitment.RecruitmentCreateDto;
+import com.lastone.core.dto.recruitment.RecruitmentListDto;
+import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.lastone.core.dto.recruitment.StartedAtDto;
 import com.lastone.core.exception.ErrorCode;
 import com.lastone.core.mapper.mapper.GymMapper;
@@ -17,6 +19,9 @@ import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;
 import com.lastone.core.repository.recruitment_img.RecruitmentImgRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +59,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         Recruitment recruitment = Recruitment.builder()
                 .member(member)
                 .gym(gym)
+                .title(recruitmentCreateDto.getTitle())
                 .workoutPart(recruitmentCreateDto.getWorkoutPart())
                 .description(recruitmentCreateDto.getDescription())
                 .startedAt(startedAtToLocalDateTime(recruitmentCreateDto.getStartedAt()))
@@ -64,6 +70,12 @@ public class RecruitmentServiceImpl implements RecruitmentService {
             recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
         }
         recruitmentRepository.save(recruitment);
+    }
+
+    @Override
+    public Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition) {
+        Pageable pageable = PageRequest.of(searchCondition.getOffset(), searchCondition.getLimit());
+        return recruitmentRepository.getListDto(pageable, searchCondition);
     }
 
     private List<RecruitmentImg> saveRecruitmentImg(List<MultipartFile> imgFiles) throws IOException {
