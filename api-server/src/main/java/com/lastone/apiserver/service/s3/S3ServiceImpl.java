@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -21,6 +23,16 @@ public class S3ServiceImpl implements S3Service {
     private String bucket;
 
     private final AmazonS3 amazonS3;
+
+
+    @Override
+    public List<String> upload(List<MultipartFile> multipartFiles) throws IOException {
+        List<String> imgUrls = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            imgUrls.add(upload(multipartFile));
+        }
+        return imgUrls;
+    }
 
     public String upload(MultipartFile multipartFile) throws IOException {
         validateFileExist(multipartFile);
