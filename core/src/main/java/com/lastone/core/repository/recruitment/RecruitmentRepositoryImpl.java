@@ -3,7 +3,9 @@ package com.lastone.core.repository.recruitment;
 import com.lastone.core.domain.recruitment.PreferGender;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.domain.recruitment.WorkoutPart;
+import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.QRecruitmentListDto;
+import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.querydsl.core.types.OrderSpecifier;
@@ -16,12 +18,44 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import static com.lastone.core.domain.recruitment.QRecruitment.recruitment;
+import static com.lastone.core.domain.recruitment_img.QRecruitmentImg.recruitmentImg;
 
 @RequiredArgsConstructor
 public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     private final JPAQueryFactory queryFactory;
+    @Override
+    public RecruitmentDetailDto getDetailDto(Long recruitmentId) {
+        RecruitmentDetailDto recruitmentDetailDto = queryFactory
+                .select(new QRecruitmentDetailDto(
+                        recruitment.member.id,
+                        recruitment.member.nickname,
+                        recruitment.member.profileUrl,
+                        recruitment.member.workoutPurpose,
+                        recruitment.gym,
+                        recruitment.id,
+                        recruitment.title,
+                        recruitment.description,
+                        recruitment.preferGender,
+                        recruitment.createdAt,
+                        recruitment.startedAt))
+                .from(recruitment)
+                .where(recruitment.id.eq(recruitmentId))
+                .fetchOne();
+
+        if (ObjectUtils.isEmpty(recruitmentDetailDto)) {
+            return null;
+        }
+
+        List<String> imgUrls = queryFactory.select(recruitmentImg.imgUrl)
+                .from(recruitmentImg)
+                .where(recruitmentImg.recruitment.id.eq(recruitmentId))
+                .fetch();
+
+        recruitmentDetailDto.setImgUrls(imgUrls);
+        return recruitmentDetailDto;
+    }
+
     @Override
     public Page<RecruitmentListDto> getListDto(Pageable pageable, RecruitmentSearchCondition searchCondition) {
 

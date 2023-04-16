@@ -2,22 +2,20 @@ package com.lastone.apiserver.service.recruitment;
 
 import com.lastone.apiserver.exception.MemberNotFountException;
 import com.lastone.apiserver.service.s3.S3Service;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.dto.gym.GymDto;
-import com.lastone.core.dto.recruitment.RecruitmentCreateDto;
-import com.lastone.core.dto.recruitment.RecruitmentListDto;
-import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
-import com.lastone.core.dto.recruitment.StartedAtDto;
-import com.lastone.core.exception.ErrorCode;
+import com.lastone.core.dto.recruitment.*;
 import com.lastone.core.mapper.mapper.GymMapper;
 import com.lastone.core.repository.gym.GymRepository;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;
 import com.lastone.core.repository.recruitment_img.RecruitmentImgRepository;
+import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +47,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     private final MemberRepository memberRepository;
 
+    private final SbdRepository sbdRepository;
     private final GymMapper gymMapper;
 
     @Override
@@ -76,6 +75,13 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     public Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition) {
         Pageable pageable = PageRequest.of(searchCondition.getOffset(), searchCondition.getLimit());
         return recruitmentRepository.getListDto(pageable, searchCondition);
+    }
+
+    @Override
+    public RecruitmentDetailDto getDetail(Long recruitmentId) {
+        RecruitmentDetailDto recruitmentDetailDto = recruitmentRepository.getDetailDto(recruitmentId);
+        recruitmentDetailDto.setSbdDto(sbdRepository.findLatestRecordByMemberId(recruitmentDetailDto.getMemberId()));
+        return recruitmentDetailDto;
     }
 
     private List<RecruitmentImg> saveRecruitmentImg(List<MultipartFile> imgFiles) throws IOException {

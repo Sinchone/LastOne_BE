@@ -2,6 +2,7 @@ package com.lastone.apiserver.controller;
 
 import com.lastone.apiserver.service.recruitment.RecruitmentService;
 import com.lastone.core.dto.recruitment.RecruitmentCreateDto;
+import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.lastone.core.security.principal.UserDetailsImpl;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/recruitment")
@@ -28,6 +30,13 @@ public class RecruitmentController {
     @GetMapping
     public ResponseEntity<Object> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
         Page<RecruitmentListDto> data = recruitmentService.getList(searchCondition);
+        return ResponseEntity.ok().body(data);
+    }
+
+    @PreAuthorize("permitAll()")
+    @GetMapping("/{recruitmentId}")
+    public ResponseEntity<Object> getRecruitmentDetail(@PathVariable Long recruitmentId) {
+        RecruitmentDetailDto data = recruitmentService.getDetail(recruitmentId);
         return ResponseEntity.ok().body(data);
     }
 

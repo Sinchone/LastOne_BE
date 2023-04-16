@@ -1,6 +1,7 @@
 package com.lastone.apiserver.service.recruitment;
 
 import com.lastone.core.dto.recruitment.RecruitmentCreateDto;
+import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import org.springframework.data.domain.Page;
@@ -13,4 +14,6 @@ public interface RecruitmentService {
 
     void createRecruitment(Long memberId, RecruitmentCreateDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException;
     Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition);
+
+    RecruitmentDetailDto getDetail(Long recruitmentId);
 }
