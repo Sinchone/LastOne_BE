@@ -2,8 +2,8 @@ package com.lastone.core.security.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.dto.response.FailureResponse;
-import com.lastone.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletResponse;
