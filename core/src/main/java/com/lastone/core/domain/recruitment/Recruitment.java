@@ -5,7 +5,6 @@ import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.repository.BaseTime;
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +36,8 @@ public class Recruitment extends BaseTime {
 
     @Enumerated(EnumType.STRING)
     private WorkoutPart workoutPart;
+
+    private String title;
 
     private String description;
 

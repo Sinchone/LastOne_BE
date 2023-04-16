@@ -49,6 +49,8 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
         /* redis 설정 */
         implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+        /* localDateTime 직렬화 역직렬화 필요 설정 */
+        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
 
         compileOnly 'org.projectlombok:lombok'
         runtimeOnly 'com.mysql:mysql-connector-j'
