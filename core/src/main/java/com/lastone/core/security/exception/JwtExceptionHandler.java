@@ -2,8 +2,9 @@ package com.lastone.core.security.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lastone.core.common.response.CommonResponse;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.dto.response.FailureResponse;
-import com.lastone.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletResponse;
@@ -13,17 +14,34 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtExceptionHandler {
 
+    private static final String ALGORITHM_MISMATCH_EXCEPTION = "AlgorithmMismatchException";
+    private static final String INVALID_CLAIM_EXCEPTION = "InvalidClaimException";
+    private static final String JWT_DECODE_EXCEPTION = "JWTDecodeException";
+    private static final String SIGNATURE_VERIFICATION_EXCEPTION = "SignatureVerificationException";
+    private static final String TOKEN_EXPIRED_EXCEPTION = "TokenExpiredException";
     private final ObjectMapper objectMapper;
 
     public void createJwtVerificationResponse(HttpServletResponse response, JWTVerificationException e) throws IOException {
-        for (JwtVerificationErrorCode errorCode : JwtVerificationErrorCode.values()) {
-            if(e.getClass().getSimpleName().equals(errorCode.getName())) {
-                response.setStatus(errorCode.getStatus());
-                FailureResponse failureResponse = new FailureResponse(errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage());
-                String result = objectMapper.writeValueAsString(failureResponse);
-                response.getWriter().write(result);
-            }
+        ErrorCode errorCode = ErrorCode.JWT_DECODING_DEFAULT_EXCEPTION;
+        switch (e.getClass().getSimpleName()) {
+            case ALGORITHM_MISMATCH_EXCEPTION:
+                errorCode = ErrorCode.ALGORITHM_MISMATCH_EXCEPTION;
+                break;
+            case INVALID_CLAIM_EXCEPTION:
+                errorCode = ErrorCode.INVALID_CLAIM_EXCEPTION;
+                break;
+            case JWT_DECODE_EXCEPTION:
+                errorCode = ErrorCode.JWT_DECODE_EXCEPTION;
+                break;
+            case SIGNATURE_VERIFICATION_EXCEPTION:
+                errorCode = ErrorCode.SIGNATURE_VERIFICATION_EXCEPTION;
+                break;
+            case TOKEN_EXPIRED_EXCEPTION:
+                errorCode = ErrorCode.TOKEN_EXPIRED_EXCEPTION;
+                break;
         }
+        response.setStatus(errorCode.getStatus());
+        response.getWriter().write(objectMapper.writeValueAsString(CommonResponse.fail(errorCode)));
     }
 
     public void createSecurityErrorResponse(HttpServletResponse response, SecurityException e) throws IOException {
