@@ -1,7 +1,7 @@
 package com.lastone.core.oauth2;
 
-import com.lastone.core.dto.FailureResponse;
 import com.lastone.core.common.response.ErrorCode;
+import com.lastone.core.dto.response.FailureResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
