@@ -1,9 +1,10 @@
 package com.lastone.apiserver.controller;
 
 import com.lastone.apiserver.service.mypage.MyPageService;
+import com.lastone.core.common.response.CommonResponse;
+import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.mypage.MyPageDto;
 import com.lastone.core.dto.mypage.MyPageUpdateDto;
-import com.lastone.core.dto.response.SuccessResponse;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,7 @@ public class MyPageController {
         Long memberId = userDetails.getId();
         MyPageDto myPage = myPageService.getMyPage(memberId);
 
-        return ResponseEntity.ok().body(SuccessResponse.builder()
-                .message("마이페이지 정보 조회에 성공하였습니다.")
-                .data(myPage)
-                .build());
+        return ResponseEntity.ok().body(CommonResponse.success(myPage, SuccessCode.INQUIRE_MYPAGE.getMessage()));
     }
 
 
@@ -38,10 +36,8 @@ public class MyPageController {
     public ResponseEntity<Object> getMyPageByMemberId(@PathVariable Long memberId) {
         MyPageDto myPage = myPageService.getMyPage(memberId);
 
-        return ResponseEntity.ok().body(SuccessResponse.builder()
-                .message("마이페이지 정보 조회에 성공하였습니다.")
-                .data(myPage)
-                .build());
+        return ResponseEntity.ok().body(CommonResponse.success(myPage, SuccessCode.INQUIRE_MYPAGE.getMessage()));
+
     }
 
     @PutMapping
@@ -51,8 +47,6 @@ public class MyPageController {
         Long memberId = userDetails.getId();
         myPageService.updateMyPage(memberId, myPage, profileImg);
 
-        return ResponseEntity.ok().body(SuccessResponse.builder()
-                .message("마이페이지 수정 작업에 성공하였습니다.")
-                .build());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.UPDATE_MYPAGE.getMessage()));
     }
 }
