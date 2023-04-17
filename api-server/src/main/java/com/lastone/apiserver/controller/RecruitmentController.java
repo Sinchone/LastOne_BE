@@ -3,7 +3,7 @@ package com.lastone.apiserver.controller;
 import com.lastone.apiserver.service.recruitment.RecruitmentService;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
-import com.lastone.core.dto.recruitment.RecruitmentCreateDto;
+import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
@@ -44,11 +44,21 @@ public class RecruitmentController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<Object> createRecruitment(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                    @RequestPart @Validated RecruitmentCreateDto recruitment,
+                                                    @RequestPart @Validated RecruitmentRequestDto recruitment,
                                                     @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
         recruitmentService.createRecruitment(userDetails.getId(), recruitment, imgFiles);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(CommonResponse.success(SuccessCode.RECRUITMENT_CREATE));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/{recruitmentId}")
+    public ResponseEntity<Object> updateRecruitment(@PathVariable Long recruitmentId,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                    @RequestPart(required = false) @Validated RecruitmentRequestDto recruitment,
+                                                    @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
+        recruitmentService.updateRecruitment(recruitmentId, userDetails.getId(), recruitment, imgFiles);
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_UPDATE));
     }
 }
