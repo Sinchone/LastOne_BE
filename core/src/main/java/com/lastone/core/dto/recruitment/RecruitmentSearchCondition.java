@@ -2,10 +2,14 @@ package com.lastone.core.dto.recruitment;
 
 import com.lastone.core.domain.recruitment.PreferGender;
 import com.lastone.core.domain.recruitment.WorkoutPart;
+import com.lastone.core.util.validator.recruitment.RecruitmentDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.util.ObjectUtils;
+
+import javax.persistence.Enumerated;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,9 +22,13 @@ public class RecruitmentSearchCondition {
     private static final int DEFAULT_OFFSET = 0;
     private static final int DEFAULT_LIMIT = 9;
 
+    @Enumerated
     private WorkoutPart workoutPart;
+    @Enumerated
     private PreferGender preferGender;
-    private String time;
+    @RecruitmentDate
+    private String date;
+    @Size(max = 20)
     private String title;
     private String gymName;
     private Boolean isRecruiting;
@@ -36,10 +44,10 @@ public class RecruitmentSearchCondition {
     }
 
     public LocalDateTime getLocalDateTime() {
-        if (ObjectUtils.isEmpty(this.time)) {
+        if (ObjectUtils.isEmpty(this.date)) {
             return null;
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        return LocalDate.parse(this.time, formatter).atStartOfDay();
+        return LocalDate.parse(this.date, formatter).atStartOfDay();
     }
 }
