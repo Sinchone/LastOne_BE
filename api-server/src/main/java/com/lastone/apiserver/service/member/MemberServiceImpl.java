@@ -1,10 +1,9 @@
 package com.lastone.apiserver.service.member;
 
-import com.lastone.apiserver.exception.MemberAlreadyExistException;
-import com.lastone.apiserver.exception.MemberNotFountException;
+import com.lastone.apiserver.exception.mypage.MemberAlreadyExistException;
+import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.member.MemberUpdateDto;
-import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.apiserver.service.s3.S3ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class MemberServiceImpl implements MemberService {
 
 
     public Member findById(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFountException(ErrorCode.MEMBER_NOT_FOUND));
+        return memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -49,7 +48,7 @@ public class MemberServiceImpl implements MemberService {
         }
         Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
         if (findMember.isPresent()) {
-            throw new MemberAlreadyExistException(ErrorCode.MEMBER_ALREADY_EXIST);
+            throw new MemberAlreadyExistException();
         }
     }
 }
