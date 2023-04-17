@@ -22,7 +22,7 @@ public class JwtExceptionHandler {
     private final ObjectMapper objectMapper;
 
     public void createJwtVerificationResponse(HttpServletResponse response, JWTVerificationException exception) throws IOException {
-        ErrorCode errorCode = findJwtVerificationException(exception);
+        ErrorCode errorCode = findJwtVerificationErrorCode(exception);
         response.setStatus(errorCode.getStatus());
         response.getWriter().write(objectMapper.writeValueAsString(CommonResponse.fail(errorCode)));
     }
@@ -34,7 +34,7 @@ public class JwtExceptionHandler {
                 .write(objectMapper.writeValueAsString(CommonResponse.fail(e.getErrorCode())));
     }
 
-    public ErrorCode findJwtVerificationException(JWTVerificationException e) {
+    public ErrorCode findJwtVerificationErrorCode(JWTVerificationException e) {
         ErrorCode errorCode = ErrorCode.JWT_DECODING_DEFAULT_EXCEPTION;
         switch (e.getClass().getSimpleName()) {
             case ALGORITHM_MISMATCH_EXCEPTION:
