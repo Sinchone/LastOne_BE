@@ -1,12 +1,11 @@
 package com.lastone.core.oauth2;
 
-import com.lastone.core.dto.FailureResponse;
+import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.ErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 
 @RestControllerAdvice
 public class Oauth2ControllerAdvice extends ResponseEntityExceptionHandler {
@@ -19,10 +18,6 @@ public class Oauth2ControllerAdvice extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> handleExceptionInternal(Oauth2Exception e) {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
-                .body(buildResponse(errorCode));
-    }
-
-    private FailureResponse buildResponse(ErrorCode errorCode) {
-        return new FailureResponse(errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage());
+                .body(CommonResponse.fail(errorCode));
     }
 }
