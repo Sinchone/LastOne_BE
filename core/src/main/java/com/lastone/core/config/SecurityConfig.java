@@ -1,5 +1,6 @@
 package com.lastone.core.config;
 
+import com.lastone.core.security.exception.CustomAuthenticationEntryPoint;
 import com.lastone.core.security.filter.AuthorizationFilter;
 import com.lastone.core.security.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class SecurityConfig {
 
     private final AuthorizationFilter authorizationFilter;
 
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,6 +42,10 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(authorizationFilter,UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, AuthorizationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+
+                .and()
                 .authorizeRequests()
                 .antMatchers("/test").permitAll()
                 .antMatchers("/api/token/**").permitAll()
