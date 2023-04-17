@@ -41,6 +41,7 @@ public enum ErrorCode {
   ALREADY_LOGOUT_TOKEN(401, "ST001", "해당 토큰은 이미 로그아웃 처리 된 토큰입니다."),
   MEMBER_NOT_FOUND_IN_TOKEN(404, "ST002", "해당 토큰 안에 등록된 멤버 정보가 없습니다."),
   NOT_FOUND_REFRESH_TOKEN(404, "ST003", "서버에 해당 리프레시 토큰이 존재하지 않습니다."),
+  UN_AUTHENTICATION_MEMBER(401, "ST004", "해당 API는 토큰을 필요로합니다. 로그인 후 이용해주세요."),
 
   /* Oauth2 예외 */
   OAUTH2_REGISTER_NOT_FOUND(404, "A001", "해당 registerId는 지원되지 않습니다."),
@@ -51,7 +52,23 @@ public enum ErrorCode {
   JWT_DECODE_EXCEPTION(401, "VT003", "토큰을 해독할 수 없습니다."),
   SIGNATURE_VERIFICATION_EXCEPTION(401, "VT004", "토큰에 등로된 서명이 일치하지 않습니다."),
   TOKEN_EXPIRED_EXCEPTION(401, "VT005", "만료된 토큰입니다."),
-  JWT_DECODING_DEFAULT_EXCEPTION(401, "VT006", "JWT 해독 과정 중 에러가 발생하였습니다.")
+  JWT_DECODING_DEFAULT_EXCEPTION(401, "VT006", "JWT 해독 과정 중 에러가 발생하였습니다."),
+
+  /* Recruitment 예외 */
+  RECRUITMENT_IMG_COUNT(400, "R001", "모집글 이미지 등록은 최대 3개까지 가능합니다."),
+
+  /* 글로벌 예외 */
+  HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),
+  HTTP_MEDIA_TYPE_EXCEPTION(415, "G002", "지원하지 않는 미디어 타입입니다. Json 혹은 Form-Data 형식인지 확인해주세요."),
+  MISSING_PATH_VARIABLE(400, "G003", "경로 변수가 잘못 입력되었습니다. 해당 api 명세서의 경로변수 타입을 확인해주세요."),
+  MISSING_REQUEST_PARAMETER(400, "G004", "요청된 처리에 필요한 파라미터가 누락되어있습니다."),
+  PARAMETER_TYPE_NOT_SUPPORTED(400, "G005", "파라미터 타입을 잘못 입력하셨습니다."),
+  HTTP_MESSAGE_NOT_READABLE(400, "G006", "요청 본문의 형식 또는 필수 데이터가 누락되어 있습니다."),
+  HTTP_MESSAGE_NOT_WRITEABLE(500, "G007", "서버에서 응답을 위한 데이터 변환에 실패하였습니다."),
+  METHOD_ARGUMENT_NOT_VALID(400, "G008", "입력한 데이터의 유효성 검사에 실패하였습니다."),
+  MISSING_REQUEST_PART(400, "G009", "이미지 또는 파일과 같은 멀티파트 파일 처리에 필요한 데이터가 누락되었거나 잘못입력되었습니다."),
+  HANDLER_NOT_FOUND(404, "G010", "요청하신 경로는 제공되지 않는 API 입니다. 요청 경로를 확인해주세요."),
+
 
           ;
 
