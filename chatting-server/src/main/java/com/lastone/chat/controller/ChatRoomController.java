@@ -5,51 +5,43 @@ import com.lastone.chat.service.ChatRoomService;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
+import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/chat-room")
 @RequiredArgsConstructor
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     @GetMapping("/{roomId}")
-    public String getRoom(@PathVariable String roomId, Model model) {
-        Long userId = 5L;
-        ChatRoomDetailDto chatRoomDetail = chatRoomService.getOne(roomId, userId);
-        model.addAttribute("userId", userId);
-        model.addAttribute("roomId", roomId);
-        model.addAttribute("info", chatRoomDetail);
-        return "chat/chat";
+    public ResponseEntity<CommonResponse> getRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String roomId) {
+        ChatRoomDetailDto chatRoomDetail = chatRoomService.getOne(roomId, userDetails.getId());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.success(chatRoomDetail));
     }
     @PostMapping
-    public ResponseEntity<CommonResponse> createChatRoom(@RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
-        Long userId = 5L;
-        SuccessCode successCode = SuccessCode.CREATED_CHAT_ROOM;
-
+    public ResponseEntity<CommonResponse> createChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(
-                        chatRoomService.createRoom(userId, chatRoomCreateReqDto),
-                        successCode.getMessage())
+                        chatRoomService.createRoom(userDetails.getId(), chatRoomCreateReqDto),
+                        SuccessCode.CREATED_CHAT_ROOM.getMessage()
+                )
         );
     }
     @DeleteMapping("/{roomId}")
-    @ResponseBody
-    public ResponseEntity<CommonResponse> deleteChatRoom(@PathVariable String roomId) {
-        Long userId = 5L;
-        chatRoomService.deleteRoom(roomId, userId);
-
+    public ResponseEntity<CommonResponse> deleteChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String roomId) {
+        chatRoomService.deleteRoom(roomId, userDetails.getId());
         return ResponseEntity.ok(CommonResponse.success(SuccessCode.DELETED_CHAT_ROOM.getMessage()));
     }
 
@@ -59,15 +51,11 @@ public class ChatRoomController {
      * @return
      */
     @GetMapping
-    @ResponseBody
-    public ResponseEntity<CommonResponse> getList(Pageable pageable) {
-        Long userId = 5L;
-        SuccessCode successCode = SuccessCode.GET_CHAT_ROOM_LIST;
-
+    public ResponseEntity<CommonResponse> getList(@AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) {
         return ResponseEntity.ok(
                 CommonResponse.success(
-                        chatRoomService.getList(userId, pageable),
-                        successCode.getMessage()
+                        chatRoomService.getList(userDetails.getId(), pageable),
+                        SuccessCode.GET_CHAT_ROOM_LIST.getMessage()
                 )
         );
     }
