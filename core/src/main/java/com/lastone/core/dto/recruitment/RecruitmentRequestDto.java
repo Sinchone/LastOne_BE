@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecruitmentCreateDto {
+public class RecruitmentRequestDto {
 
     @Valid
     private GymDto gym;
