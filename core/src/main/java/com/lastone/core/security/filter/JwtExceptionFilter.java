@@ -1,7 +1,7 @@
 package com.lastone.core.security.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.lastone.core.security.exception.JwtExceptionHandler;
+import com.lastone.core.security.jwt.JwtExceptionHandler;
 import com.lastone.core.security.exception.SecurityException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
