@@ -1,6 +1,5 @@
 package com.lastone.core.security.filter;
 
-import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.security.principal.UserDetailsImpl;
@@ -65,7 +64,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             return createBearerToken(header);
         }
         else {
-            throw new AuthorizationHeaderException(ErrorCode.AUTHORIZATION_NOT_FOUND);
+            throw new AuthorizationHeaderException();
         }
     }
 
@@ -73,11 +72,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         String token = header.substring(TokenType.BEARER_TOKEN.getTokenHeader().length());
         String isLogout = (String) redisTemplate.opsForValue().get(token);
         if (StringUtils.hasText(isLogout)) {
-            throw new AlreadyLogoutException(ErrorCode.ALREADY_LOGOUT_TOKEN);
+            throw new AlreadyLogoutException();
         }
         String email = jwtProvider.verifyToken(token).getSubject();
         UserDetails userdetails = UserDetailsImpl.convert(memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundMemberException(ErrorCode.MEMBER_NOT_FOUND_IN_TOKEN)));
+                .orElseThrow(NotFoundMemberException::new));
         Collection<SimpleGrantedAuthority> authorities = createMemberAuthorities();
 
         return new UsernamePasswordAuthenticationToken(userdetails, null, authorities);
