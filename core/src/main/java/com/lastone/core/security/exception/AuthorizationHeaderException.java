@@ -5,11 +5,7 @@ import com.lastone.core.common.response.ErrorCode;
 
 public class AuthorizationHeaderException extends SecurityException{
 
-    public AuthorizationHeaderException(String message, ErrorCode errorCode) {
-        super(message, errorCode);
-    }
-
-    public AuthorizationHeaderException(ErrorCode errorCode) {
-        super(errorCode);
+    public AuthorizationHeaderException() {
+        super(ErrorCode.AUTHORIZATION_NOT_FOUND);
     }
 }

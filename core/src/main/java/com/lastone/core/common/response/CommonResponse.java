@@ -23,6 +23,10 @@ public class CommonResponse<T> {
         return success(data, null);
     }
 
+    public static <T> CommonResponse<T> success(SuccessCode successCode) {
+        return success(successCode.getMessage());
+    }
+
     public static <T> CommonResponse<T> success(String message) {
         return (CommonResponse<T>) CommonResponse.builder()
                         .result(Result.SUCCESS)
@@ -37,6 +41,16 @@ public class CommonResponse<T> {
                 .message(message)
                 .build();
     }
+
+    public static <T> CommonResponse<T> success(SuccessCode successCode, T data) {
+        return (CommonResponse<T>) CommonResponse.builder()
+                .result(Result.SUCCESS)
+                .data(data)
+                .message(successCode.getMessage())
+                .build();
+    }
+
+
 
     public static <T> CommonResponse<T> success(int status, T data, String message) {
         return (CommonResponse<T>) CommonResponse.builder()

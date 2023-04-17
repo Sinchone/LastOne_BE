@@ -1,8 +1,8 @@
 package com.lastone.apiserver.service.recruitment;
 
-import com.lastone.apiserver.exception.MemberNotFountException;
+import com.lastone.apiserver.exception.mypage.MemberNotFountException;
+import com.lastone.apiserver.exception.recruitment.RecruitmentImgCountException;
 import com.lastone.apiserver.service.s3.S3Service;
-import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -36,25 +37,21 @@ import java.util.Locale;
 public class RecruitmentServiceImpl implements RecruitmentService {
 
     private static final int IMG_MAX_COUNT = 3;
-
     private final S3Service s3Service;
-
     private final RecruitmentRepository recruitmentRepository;
-
     private final RecruitmentImgRepository recruitmentImgRepository;
-
     private final GymRepository gymRepository;
-
     private final MemberRepository memberRepository;
-
     private final SbdRepository sbdRepository;
     private final GymMapper gymMapper;
 
     @Override
     public void createRecruitment(Long memberId, RecruitmentCreateDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException {
+
         Gym gym = findGym(recruitmentCreateDto.getGym());
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFountException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
+
         Recruitment recruitment = Recruitment.builder()
                 .member(member)
                 .gym(gym)
@@ -65,8 +62,13 @@ public class RecruitmentServiceImpl implements RecruitmentService {
                 .recruitmentStatus(RecruitmentStatus.RECRUITING)
                 .preferGender(recruitmentCreateDto.getPreferGender())
                 .build();
-        if (imgFiles.isEmpty()) {
-            recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
+
+        // List에 파일이 있지만 실제로 비어있는 경우 때문에 로직 수정
+        for (MultipartFile imgFile : imgFiles) {
+            if (!imgFile.isEmpty()) {
+                recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
+                break;
+            }
         }
         recruitmentRepository.save(recruitment);
     }
@@ -95,15 +97,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     private LocalDateTime startedAtToLocalDateTime(StartedAtDto startedAt) {
-        StringBuffer sb = new StringBuffer();
-        String time = sb.append(startedAt.getDate())
-                .append(" ")
-                .append(startedAt.getMeridiem().getText())
-                .append(" ")
-                .append(startedAt.getTime())
-                .toString();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd a h:mm", Locale.KOREAN);
-        return LocalDateTime.parse(time, formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm", Locale.KOREAN);
+        return LocalDateTime.parse(startedAt.toTime(), formatter);
     }
 
     private Gym findGym(GymDto gymdto) {
@@ -116,7 +111,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     private void validateImgCount(List<MultipartFile> imgFiles) {
         if (imgFiles.size() > IMG_MAX_COUNT) {
-            throw new IllegalArgumentException("이미지 갯수는 최대 3개까지 등록 가능합니다.");// TODO 커스텀 예외처리
+            throw new RecruitmentImgCountException();
         }
     }
 }

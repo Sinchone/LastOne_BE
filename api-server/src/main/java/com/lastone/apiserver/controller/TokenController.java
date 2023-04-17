@@ -1,7 +1,8 @@
 package com.lastone.apiserver.controller;
 
 import com.lastone.apiserver.service.token.TokenService;
-import com.lastone.core.dto.response.SuccessResponse;
+import com.lastone.core.common.response.CommonResponse;
+import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.token.TokenLogoutDto;
 import com.lastone.core.dto.token.TokenRefreshDto;
 import com.lastone.core.security.jwt.TokenResponse;
@@ -27,10 +28,7 @@ public class TokenController {
     @PostMapping("/logout")
     public ResponseEntity<Object> logout(@RequestBody @Validated TokenLogoutDto tokenLogoutDto) {
         tokenService.logout(tokenLogoutDto);
-        return ResponseEntity.ok()
-                .body(SuccessResponse.builder()
-                        .message("로그아웃을 완료했습니다.")
-                        .build());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.OAUTH2_LOGIN.getMessage()));
     }
 
     @PostMapping("/refresh")
@@ -38,9 +36,6 @@ public class TokenController {
         TokenResponse tokens = tokenService.refresh(tokenRefreshDto.getRefreshToken(), request.getRequestURI());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(SuccessResponse.builder()
-                        .message("토큰 재발급을 완료하였습니다.")
-                        .data(tokens)
-                        .build());
+                .body(CommonResponse.success(tokens, SuccessCode.TOKEN_REFRESH.getMessage()));
     }
 }
