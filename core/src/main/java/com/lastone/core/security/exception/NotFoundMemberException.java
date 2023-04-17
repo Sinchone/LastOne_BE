@@ -4,11 +4,8 @@ package com.lastone.core.security.exception;
 import com.lastone.core.common.response.ErrorCode;
 
 public class NotFoundMemberException extends SecurityException{
-    public NotFoundMemberException(String message, ErrorCode errorCode) {
-        super(message, errorCode);
-    }
 
-    public NotFoundMemberException(ErrorCode errorCode) {
-        super(errorCode);
+    public NotFoundMemberException() {
+        super(ErrorCode.MEMBER_NOT_FOUND_IN_TOKEN);
     }
 }
