@@ -13,7 +13,6 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtExceptionHandler {
-
     private static final String ALGORITHM_MISMATCH_EXCEPTION = "AlgorithmMismatchException";
     private static final String INVALID_CLAIM_EXCEPTION = "InvalidClaimException";
     private static final String JWT_DECODE_EXCEPTION = "JWTDecodeException";
