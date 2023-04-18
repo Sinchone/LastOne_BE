@@ -30,20 +30,20 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
 
     @GetMapping
-    public ResponseEntity<Object> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
+    public ResponseEntity<CommonResponse> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
         Page<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST, recruitmentList));
     }
 
     @GetMapping("/{recruitmentId}")
-    public ResponseEntity<Object> getRecruitmentDetail(@PathVariable Long recruitmentId) {
+    public ResponseEntity<CommonResponse> getRecruitmentDetail(@PathVariable Long recruitmentId) {
         RecruitmentDetailDto recruitmentDetail = recruitmentService.getDetail(recruitmentId);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_DETAIL, recruitmentDetail));
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<Object> createRecruitment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<CommonResponse> createRecruitment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                     @RequestPart @Validated RecruitmentRequestDto recruitment,
                                                     @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
         recruitmentService.createRecruitment(userDetails.getId(), recruitment, imgFiles);
@@ -54,7 +54,7 @@ public class RecruitmentController {
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{recruitmentId}")
-    public ResponseEntity<Object> updateRecruitment(@PathVariable Long recruitmentId,
+    public ResponseEntity<CommonResponse> updateRecruitment(@PathVariable Long recruitmentId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                     @RequestPart(required = false) @Validated RecruitmentRequestDto recruitment,
                                                     @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
@@ -64,7 +64,7 @@ public class RecruitmentController {
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{recruitmentId}")
-    public ResponseEntity<Object> deleteRecruitment(@PathVariable Long recruitmentId,
+    public ResponseEntity<CommonResponse> deleteRecruitment(@PathVariable Long recruitmentId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         recruitmentService.deleteRecruitment(recruitmentId, userDetails.getId());
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_DELETE));
