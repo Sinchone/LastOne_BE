@@ -5,7 +5,13 @@ import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
 import com.lastone.core.repository.BaseTime;
-import lombok.*;
+import com.lastone.core.util.BooleanToYNConverter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,6 +57,10 @@ public class Recruitment extends BaseTime {
     @Enumerated(EnumType.STRING)
     private PreferGender preferGender;
 
+    @Convert(converter = BooleanToYNConverter.class)
+    @ColumnDefault("false")
+    private boolean isDeleted;
+
     public void setImgFiles(List<RecruitmentImg> recruitmentImgs) {
         for (RecruitmentImg recruitmentImg : recruitmentImgs) {
             recruitmentImg.setRecruitment(this);
@@ -76,5 +86,10 @@ public class Recruitment extends BaseTime {
     public void updateImg(List<RecruitmentImg> recruitmentImgs) {
         this.recruitmentImgs.clear();
         setImgFiles(recruitmentImgs);
+    }
+
+    public void delete() {
+        this.recruitmentImgs.clear();
+        this.isDeleted = true;
     }
 }
