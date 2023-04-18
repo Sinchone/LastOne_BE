@@ -220,7 +220,7 @@
     const message = messageContent.value;
     messageContent.value = '';
 
-    stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
+    stomp.send(`/pub/chat/message/test/${chatRoomId}`, {}, JSON.stringify({
       senderId: myId,
       receiverId: otherId,
       content: message
@@ -234,7 +234,7 @@
       const message = messageContent.value;
       messageContent.value = '';
 
-      stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
+      stomp.send(`/pub/chat/message/test/${chatRoomId}`, {}, JSON.stringify({
         senderId: otherId,
         receiverId: myId,
         content: message
