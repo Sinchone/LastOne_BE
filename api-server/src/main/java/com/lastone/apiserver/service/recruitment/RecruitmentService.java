@@ -16,4 +16,5 @@ public interface RecruitmentService {
     Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition);
     RecruitmentDetailDto getDetail(Long recruitmentId);
     void updateRecruitment(Long recruitmentId, Long memberId, RecruitmentRequestDto recruitment, List<MultipartFile> imgFiles) throws IOException;
+    void deleteRecruitment(Long recruitmentId, Long id);
 }

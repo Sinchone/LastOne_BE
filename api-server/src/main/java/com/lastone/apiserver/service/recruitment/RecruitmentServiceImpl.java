@@ -19,6 +19,7 @@ import com.lastone.core.repository.recruitment.RecruitmentRepository;
 import com.lastone.core.repository.recruitment_img.RecruitmentImgRepository;
 import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -56,6 +59,9 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     public RecruitmentDetailDto getDetail(Long recruitmentId) {
         RecruitmentDetailDto recruitmentDetailDto = recruitmentRepository.getDetailDto(recruitmentId);
+        if (recruitmentDetailDto == null) {
+            throw new RecruitmentNotFoundException();
+        }
         recruitmentDetailDto.setSbdDto(sbdRepository.findLatestRecordByMemberId(recruitmentDetailDto.getMemberId()));
         return recruitmentDetailDto;
     }
@@ -98,12 +104,24 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     }
 
+    @Override
+    public void deleteRecruitment(Long recruitmentId, Long memberId) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(RecruitmentNotFoundException::new);
+        validateWriterAndMember(recruitment.getMember().getId(), memberId);
+        deleteImgFile(recruitment.getRecruitmentImgs());
+        recruitment.delete();
+    }
+
     private void updateImgFiles(Recruitment recruitment, List<MultipartFile> imgFiles) throws IOException {
-        for (RecruitmentImg recruitmentImg : recruitment.getRecruitmentImgs()) {
-            s3Service.delete(recruitmentImg.getImgUrl());
-        }
+        deleteImgFile(recruitment.getRecruitmentImgs());
         List<RecruitmentImg> recruitmentImgs = saveRecruitmentImg(imgFiles);
         recruitment.updateImg(recruitmentImgs);
+    }
+
+    private void deleteImgFile(List<RecruitmentImg> recruitmentImgs) {
+        for (RecruitmentImg recruitmentImg : recruitmentImgs) {
+            s3Service.delete(recruitmentImg.getImgUrl());
+        }
     }
 
     private boolean imgFileIsNotEmpty(List<MultipartFile> imgFiles) {
@@ -130,8 +148,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitment.updateGym(gym);
     }
 
-    private void validateWriterAndMember(Long recruitmentId, Long memberId) {
-        if (recruitmentId.equals(memberId)) {
+    private void validateWriterAndMember(Long writerId, Long memberId) {
+        if (writerId.equals(memberId)) {
             return;
         }
         throw new IncorrectWriterException();
