@@ -52,8 +52,7 @@ public class SecurityConfig {
                 .antMatchers("/stomp/**").permitAll()
                 .antMatchers("/pub/chat/message/**").permitAll()
                 .antMatchers("/sub/chat/message/**").permitAll()
-                .antMatchers("/api/token/**").permitAll()
-                .antMatchers("/api/oauth2/login/**").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();
