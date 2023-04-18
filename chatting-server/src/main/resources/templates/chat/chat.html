@@ -160,7 +160,7 @@
 <script th:inline="javascript">
   let chatBox = document.querySelector("#chat-box");
   let messageContent = document.querySelector("#chat-outgoing-msg");
-  const chatRoomId = window.location.href.split("/")[4];
+  const chatRoomId = [[${chatRoomId}]];
   let myId = Number("[[${userId}]]");
   let messages = JSON.parse('[[${info.messages}]]');
   // 초기 메세지 목록 그리기
@@ -214,12 +214,13 @@
   }, onError, '/');
 
   document.querySelector("#chat-send").addEventListener("click", (event) => {
+    console.log("chatRoomId   : " + chatRoomId);
     event.preventDefault();
     const message = messageContent.value;
     messageContent.value = '';
 
     stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
-      senderId: 5,
+      senderId: myId,
       receiverId: 1,
       content: message
     }));
@@ -228,12 +229,13 @@
   document.querySelector("#chat-outgoing-msg").addEventListener("keydown", (event) => {
     if(event.keyCode === 13) {
       event.preventDefault();
+      console.log("chatRoomId   : " + chatRoomId);
       const message = messageContent.value;
       messageContent.value = '';
 
       stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
         senderId: 1,
-        receiverId: 5,
+        receiverId: myId,
         content: message
       }));
     }

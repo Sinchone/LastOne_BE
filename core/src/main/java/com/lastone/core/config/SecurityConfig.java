@@ -47,6 +47,11 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
+                .antMatchers("/test").permitAll()
+                .antMatchers("/test/chat-room/**").permitAll()
+                .antMatchers("/stomp/**").permitAll()
+                .antMatchers("/pub/chat/message/**").permitAll()
+                .antMatchers("/sub/chat/message/**").permitAll()
                 .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated();
 
