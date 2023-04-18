@@ -29,14 +29,12 @@ public class RecruitmentController {
 
     private final RecruitmentService recruitmentService;
 
-    @PreAuthorize("permitAll()")
     @GetMapping
     public ResponseEntity<Object> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
         Page<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST, recruitmentList));
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/{recruitmentId}")
     public ResponseEntity<Object> getRecruitmentDetail(@PathVariable Long recruitmentId) {
         RecruitmentDetailDto recruitmentDetail = recruitmentService.getDetail(recruitmentId);

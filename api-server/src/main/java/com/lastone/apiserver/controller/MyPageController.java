@@ -9,6 +9,7 @@ import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<Object> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long memberId = userDetails.getId();
@@ -40,6 +42,7 @@ public class MyPageController {
 
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping
     public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
