@@ -45,11 +45,6 @@ public class ChatRoomController {
         return ResponseEntity.ok(CommonResponse.success(SuccessCode.DELETED_CHAT_ROOM.getMessage()));
     }
 
-    /**
-     * Todo - 회원번호 받는 부분 추가하기
-     * @param pageable
-     * @return
-     */
     @GetMapping
     public ResponseEntity<CommonResponse> getList(@AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) {
         return ResponseEntity.ok(
