@@ -61,4 +61,12 @@ public class RecruitmentController {
         recruitmentService.updateRecruitment(recruitmentId, userDetails.getId(), recruitment, imgFiles);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_UPDATE));
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/{recruitmentId}")
+    public ResponseEntity<Object> deleteRecruitment(@PathVariable Long recruitmentId,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        recruitmentService.deleteRecruitment(recruitmentId, userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_DELETE));
+    }
 }
