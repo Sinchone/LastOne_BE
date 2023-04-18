@@ -1,7 +1,9 @@
 package com.lastone.apiserver.service.recruitment;
 
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
+import com.lastone.apiserver.exception.recruitment.IncorrectWriterException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentImgCountException;
+import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.apiserver.service.s3.S3Service;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
@@ -46,7 +48,20 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     private final GymMapper gymMapper;
 
     @Override
-    public void createRecruitment(Long memberId, RecruitmentCreateDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException {
+    public Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition) {
+        Pageable pageable = PageRequest.of(searchCondition.getOffset(), searchCondition.getLimit());
+        return recruitmentRepository.getListDto(pageable, searchCondition);
+    }
+
+    @Override
+    public RecruitmentDetailDto getDetail(Long recruitmentId) {
+        RecruitmentDetailDto recruitmentDetailDto = recruitmentRepository.getDetailDto(recruitmentId);
+        recruitmentDetailDto.setSbdDto(sbdRepository.findLatestRecordByMemberId(recruitmentDetailDto.getMemberId()));
+        return recruitmentDetailDto;
+    }
+
+    @Override
+    public void createRecruitment(Long memberId, RecruitmentRequestDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException {
 
         Gym gym = findGym(recruitmentCreateDto.getGym());
 
@@ -64,26 +79,63 @@ public class RecruitmentServiceImpl implements RecruitmentService {
                 .build();
 
         // List에 파일이 있지만 실제로 비어있는 경우 때문에 로직 수정
-        for (MultipartFile imgFile : imgFiles) {
-            if (!imgFile.isEmpty()) {
-                recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
-                break;
-            }
+        if (imgFileIsNotEmpty(imgFiles)) {
+            recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
         }
         recruitmentRepository.save(recruitment);
     }
 
     @Override
-    public Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition) {
-        Pageable pageable = PageRequest.of(searchCondition.getOffset(), searchCondition.getLimit());
-        return recruitmentRepository.getListDto(pageable, searchCondition);
+    public void updateRecruitment(Long recruitmentId, Long memberId, RecruitmentRequestDto recruitmentUpdateDto, List<MultipartFile> imgFiles) throws IOException {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(RecruitmentNotFoundException::new);
+        validateWriterAndMember(recruitment.getMember().getId(), memberId);
+        recruitment.update(recruitmentUpdateDto);
+        updateGym(recruitment, recruitmentUpdateDto.getGym());
+        updateStartedAt(recruitment, recruitmentUpdateDto.getStartedAt());
+        if (imgFileIsNotEmpty(imgFiles)) {
+            updateImgFiles(recruitment, imgFiles);
+        }
+
     }
 
-    @Override
-    public RecruitmentDetailDto getDetail(Long recruitmentId) {
-        RecruitmentDetailDto recruitmentDetailDto = recruitmentRepository.getDetailDto(recruitmentId);
-        recruitmentDetailDto.setSbdDto(sbdRepository.findLatestRecordByMemberId(recruitmentDetailDto.getMemberId()));
-        return recruitmentDetailDto;
+    private void updateImgFiles(Recruitment recruitment, List<MultipartFile> imgFiles) throws IOException {
+        for (RecruitmentImg recruitmentImg : recruitment.getRecruitmentImgs()) {
+            s3Service.delete(recruitmentImg.getImgUrl());
+        }
+        List<RecruitmentImg> recruitmentImgs = saveRecruitmentImg(imgFiles);
+        recruitment.updateImg(recruitmentImgs);
+    }
+
+    private boolean imgFileIsNotEmpty(List<MultipartFile> imgFiles) {
+        if (ObjectUtils.isEmpty(imgFiles)) {
+            return false;
+        }
+        for (MultipartFile imgFile : imgFiles) {
+            if (!ObjectUtils.isEmpty(imgFile)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateStartedAt(Recruitment recruitment, StartedAtDto startedAt) {
+        recruitment.updateStartedAt(startedAtToLocalDateTime(startedAt));
+    }
+
+    private void updateGym(Recruitment recruitment, GymDto gymDto) {
+        Gym gym = findGym(gymDto);
+        if (recruitment.getGym().equals(gym)) {
+            return;
+        }
+        recruitment.updateGym(gym);
+    }
+
+    private void validateWriterAndMember(Long recruitmentId, Long memberId) {
+        if (recruitmentId.equals(memberId)) {
+            return;
+        }
+        throw new IncorrectWriterException();
+
     }
 
     private List<RecruitmentImg> saveRecruitmentImg(List<MultipartFile> imgFiles) throws IOException {

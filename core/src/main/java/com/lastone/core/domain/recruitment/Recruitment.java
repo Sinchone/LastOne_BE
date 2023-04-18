@@ -3,6 +3,7 @@ package com.lastone.core.domain.recruitment;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
+import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
 import com.lastone.core.repository.BaseTime;
 import lombok.*;
 import javax.persistence.*;
@@ -30,7 +31,7 @@ public class Recruitment extends BaseTime {
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
-    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<RecruitmentImg> recruitmentImgs = new ArrayList<>();
 
@@ -55,5 +56,25 @@ public class Recruitment extends BaseTime {
             recruitmentImg.setRecruitment(this);
             this.recruitmentImgs.add(recruitmentImg);
         }
+    }
+
+    public void update(RecruitmentRequestDto recruitmentUpdateDto) {
+        workoutPart = recruitmentUpdateDto.getWorkoutPart();
+        title = recruitmentUpdateDto.getTitle();
+        description = recruitmentUpdateDto.getDescription();
+        preferGender = recruitmentUpdateDto.getPreferGender();
+    }
+
+    public void updateGym(Gym gym) {
+        this.gym = gym;
+    }
+
+    public void updateStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public void updateImg(List<RecruitmentImg> recruitmentImgs) {
+        this.recruitmentImgs.clear();
+        setImgFiles(recruitmentImgs);
     }
 }

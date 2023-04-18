@@ -56,6 +56,8 @@ public enum ErrorCode {
 
   /* Recruitment 예외 */
   RECRUITMENT_IMG_COUNT(400, "R001", "모집글 이미지 등록은 최대 3개까지 가능합니다."),
+  RECRUITMENT_NOT_FOUND(404, "R002", "존재하지 않는 모집글입니다."),
+  INCORRECT_WRITER(403, "R003", "모집글 작성자와 수정자의 정보가 일치하지 않습니다."),
 
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),
