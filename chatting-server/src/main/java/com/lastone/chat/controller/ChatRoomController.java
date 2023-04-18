@@ -7,6 +7,7 @@ import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +38,7 @@ public class ChatRoomController {
         Long userId = 5L;
         SuccessCode successCode = SuccessCode.CREATED_CHAT_ROOM;
 
-        return ResponseEntity.status(successCode.getStatus())
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(
                         chatRoomService.createRoom(userId, chatRoomCreateReqDto),
                         successCode.getMessage())
@@ -47,12 +48,9 @@ public class ChatRoomController {
     @ResponseBody
     public ResponseEntity<CommonResponse> deleteChatRoom(@PathVariable String roomId) {
         Long userId = 5L;
-        SuccessCode successCode = SuccessCode.DELETED_CHAT_ROOM;
-
         chatRoomService.deleteRoom(roomId, userId);
 
-        return ResponseEntity.status(successCode.getStatus())
-                .body(CommonResponse.success(successCode.getMessage()));
+        return ResponseEntity.ok(CommonResponse.success(SuccessCode.DELETED_CHAT_ROOM.getMessage()));
     }
 
     /**
