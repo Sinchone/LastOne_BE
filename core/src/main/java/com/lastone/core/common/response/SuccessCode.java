@@ -22,7 +22,7 @@ public enum SuccessCode {
     RECRUITMENT_DETAIL("모집글 상세 정보 조회에 성공하였습니다."),
     RECRUITMENT_CREATE("모집글 작성이 완료되었습니다."),
     RECRUITMENT_UPDATE("모집글 수정이 완료되었습니다."),
-    RECRUITMENT_CREATE("모집글 작성이 완료되었습니다.")
+    RECRUITMENT_DELETE("모집글 삭제가 완료되었습니다.")
     ;
 
     private String message;
