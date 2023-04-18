@@ -40,7 +40,10 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                         recruitment.createdAt,
                         recruitment.startedAt))
                 .from(recruitment)
-                .where(recruitment.id.eq(recruitmentId))
+                .where(
+                        recruitment.id.eq(recruitmentId),
+                        recruitment.isDeleted.eq(false)
+                )
                 .fetchOne();
 
         if (ObjectUtils.isEmpty(recruitmentDetailDto)) {
@@ -76,7 +79,8 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                         isRecruitingOrNot(searchCondition.getIsRecruiting()),
                         eqStartedAt(searchCondition.getLocalDateTime()),
                         eqGymName(searchCondition.getGymName()),
-                        isMatchingTitleOrGymName(searchCondition.getTitle())
+                        isMatchingTitleOrGymName(searchCondition.getTitle()),
+                        recruitment.isDeleted.eq(false)
                 )
                 .orderBy(sortList(searchCondition.getIsNewest()))
                 .offset(pageable.getOffset())
