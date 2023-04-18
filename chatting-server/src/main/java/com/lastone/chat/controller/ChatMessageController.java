@@ -16,7 +16,14 @@ import org.springframework.stereotype.Controller;
 public class ChatMessageController {
     private final SimpMessagingTemplate template;
     private final ChatMessageService messageService;
-
+    /**
+     * Todo - API 연동이 끝나면 통합테스트를 위해 로그인 로직 붙이기
+     * @AuthenticationPrincipal UserDetailsImpl userDetails,
+     * if(userDetails.getId() != chatMessage.getSenderId()
+     *         || userDetails.getId() != chatMessage.getReceiverId()) {
+     *             throw new ChatException(ErrorCode.UNAUTHORIZED);
+     *         }
+     */
     @MessageMapping("chat/message/{chatRoomId}")
     public void sendMessage(@DestinationVariable String chatRoomId, ChatMessageReqDto chatMessage) {
         ChatMessageResDto message = messageService.createMessage(chatRoomId, chatMessage);
