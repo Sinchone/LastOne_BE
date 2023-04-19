@@ -174,17 +174,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 resDtos.add(roomResDto);
             }else {
                 /**
+                 * Todo
                  * 회원 가입 전 테스트용 코드
                  * 배포 때에는 else 분기 없앨 예정
                  */
-                long randomUserNumber = (long)(Math.random() * 100 + 1);
                 Member testMember = Member.builder()
-                        .id(randomUserNumber)
-                        .email("테스트 Email" + randomUserNumber)
+                        .id(otherUserId)
+                        .email("테스트 Email" + otherUserId)
                         .gender("남성")
-                        .nickname("테스트 닉네임" + randomUserNumber)
+                        .nickname("테스트 닉네임" + otherUserId)
                         .build();
-                roomResDto = new ChatRoomResDto(roomFindDto, otherUserInfo.get());
+                roomResDto = new ChatRoomResDto(roomFindDto, testMember);
                 resDtos.add(roomResDto);
 //                continue;
             }

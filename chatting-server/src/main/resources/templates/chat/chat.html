@@ -162,6 +162,7 @@
   let messageContent = document.querySelector("#chat-outgoing-msg");
   const chatRoomId = [[${chatRoomId}]];
   let myId = Number("[[${userId}]]");
+  let otherId = Number([[${otherId}]]);
   let messages = JSON.parse('[[${info.messages}]]');
   // 초기 메세지 목록 그리기
   initChat__drawMessages(messages);
@@ -219,9 +220,9 @@
     const message = messageContent.value;
     messageContent.value = '';
 
-    stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
+    stomp.send(`/pub/chat/message/test/${chatRoomId}`, {}, JSON.stringify({
       senderId: myId,
-      receiverId: 1,
+      receiverId: otherId,
       content: message
     }));
   });
@@ -233,8 +234,8 @@
       const message = messageContent.value;
       messageContent.value = '';
 
-      stomp.send(`/pub/chat/message/${chatRoomId}`, {}, JSON.stringify({
-        senderId: 1,
+      stomp.send(`/pub/chat/message/test/${chatRoomId}`, {}, JSON.stringify({
+        senderId: otherId,
         receiverId: myId,
         content: message
       }));
