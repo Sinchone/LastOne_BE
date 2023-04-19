@@ -34,8 +34,8 @@ public class ChatRoomResDto {
 
     public ChatRoomResDto(ChatRoomFindDto roomFindDto, Member member) {
         this.roomId = roomFindDto.getId();
-        this.lastChat = roomFindDto.getContent();
-        this.lastChatTime = roomFindDto.getCreatedAt();
+        this.lastChat = roomFindDto.getLastMessage().getContent();
+        this.lastChatTime = roomFindDto.getLastMessage().getCreatedAt();
         this.notReadCount = roomFindDto.getNotReadCount();
         this.otherUserId = member.getId();
         this.profileUrl = member.getProfileUrl();
