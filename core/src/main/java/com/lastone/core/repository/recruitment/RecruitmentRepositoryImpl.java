@@ -25,6 +25,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     private final JPAQueryFactory queryFactory;
     private static final int DEFAULT_OFFSET = 0;
     private static final int DEFAULT_SIZE = 6;
+    private static final int DEFAULT_MAIN_PAGE_SIZE = 9;
 
     @Override
     public RecruitmentDetailDto getDetailDto(Long recruitmentId) {
@@ -59,6 +60,23 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
 
         recruitmentDetailDto.setImgUrls(imgUrls);
         return recruitmentDetailDto;
+    }
+
+    @Override
+    public List<RecruitmentListDto> getListDtoInMainPage() {
+        List<Recruitment> content = queryFactory
+                .selectFrom(recruitment)
+                .leftJoin(recruitment.member, member).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
+                .where(
+                        isRecruitingOrNot(true),
+                        recruitment.isDeleted.eq(false)
+                )
+                .orderBy(recruitment.createdAt.desc())
+                .limit(DEFAULT_MAIN_PAGE_SIZE)
+                .fetch();
+        return RecruitmentListDto.toDto(content, true);
     }
 
     @Override
@@ -147,7 +165,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
             hasNext = true;
             recruitments.remove(DEFAULT_SIZE);
         }
-        List<RecruitmentListDto> content = RecruitmentListDto.toDto(recruitments);
+        List<RecruitmentListDto> content = RecruitmentListDto.toDto(recruitments, false);
         return new SliceImpl<>(content, pageable, hasNext);
     }
 }
