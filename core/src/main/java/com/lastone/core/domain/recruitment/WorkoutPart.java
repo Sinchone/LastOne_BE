@@ -4,17 +4,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum WorkoutPart {
-    ALL("전신"),
-    CHEST("가슴"),
-    BACK("등"),
-    SHOULDER("어깨"),
-    LOWER("하체"),
-    CORE("코어");
+    ALL("전신", "all.jpg"),
+    CHEST("가슴", "chest.jpg"),
+    BACK("등", "back.jpg"),
+    SHOULDER("어깨", "shoulder.jpg"),
+    LOWER("하체", "lower.jpg"),
+    CORE("코어", "core.jpg");
 
     private final String text;
 
-    WorkoutPart(String text) {
+    private final String defaultImgUrl;
+
+    WorkoutPart(String text, String defaultImgUrl) {
         this.text = text;
+        this.defaultImgUrl = defaultImgUrl;
     }
 
     @JsonCreator
@@ -30,5 +33,9 @@ public enum WorkoutPart {
     @JsonValue
     public String getText() {
         return text;
+    }
+
+    public String getDefaultImgUrl() {
+        return defaultImgUrl;
     }
 }
