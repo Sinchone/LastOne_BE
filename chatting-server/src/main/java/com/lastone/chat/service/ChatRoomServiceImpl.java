@@ -131,6 +131,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .sum(
                     ConditionalOperators.Cond.newBuilder().when(
                             Criteria.where(JOIN_AS + "." + isRead).is(false)
+                                    .and(JOIN_AS + "." + MessageColumn.RECEIVERID.getWord()).is(userId)
                     ).then(1)
                     .otherwise(0)
                 ).as("notReadCount");
