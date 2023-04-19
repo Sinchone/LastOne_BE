@@ -42,29 +42,43 @@ public class RecruitmentListDto {
     private String imgUrl;
 
 
-    public static List<RecruitmentListDto> toDto(List<Recruitment> recruitments) {
+    public static List<RecruitmentListDto> toDto(List<Recruitment> recruitments, boolean isMainPage) {
         List<RecruitmentListDto> recruitmentListDtos = new ArrayList<>();
         for (Recruitment recruitment : recruitments) {
-
             RecruitmentListDto recruitmentListDto = RecruitmentListDto.builder()
                     .id(recruitment.getId())
                     .gym(recruitment.getGym().getName())
                     .status(recruitment.getRecruitmentStatus())
                     .title(recruitment.getTitle())
                     .preferGender(recruitment.getPreferGender())
+                    .imgUrl(chooseImgType(recruitment, isMainPage))
                     .startedAt(recruitment.getStartedAt())
                     .workoutPart(recruitment.getWorkoutPart())
-                    .imgUrl(toImgUrl(recruitment))
                     .build();
             recruitmentListDtos.add(recruitmentListDto);
         }
         return recruitmentListDtos;
     }
 
-    private static String toImgUrl(Recruitment recruitment) {
+    private static String chooseImgType(Recruitment recruitment, boolean isMainPage) {
+        if (isMainPage) {
+            return toImgUrlForMainPage(recruitment);
+        }
+        return toImgUrlForListPage(recruitment);
+    }
+
+    private static String toImgUrlForListPage(Recruitment recruitment) {
         List<RecruitmentImg> recruitmentImgs = recruitment.getRecruitmentImgs();
         if (recruitmentImgs.isEmpty()) {
-            return recruitment.getWorkoutPart().getDefaultImgUrl();
+            return recruitment.getWorkoutPart().getListDefaultImgUrl();
+        }
+        return recruitmentImgs.get(0).getImgUrl();
+    }
+
+    private static String toImgUrlForMainPage(Recruitment recruitment) {
+        List<RecruitmentImg> recruitmentImgs = recruitment.getRecruitmentImgs();
+        if (recruitmentImgs.isEmpty()) {
+            return recruitment.getWorkoutPart().getMainDefaultImgUrl();
         }
         return recruitmentImgs.get(0).getImgUrl();
     }
