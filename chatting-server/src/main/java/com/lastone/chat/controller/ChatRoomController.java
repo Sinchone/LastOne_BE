@@ -7,7 +7,6 @@ import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.chatroom.ChatRoomCreateReqDto;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,11 +45,11 @@ public class ChatRoomController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse> getList(@AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) {
+    public ResponseEntity<CommonResponse> getList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(
                 CommonResponse.success(
-                        chatRoomService.getList(userDetails.getId(), pageable),
-                        SuccessCode.GET_CHAT_ROOM_LIST.getMessage()
+                    chatRoomService.getList(userDetails.getId()),
+                    SuccessCode.GET_CHAT_ROOM_LIST.getMessage()
                 )
         );
     }

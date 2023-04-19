@@ -19,21 +19,17 @@ import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -103,67 +99,63 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoom.delete();
         mongoTemplate.save(chatRoomOptional.get());
     }
-    private Aggregation makeRoomSearchAggregation(Long userId, Pageable pageable) {
-        String JOIN_AS = "room";
-        String senderId = MessageColumn.SENDERID.getWord();
-        String receiverId = MessageColumn.RECEIVERID.getWord();
-        String roomId = MessageColumn.ROOMID.getWord();
-        String content = MessageColumn.CONTENT.getWord();
+    private Aggregation makeRoomSearchAggregation(Long userId) {
+        String JOIN_AS = "messages";
+        String roomId = RoomColumn.ID.getWord();
+        String participation = RoomColumn.PARTICIPATIONS.getWord();
+        String status = RoomColumn.STATUS.getWord();
         String createdAt = MessageColumn.CREATEDAT.getWord();
         String isRead = MessageColumn.ISREAD.getWord();
-        Long elementsToSkip = Long.valueOf(pageable.getPageSize()) * Long.valueOf(pageable.getPageNumber());
 
         AddFieldsOperation objectRoomIdToString = AddFieldsOperation.builder().addField(roomId)
                 .withValue(
-                        ConvertOperators.ToObjectId.toObjectId("$" + roomId)
+                        ConvertOperators.ToString.toString("$" + roomId)
                 ).build();
-        MatchOperation messageMatch = Aggregation.match(
+        MatchOperation roomMatch = Aggregation.match(
                 new Criteria()
-                        .orOperator(new Criteria(senderId).is(userId), new Criteria(receiverId).is(userId))
+                        .and(participation).is(userId)
+                        .and(status).is(ChatStatus.NORMAL.name())
         );
         LookupOperation lookupOperation = Aggregation.lookup(
-                                            RoomColumn.COLLECTION_NAME.getWord(),
-                                            MessageColumn.ROOMID.getWord(),
-                                            RoomColumn.ID.getWord(), JOIN_AS
-                                        );
-        MatchOperation roomMatch = Aggregation.match(
-                new Criteria(JOIN_AS + ".status").is(ChatStatus.NORMAL.name())
-                        .and(JOIN_AS + "." + RoomColumn.PARTICIPATIONS.getWord())
-                        .is(userId)
+                MessageColumn.COLLECTION_NAME.getWord(),
+                RoomColumn.ID.getWord(),
+                MessageColumn.ROOMID.getWord(),
+                JOIN_AS
         );
-        GroupOperation messageGrouping = group(roomId)
-                                            .last(JOIN_AS + "." + RoomColumn.PARTICIPATIONS.getWord()).as("other")
-                                            .last(content).as(content)
-                                            .last(createdAt).as(createdAt)
-                                            .sum(ArithmeticOperators.Subtract.valueOf(1)
-                                                    .subtract(ConvertOperators.ToLong.toLong("$"+ isRead))
-                                            ).as("notReadCount");
-        SortOperation latestSort = Aggregation.sort(Sort.Direction.DESC, createdAt);
-        SkipOperation skipItem = Aggregation.skip(elementsToSkip);
-        LimitOperation itemLimit = new LimitOperation(pageable.getPageSize());
+        UnwindOperation unwindOperation = UnwindOperation.UnwindOperationBuilder
+                                            .newBuilder().path("$"+ JOIN_AS)
+                                            .noArrayIndex().preserveNullAndEmptyArrays();
+        GroupOperation roomGrouping = group(roomId)
+                .last(participation).as(participation)
+                .last(JOIN_AS).as("lastMessage")
+                .sum(
+                    ConditionalOperators.Cond.newBuilder().when(
+                            Criteria.where(JOIN_AS + "." + isRead).is(false)
+                    ).then(1)
+                    .otherwise(0)
+                ).as("notReadCount");
+        SortOperation latestSort = Aggregation.sort(Sort.Direction.DESC, "lastMessage." + createdAt);
 
         return Aggregation.newAggregation(
-                objectRoomIdToString, messageMatch, lookupOperation
-                , roomMatch, messageGrouping, latestSort
-                , skipItem, itemLimit
+                objectRoomIdToString, roomMatch, lookupOperation
+                , unwindOperation, roomGrouping, latestSort
         );
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<ChatRoomResDto> getList(Long userId, Pageable pageable) {
-        Long totalCount = getCount(userId);
+    public List<ChatRoomResDto> getList(Long userId) {
         List<ChatRoomResDto> resDtos = new ArrayList<>();
-        Aggregation roomSearchAggregation = makeRoomSearchAggregation(userId, pageable);
+        Aggregation roomSearchAggregation = makeRoomSearchAggregation(userId);
 
         List<ChatRoomFindDto> roomFindDtos =
                 mongoTemplate.aggregate(
                     roomSearchAggregation,
-                    MessageColumn.COLLECTION_NAME.getWord(),
+                    RoomColumn.COLLECTION_NAME.getWord(),
                     ChatRoomFindDto.class
                 ).getMappedResults();
 
         for (ChatRoomFindDto roomFindDto : roomFindDtos) {
-            Long otherUserId = roomFindDto.getOther().get(0).stream()
+            Long otherUserId = roomFindDto.getParticipations().stream()
                     .filter(membersId -> userId != membersId)
                     .findFirst().get();
             if(otherUserId == null) continue;
@@ -186,10 +178,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                         .build();
                 roomResDto = new ChatRoomResDto(roomFindDto, testMember);
                 resDtos.add(roomResDto);
-//                continue;
             }
         }
-        return new PageImpl<>(resDtos, pageable, totalCount);
+        return resDtos;
     }
 
     /**
@@ -212,12 +203,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         /**
          * Todo - 회원로그인 완료시 삭제할 로직
          */
-        long randomUserNumber = (long)(Math.random() * 100 + 1);
         Member otherUser = Member.builder()
-                .id(randomUserNumber)
-                .email("테스트 Email" + randomUserNumber)
+                .id(otherUserId)
+                .email("테스트 Email" + otherUserId)
                 .gender("남성")
-                .nickname("테스트 닉네임" + randomUserNumber)
+                .nickname("테스트 닉네임" + otherUserId)
                 .build();
 
         List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
@@ -225,7 +215,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         Query query = new Query();
         query.addCriteria(
                 Criteria.where(MessageColumn.ROOMID.getWord()).is(roomId)
-                    .and(MessageColumn.SENDERID.getWord()).is(otherUserId)
+                    .and(MessageColumn.RECEIVERID.getWord()).is(otherUserId)
         );
 
         mongoTemplate.updateMulti(
@@ -233,22 +223,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 MessageColumn.COLLECTION_NAME.getWord()
         );
         return new ChatRoomDetailDto(messages, otherUser);
-    }
-
-    /**
-     * 회원이 참여한 정상인 채팅방의 갯수를 반환한다.
-     * @param userId
-     * @return 채팅방 갯수
-     */
-    private Long getCount(Long userId) {
-        Criteria countCriteria = Criteria.where(RoomColumn.STATUS.getWord())
-                .is(ChatStatus.NORMAL.name())
-                .orOperator(Criteria.where(RoomColumn.PARTICIPATIONS.getWord())
-                        .is(userId)
-                );
-        Query countQuery = new Query(countCriteria);
-        long count = mongoTemplate.count(countQuery, RoomColumn.COLLECTION_NAME.getWord());
-        return count;
     }
 
     /**
