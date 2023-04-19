@@ -26,16 +26,16 @@ public class TokenController {
     private final TokenService tokenService;
 
     @PostMapping("/logout")
-    public ResponseEntity<Object> logout(@RequestBody @Validated TokenLogoutDto tokenLogoutDto) {
+    public ResponseEntity<CommonResponse> logout(@RequestBody @Validated TokenLogoutDto tokenLogoutDto) {
         tokenService.logout(tokenLogoutDto);
-        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.OAUTH2_LOGIN.getMessage()));
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.TOKEN_LOGOUT));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Object> refreshToken(HttpServletRequest request, @RequestBody @Validated TokenRefreshDto tokenRefreshDto) {
+    public ResponseEntity<CommonResponse> refreshToken(HttpServletRequest request, @RequestBody @Validated TokenRefreshDto tokenRefreshDto) {
         TokenResponse tokens = tokenService.refresh(tokenRefreshDto.getRefreshToken(), request.getRequestURI());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(CommonResponse.success(tokens, SuccessCode.TOKEN_REFRESH.getMessage()));
+                .body(CommonResponse.success(SuccessCode.TOKEN_REFRESH, tokens));
     }
 }
