@@ -44,7 +44,10 @@ public enum ErrorCode {
   UN_AUTHENTICATION_MEMBER(401, "ST004", "해당 API는 토큰을 필요로합니다. 로그인 후 이용해주세요."),
 
   /* Oauth2 예외 */
-  OAUTH2_REGISTER_NOT_FOUND(404, "A001", "해당 registerId는 지원되지 않습니다."),
+  OAUTH2_REGISTER_NOT_FOUND(404, "OA001", "해당 registerId는 지원되지 않습니다."),
+  OAUTH2_ALREADY_USED_CODE(400, "OA002", "해당 Oauth2인증 토큰은 이미 사용되었거나 잘못된 형식의 토큰입니다."),
+  OAUTH2_DEFAULT_EXCEPTION(400, "OA003", "OAuth2 로그인에 실패하였습니다."),
+  OAUTH2_CODE_NOT_FOUND(400, "OA004", "인증에 필수 값인 Oauth2 code가 존재하지 않습니다."),
 
   /* JWT Token 예외 */
   ALGORITHM_MISMATCH_EXCEPTION(403, "VT001", "토큰의 인코딩 알고리즘이 일치하지 않습니다." ),

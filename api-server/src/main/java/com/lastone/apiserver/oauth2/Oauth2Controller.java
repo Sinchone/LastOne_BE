@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -18,12 +19,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Oauth2Controller {
 
+    private static final String CODE = "code";
+
     private final Oauth2ServiceProvider oauth2ServiceProvider;
 
     @PostMapping("/{registerId}")
     public ResponseEntity<Object> getToken(HttpServletRequest request, @PathVariable("registerId") String registerId, @RequestBody Map<String,String> authCode) throws JsonProcessingException {
+        String code = authCode.get(CODE);
+        if (ObjectUtils.isEmpty(code)) {
+            throw new Oauth2CodeNotFounException();
+        }
         Oauth2Service oauth2Service = oauth2ServiceProvider.getOauth2Service(registerId);
-        TokenResponse tokens = oauth2Service.createToken(authCode.get("code"), request.getRequestURI());
+        TokenResponse tokens = oauth2Service.createToken(authCode.get(CODE), request.getRequestURI());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

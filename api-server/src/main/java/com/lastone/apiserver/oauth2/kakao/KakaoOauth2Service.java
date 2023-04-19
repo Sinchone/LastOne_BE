@@ -1,22 +1,20 @@
-package com.lastone.core.oauth2.kakao;
+package com.lastone.apiserver.oauth2.kakao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lastone.apiserver.oauth2.Oauth2Service;
 import com.lastone.core.domain.member.Member;
-import com.lastone.core.oauth2.Oauth2Service;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.security.jwt.TokenResponse;
 import com.lastone.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;

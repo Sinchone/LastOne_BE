@@ -1,4 +1,4 @@
-package com.lastone.core.oauth2;
+package com.lastone.apiserver.oauth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lastone.core.security.jwt.TokenResponse;
