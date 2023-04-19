@@ -8,13 +8,10 @@ import com.lastone.core.dto.recruitment.QRecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +21,9 @@ import static com.lastone.core.domain.recruitment_img.QRecruitmentImg.recruitmen
 @RequiredArgsConstructor
 public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     private final JPAQueryFactory queryFactory;
+    private static final int DEFAULT_OFFSET = 0;
+    private static final int DEFAULT_SIZE = 6;
+
     @Override
     public RecruitmentDetailDto getDetailDto(Long recruitmentId) {
         RecruitmentDetailDto recruitmentDetailDto = queryFactory
@@ -60,7 +60,9 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     @Override
-    public Page<RecruitmentListDto> getListDto(Pageable pageable, RecruitmentSearchCondition searchCondition) {
+    public Slice<RecruitmentListDto> getListDto(RecruitmentSearchCondition searchCondition) {
+
+        Pageable pageable = PageRequest.of(DEFAULT_OFFSET, DEFAULT_SIZE);
 
         List<RecruitmentListDto> content = queryFactory
                 .select(new QRecruitmentListDto(
@@ -80,21 +82,14 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                         eqStartedAt(searchCondition.getLocalDateTime()),
                         eqGymName(searchCondition.getGymName()),
                         isMatchingTitleOrGymName(searchCondition.getTitle()),
+                        ltLastId(searchCondition.getLastId()),
                         recruitment.isDeleted.eq(false)
                 )
-                .orderBy(sortList(searchCondition.getIsNewest()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .orderBy(recruitment.createdAt.desc())
+                .limit(DEFAULT_SIZE + 1)
                 .fetch();
 
-        return new PageImpl<>(content, pageable, content.size());
-    }
-
-    private OrderSpecifier<?> sortList(Boolean newest) {
-        if (!newest) {
-            return recruitment.startedAt.asc();
-        }
-        return recruitment.createdAt.desc();
+        return checkLastPage(pageable, content);
     }
 
     private BooleanExpression eqWorkoutPart(WorkoutPart workoutPart) {
@@ -141,5 +136,21 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
             return null;
         }
         return recruitment.gym.name.eq(gymName);
+    }
+
+    private BooleanExpression ltLastId(Long lastId) {
+        if (lastId == null) {
+            return null;
+        }
+        return recruitment.id.lt(lastId);
+    }
+
+    private Slice<RecruitmentListDto> checkLastPage(Pageable pageable, List<RecruitmentListDto> content) {
+        boolean hasNext = false;
+        if (content.size() > DEFAULT_SIZE) {
+            hasNext = true;
+            content.remove(DEFAULT_SIZE);
+        }
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 }

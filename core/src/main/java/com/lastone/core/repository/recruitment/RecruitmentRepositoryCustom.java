@@ -3,11 +3,10 @@ package com.lastone.core.repository.recruitment;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface RecruitmentRepositoryCustom {
 
-    Page<RecruitmentListDto> getListDto(Pageable pageable, RecruitmentSearchCondition searchCondition);
+    Slice<RecruitmentListDto> getListDto(RecruitmentSearchCondition searchCondition);
     RecruitmentDetailDto getDetailDto(Long recruitmentId);
 }

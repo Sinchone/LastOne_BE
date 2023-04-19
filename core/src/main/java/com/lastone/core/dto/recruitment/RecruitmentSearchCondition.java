@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.util.ObjectUtils;
-
 import javax.persistence.Enumerated;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -19,9 +18,6 @@ import java.time.format.DateTimeFormatter;
 @ToString
 public class RecruitmentSearchCondition {
 
-    private static final int DEFAULT_OFFSET = 0;
-    private static final int DEFAULT_LIMIT = 9;
-
     @Enumerated
     private WorkoutPart workoutPart;
     @Enumerated
@@ -32,15 +28,10 @@ public class RecruitmentSearchCondition {
     private String title;
     private String gymName;
     private Boolean isRecruiting;
-    private Boolean isNewest;
-    private int offset;
-    private int limit;
+    private Long lastId;
 
     public RecruitmentSearchCondition() {
-        this.offset = DEFAULT_OFFSET;
-        this.limit = DEFAULT_LIMIT;
         this.isRecruiting = true;
-        this.isNewest = false;
     }
 
     public LocalDateTime getLocalDateTime() {

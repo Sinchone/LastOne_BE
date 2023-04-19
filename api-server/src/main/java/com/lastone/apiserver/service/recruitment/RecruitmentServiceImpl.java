@@ -11,7 +11,11 @@ import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.dto.gym.GymDto;
-import com.lastone.core.dto.recruitment.*;
+import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
+import com.lastone.core.dto.recruitment.RecruitmentListDto;
+import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
+import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
+import com.lastone.core.dto.recruitment.StartedAtDto;
 import com.lastone.core.mapper.mapper.GymMapper;
 import com.lastone.core.repository.gym.GymRepository;
 import com.lastone.core.repository.member.MemberRepository;
@@ -20,9 +24,7 @@ import com.lastone.core.repository.recruitment_img.RecruitmentImgRepository;
 import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -51,9 +53,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     private final GymMapper gymMapper;
 
     @Override
-    public Page<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition) {
-        Pageable pageable = PageRequest.of(searchCondition.getOffset(), searchCondition.getLimit());
-        return recruitmentRepository.getListDto(pageable, searchCondition);
+    public Slice<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition) {
+        return recruitmentRepository.getListDto(searchCondition);
     }
 
     @Override
