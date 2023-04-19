@@ -68,6 +68,11 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     @Override
+    public List<RecruitmentListDto> getMainList() {
+        return recruitmentRepository.getListDtoInMainPage();
+    }
+
+    @Override
     public void createRecruitment(Long memberId, RecruitmentRequestDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException {
 
         Gym gym = findGym(recruitmentCreateDto.getGym());
