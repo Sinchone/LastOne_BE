@@ -1,4 +1,4 @@
-package com.lastone.core.oauth2;
+package com.lastone.apiserver.exception.oauth2;
 
 import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.common.exception.LastOneException;

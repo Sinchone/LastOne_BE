@@ -1,7 +1,6 @@
-package com.lastone.core.oauth2;
+package com.lastone.apiserver.exception.oauth2;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lastone.apiserver.controller.Oauth2Controller;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;

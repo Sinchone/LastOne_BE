@@ -1,4 +1,4 @@
-package com.lastone.core.oauth2.kakao;
+package com.lastone.apiserver.oauth2.kakao;
 
 import lombok.Getter;
 import lombok.Setter;
