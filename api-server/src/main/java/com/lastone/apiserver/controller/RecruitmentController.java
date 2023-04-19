@@ -10,7 +10,7 @@ import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,12 +26,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/recruitment")
 public class RecruitmentController {
-
     private final RecruitmentService recruitmentService;
-
     @GetMapping
     public ResponseEntity<CommonResponse> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
-        Page<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
+        Slice<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST, recruitmentList));
     }
 
