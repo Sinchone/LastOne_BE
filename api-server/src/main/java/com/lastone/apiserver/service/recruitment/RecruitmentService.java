@@ -11,9 +11,10 @@ import java.util.List;
 
 public interface RecruitmentService {
 
-    void createRecruitment(Long memberId, RecruitmentRequestDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException;
     Slice<RecruitmentListDto> getList(RecruitmentSearchCondition searchCondition);
     RecruitmentDetailDto getDetail(Long recruitmentId);
+    List<RecruitmentListDto> getMainList();
+    void createRecruitment(Long memberId, RecruitmentRequestDto recruitmentCreateDto, List<MultipartFile> imgFiles) throws IOException;
     void updateRecruitment(Long recruitmentId, Long memberId, RecruitmentRequestDto recruitment, List<MultipartFile> imgFiles) throws IOException;
     void deleteRecruitment(Long recruitmentId, Long id);
 }

@@ -1,10 +1,10 @@
 package com.lastone.core.repository.recruitment;
 
 import com.lastone.core.domain.recruitment.PreferGender;
+import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.domain.recruitment.WorkoutPart;
 import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
-import com.lastone.core.dto.recruitment.QRecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
@@ -15,6 +15,8 @@ import org.springframework.data.domain.*;
 import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.List;
+import static com.lastone.core.domain.gym.QGym.gym;
+import static com.lastone.core.domain.member.QMember.member;
 import static com.lastone.core.domain.recruitment.QRecruitment.recruitment;
 import static com.lastone.core.domain.recruitment_img.QRecruitmentImg.recruitmentImg;
 
@@ -23,6 +25,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     private final JPAQueryFactory queryFactory;
     private static final int DEFAULT_OFFSET = 0;
     private static final int DEFAULT_SIZE = 6;
+    private static final int DEFAULT_MAIN_PAGE_SIZE = 9;
 
     @Override
     public RecruitmentDetailDto getDetailDto(Long recruitmentId) {
@@ -60,21 +63,32 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     @Override
+    public List<RecruitmentListDto> getListDtoInMainPage() {
+        List<Recruitment> content = queryFactory
+                .selectFrom(recruitment)
+                .leftJoin(recruitment.member, member).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
+                .where(
+                        isRecruitingOrNot(true),
+                        recruitment.isDeleted.eq(false)
+                )
+                .orderBy(recruitment.createdAt.desc())
+                .limit(DEFAULT_MAIN_PAGE_SIZE)
+                .fetch();
+        return RecruitmentListDto.toDto(content, true);
+    }
+
+    @Override
     public Slice<RecruitmentListDto> getListDto(RecruitmentSearchCondition searchCondition) {
 
         Pageable pageable = PageRequest.of(DEFAULT_OFFSET, DEFAULT_SIZE);
 
-        List<RecruitmentListDto> content = queryFactory
-                .select(new QRecruitmentListDto(
-                        recruitment.id,
-                        recruitment.title,
-                        recruitment.gym.name,
-                        recruitment.startedAt,
-                        recruitment.recruitmentStatus,
-                        recruitment.preferGender,
-                        recruitment.workoutPart
-                ))
-                .from(recruitment)
+        List<Recruitment> content = queryFactory
+                .selectFrom(recruitment)
+                .leftJoin(recruitment.member, member).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
                 .where(
                         eqWorkoutPart(searchCondition.getWorkoutPart()),
                         eqPreferGender(searchCondition.getPreferGender()),
@@ -145,12 +159,13 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
         return recruitment.id.lt(lastId);
     }
 
-    private Slice<RecruitmentListDto> checkLastPage(Pageable pageable, List<RecruitmentListDto> content) {
+    private Slice<RecruitmentListDto> checkLastPage(Pageable pageable, List<Recruitment> recruitments) {
         boolean hasNext = false;
-        if (content.size() > DEFAULT_SIZE) {
+        if (recruitments.size() > DEFAULT_SIZE) {
             hasNext = true;
-            content.remove(DEFAULT_SIZE);
+            recruitments.remove(DEFAULT_SIZE);
         }
+        List<RecruitmentListDto> content = RecruitmentListDto.toDto(recruitments, false);
         return new SliceImpl<>(content, pageable, hasNext);
     }
 }

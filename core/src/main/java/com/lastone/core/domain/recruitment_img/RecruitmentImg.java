@@ -2,7 +2,6 @@ package com.lastone.core.domain.recruitment_img;
 
 import com.lastone.core.domain.recruitment.Recruitment;
 import lombok.*;
-
 import javax.persistence.*;
 
 @Entity
@@ -15,7 +14,7 @@ public class RecruitmentImg {
     @Column(name = "recruitment_img_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitment_id")
     private Recruitment recruitment;
 

@@ -19,6 +19,7 @@ public enum SuccessCode {
 
     /* 모집글 */
     RECRUITMENT_LIST("모집글 리스트 조회에 성공하였습니다."),
+    RECRUITMENT_LIST_FOR_MAIN("메인 페이지 모집글 리스트 조회에 성공하였습니다."),
     RECRUITMENT_DETAIL("모집글 상세 정보 조회에 성공하였습니다."),
     RECRUITMENT_CREATE("모집글 작성이 완료되었습니다."),
     RECRUITMENT_UPDATE("모집글 수정이 완료되었습니다."),

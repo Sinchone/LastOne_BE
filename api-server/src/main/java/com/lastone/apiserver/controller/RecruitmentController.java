@@ -33,6 +33,12 @@ public class RecruitmentController {
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST, recruitmentList));
     }
 
+    @GetMapping("/main")
+    public ResponseEntity<CommonResponse> getRecruitmentListInMain() {
+        List<RecruitmentListDto> recruitmentList = recruitmentService.getMainList();
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST_FOR_MAIN, recruitmentList));
+    }
+
     @GetMapping("/{recruitmentId}")
     public ResponseEntity<CommonResponse> getRecruitmentDetail(@PathVariable Long recruitmentId) {
         RecruitmentDetailDto recruitmentDetail = recruitmentService.getDetail(recruitmentId);
