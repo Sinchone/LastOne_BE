@@ -26,7 +26,8 @@ public enum SuccessCode {
     RECRUITMENT_DELETE("모집글 삭제가 완료되었습니다."),
 
     /* 신청 */
-    APPLICATION_CREATE("신청 처리가 완료되었습니다.")
+    APPLICATION_CREATE("신청 처리가 완료되었습니다."),
+    APPLICATION_RECEIVED_LIST("받은 신청 리스트 조회가 완료되었습니다."),
     ;
 
     private String message;
