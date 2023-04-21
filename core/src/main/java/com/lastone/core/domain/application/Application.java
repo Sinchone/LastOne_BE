@@ -1,4 +1,4 @@
-package com.lastone.core.domain.applyment;
+package com.lastone.core.domain.application;
 
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
@@ -9,11 +9,11 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Applyment extends BaseTime {
+public class Application extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "applyment_id")
+    @Column(name = "application_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,14 +22,14 @@ public class Applyment extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member applyer;
+    private Member applicant;
 
     @Enumerated(EnumType.STRING)
-    private ApplymentStatus status;
+    private ApplicationStatus status;
 
-    public Applyment(Recruitment recruitment, Member applyer) {
+    public Application(Recruitment recruitment, Member applicant) {
         this.recruitment = recruitment;
-        this.applyer = applyer;
-        this.status = ApplymentStatus.WAITING;
+        this.applicant = applicant;
+        this.status = ApplicationStatus.WAITING;
     }
 }
