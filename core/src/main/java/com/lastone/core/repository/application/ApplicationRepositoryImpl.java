@@ -1,10 +1,8 @@
 package com.lastone.core.repository.application;
 
+import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
-import com.lastone.core.dto.applicaation.ApplicantDto;
-import com.lastone.core.dto.applicaation.ApplicationReceivedDto;
-import com.lastone.core.dto.applicaation.QApplicantDto;
-import com.lastone.core.dto.applicaation.QApplicationReceivedDto;
+import com.lastone.core.dto.applicaation.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
@@ -69,5 +67,32 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
         }
         applicationReceivedDtos.removeAll(removeList);
         return applicationReceivedDtos;
+    }
+
+    @Override
+    public List<ApplicationRequestedDto> getRequestedList(Long memberId) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        return queryFactory
+                .select(new QApplicationRequestedDto(
+                        application.recruitment.id,
+                        application.recruitment.title,
+                        application.recruitment.gym.name,
+                        application.recruitment.startedAt,
+                        application.recruitment.member.id,
+                        application.recruitment.member.profileUrl,
+                        application.recruitment.member.nickname,
+                        application.recruitment.member.gender,
+                        application.createdAt))
+                .from(application)
+                .where(
+                        application.applicant.id.eq(memberId),
+                        application.status.eq(ApplicationStatus.WAITING)
+                                .or(application.status.eq(ApplicationStatus.SUCCESS)
+                                        .and(application.recruitment.startedAt.loe(now.plusDays(ONE_DAY)))),
+                        application.recruitment.startedAt.goe(now))
+                .orderBy(application.createdAt.desc())
+                .fetch();
     }
 }
