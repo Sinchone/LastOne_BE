@@ -96,4 +96,8 @@ public class Recruitment extends BaseTime {
         this.recruitmentImgs.clear();
         this.isDeleted = true;
     }
+
+    public void cancelMatching() {
+        this.recruitmentStatus = RecruitmentStatus.RECRUITING;
+    }
 }
