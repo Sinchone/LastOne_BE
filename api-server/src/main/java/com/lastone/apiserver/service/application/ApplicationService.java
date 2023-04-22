@@ -11,4 +11,6 @@ public interface ApplicationService {
     List<ApplicationReceivedDto> getReceivedListByMemberId(Long memberId);
 
     List<ApplicationRequestedDto> getRequestedListByMemberId(Long memberId);
+
+    void cancel(Long applicationId, Long requestMemberId);
 }
