@@ -1,5 +1,6 @@
 package com.lastone.apiserver.controller;
 
+import com.lastone.apiserver.service.matching.MatchingService;
 import com.lastone.apiserver.service.recruitment.RecruitmentService;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequestMapping("/api/recruitment")
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
+    private final MatchingService matchingService;
     @GetMapping
     public ResponseEntity<CommonResponse> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
         Slice<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
@@ -64,6 +66,13 @@ public class RecruitmentController {
                                                     @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
         recruitmentService.updateRecruitment(recruitmentId, userDetails.getId(), recruitment, imgFiles);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_UPDATE));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/{recruitmentId}/application/{applicationId}")
+    public ResponseEntity<CommonResponse> changeApplicationStatus(@PathVariable Long recruitmentId, @PathVariable Long applicationId) {
+        matchingService.completeMatching(recruitmentId, applicationId);
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.APPLICATION_MATCHING_COMPLETE));
     }
 
     @PreAuthorize("isAuthenticated()")
