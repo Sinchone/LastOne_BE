@@ -30,6 +30,8 @@ public enum SuccessCode {
     APPLICATION_RECEIVED_LIST("받은 신청 리스트 조회가 완료되었습니다."),
     APPLICATION_REQUESTED_LIST("요청한 신청 리스트 조회가 완료되었습니다."),
     APPLICATION_MATCHING_COMPLETE("파트너 매칭이 완료되었습니다."),
+    APPLICATION_MATCHING_CANCEL("매칭된 파트너와의 운동을 취소하였습니다."),
+    APPLICATION_REQUEST_CANCEL("요청한 신청이 취소되었습니다."),
 
 
     ;
