@@ -5,6 +5,8 @@ import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import static com.lastone.core.domain.recruitment.QRecruitment.recruitment;
 public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
     private static final int ONE_DAY = 1;
 
     @Override
@@ -94,5 +97,26 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                         application.recruitment.startedAt.goe(now))
                 .orderBy(application.createdAt.desc())
                 .fetch();
+    }
+
+    @Override
+    public void updateStatus(Long recruitmentId, Long successApplicationId) {
+
+        queryFactory
+                .update(application)
+                .set(application.status, ApplicationStatus.SUCCESS)
+                .where(application.id.eq(successApplicationId))
+                .execute();
+
+        queryFactory
+                .update(application)
+                .set(application.status, ApplicationStatus.FAILURE)
+                .where(
+                        application.id.ne(successApplicationId),
+                        application.status.ne(ApplicationStatus.CANCLE))
+                .execute();
+
+        em.flush();
+        em.clear();
     }
 }
