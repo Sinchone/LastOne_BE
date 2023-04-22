@@ -4,6 +4,7 @@ import com.lastone.apiserver.service.application.ApplicationService;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.applicaation.ApplicationReceivedDto;
+import com.lastone.core.dto.applicaation.ApplicationRequestedDto;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,12 @@ public class ApplicationController {
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.APPLICATION_RECEIVED_LIST, content));
     }
 
+    @GetMapping("/requested")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<CommonResponse> getRequestedApplication(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<ApplicationRequestedDto> content = applicationService.getRequestedListByMemberId(userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.APPLICATION_REQUESTED_LIST, content));
+    }
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
