@@ -46,4 +46,12 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(SuccessCode.APPLICATION_CREATE));
     }
+
+    @DeleteMapping("/{applicationId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<CommonResponse> cancelApplication(@PathVariable Long applicationId,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        applicationService.cancel(applicationId, userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.APPLICATION_REQUEST_CANCEL));
+    }
 }
