@@ -1,6 +1,6 @@
-package com.lastone.core.domain.applyment;
+package com.lastone.core.domain.application;
 
-public enum ApplymentStatus {
+public enum ApplicationStatus {
 
     WAITING("대기중"),
     CANCLE("신청 취소"),
@@ -9,7 +9,7 @@ public enum ApplymentStatus {
 
     private final String text;
 
-    ApplymentStatus(String text) {
+    ApplicationStatus(String text) {
         this.text = text;
     }
 }

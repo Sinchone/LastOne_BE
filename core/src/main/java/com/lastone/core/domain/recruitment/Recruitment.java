@@ -1,6 +1,6 @@
 package com.lastone.core.domain.recruitment;
 
-import com.lastone.core.domain.applyment.Applyment;
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
@@ -43,7 +43,7 @@ public class Recruitment extends BaseTime {
     private List<RecruitmentImg> recruitmentImgs = new ArrayList<>();
 
     @OneToMany(mappedBy = "recruitment")
-    private List<Applyment> applyments = new ArrayList<>();
+    private List<Application> applications = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private WorkoutPart workoutPart;
