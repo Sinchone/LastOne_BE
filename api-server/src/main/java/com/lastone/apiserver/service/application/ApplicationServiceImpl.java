@@ -6,6 +6,7 @@ import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.dto.applicaation.ApplicationReceivedDto;
+import com.lastone.core.dto.applicaation.ApplicationRequestedDto;
 import com.lastone.core.repository.application.ApplicationRepository;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;
@@ -39,5 +40,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public List<ApplicationReceivedDto> getReceivedListByMemberId(Long memberId) {
         return applicationRepository.getReceivedList(memberId);
+    }
+
+    @Override
+    public List<ApplicationRequestedDto> getRequestedListByMemberId(Long memberId) {
+        return applicationRepository.getRequestedList(memberId);
     }
 }
