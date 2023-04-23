@@ -5,7 +5,6 @@ import com.lastone.core.repository.BaseTime;
 import com.lastone.core.util.BooleanToYNConverter;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-
 import javax.persistence.*;
 
 @Entity
@@ -48,7 +47,7 @@ public class Member extends BaseTime {
         this.profileUrl = memberUpdateDto.getProfileUrl();
         this.workoutPurpose = memberUpdateDto.getWorkoutPurpose();
         this.workoutTime = memberUpdateDto.getWorkoutTime();
-        this.workoutDay = memberUpdateDto.getWorkoutDay();
+        this.workoutDay = Day.sortListToString(memberUpdateDto.getWorkoutDay());
         this.isEdited = true;
     }
 }
