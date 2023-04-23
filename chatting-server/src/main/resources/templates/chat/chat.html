@@ -186,7 +186,7 @@
             </div>`;
     }
   }
-  const sockJS = new SockJS("/stomp/chat");
+  const sockJS = new SockJS("/chat/stomp");
   const stomp = Stomp.over(sockJS);
 
   stomp.heartbeat.outgoing = 0; //Rabbit에선 heartbeat 안먹힌다고 함
