@@ -3,6 +3,7 @@ package com.lastone.core.dto.member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import java.util.List;
 
 @Getter
 @Builder
@@ -23,7 +24,7 @@ public class MemberDto {
 
     private String workoutTime;
 
-    private String workoutDay;
+    private List<String> workoutDay;
 
     private String status;
 
