@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Optional;
@@ -24,7 +25,6 @@ public class MemberServiceImpl implements MemberService {
 
     private final S3ServiceImpl s3Service;
 
-
     public Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
     }
@@ -33,10 +33,8 @@ public class MemberServiceImpl implements MemberService {
     public void update(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
         isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
 
-        if (profileImg != null) {
-            if (member.getProfileUrl() != null) {
-                s3Service.delete(member.getProfileUrl());
-            }
+        if (!ObjectUtils.isEmpty(profileImg)) {
+            s3Service.delete(member.getProfileUrl());
             memberUpdateDto.setProfileUrl(s3Service.upload(profileImg));
         }
         member.update(memberUpdateDto);
