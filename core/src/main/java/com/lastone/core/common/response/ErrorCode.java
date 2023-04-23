@@ -62,6 +62,11 @@ public enum ErrorCode {
   RECRUITMENT_NOT_FOUND(404, "R002", "존재하지 않는 모집글입니다."),
   INCORRECT_WRITER(403, "R003", "모집글 작성자와 요청 회원의 정보가 일치하지 않습니다."),
 
+  /* Application 예외 */
+  APPLICATION_NOT_FOUND(404, "A001", "존재하지 않는 신청입니다."),
+  APPLICATION_NOT_EQUAL_REQUEST_ID(403, "A002", "신청 유저와 신청 취소 유저 정보가 일치하지 않습니다."),
+  APPLICATION_STATUS_INCORRECT(402, "A003", "신청 상태가 매칭 성공인 상태여야 취소가 가능합니다."),
+
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),
   HTTP_MEDIA_TYPE_EXCEPTION(415, "G002", "지원하지 않는 미디어 타입입니다. Json 혹은 Form-Data 형식인지 확인해주세요."),

@@ -32,4 +32,12 @@ public class Application extends BaseTime {
         this.applicant = applicant;
         this.status = ApplicationStatus.WAITING;
     }
+
+    public void fail() {
+        this.status = ApplicationStatus.FAILURE;
+    }
+
+    public void cancel() {
+        this.status = ApplicationStatus.CANCLE;
+    }
 }

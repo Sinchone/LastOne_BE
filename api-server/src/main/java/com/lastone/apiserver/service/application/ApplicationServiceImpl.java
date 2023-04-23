@@ -1,5 +1,7 @@
 package com.lastone.apiserver.service.application;
 
+import com.lastone.apiserver.exception.application.ApplicationNotEqualRequestIdException;
+import com.lastone.apiserver.exception.application.ApplicationNotFoundException;
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.core.domain.application.Application;
@@ -45,5 +47,18 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public List<ApplicationRequestedDto> getRequestedListByMemberId(Long memberId) {
         return applicationRepository.getRequestedList(memberId);
+    }
+
+    @Override
+    public void cancel(Long applicationId, Long requestMemberId) {
+        Application application = applicationRepository.findById(applicationId).orElseThrow(ApplicationNotFoundException::new);
+        validateRequestMember(application.getApplicant().getId(), requestMemberId);
+        application.cancel();
+    }
+
+    private void validateRequestMember(Long applicantId, Long requestMemberId) {
+        if (!applicantId.equals(requestMemberId)) {
+            throw new ApplicationNotEqualRequestIdException();
+        }
     }
 }

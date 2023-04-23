@@ -76,6 +76,14 @@ public class RecruitmentController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/{recruitmentId}/application/{applicationId}")
+    public ResponseEntity<CommonResponse> cancelApplication(@PathVariable Long recruitmentId, @PathVariable Long applicationId,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        matchingService.cancelMatching(recruitmentId, applicationId, userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.APPLICATION_MATCHING_CANCEL));
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{recruitmentId}")
     public ResponseEntity<CommonResponse> deleteRecruitment(@PathVariable Long recruitmentId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
