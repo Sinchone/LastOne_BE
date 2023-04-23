@@ -3,9 +3,11 @@ package com.lastone.core.mapper.mapper;
 import com.lastone.core.domain.member.Day;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.dto.member.MemberDto;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +30,9 @@ public interface MemberMapper extends GenericMapper<MemberDto, Member> {
 
     @Named("toWorkoutDayAsList")
     default List<String> toWorkoutDaysList(String workoutDay) {
+        if (StringUtils.isBlank(workoutDay)) {
+            return new ArrayList<>();
+        }
         return Arrays.asList(workoutDay.split(" "));
     }
 
