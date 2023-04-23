@@ -1,6 +1,7 @@
 package com.lastone.core.security.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.lastone.core.security.exception.CustomTokenException;
 import com.lastone.core.security.jwt.JwtExceptionHandler;
 import com.lastone.core.security.exception.SecurityException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         } catch (JWTVerificationException e) {
             setResponseHeader(response);
             exceptionHandler.createJwtVerificationResponse(response, e);
+        } catch (CustomTokenException e) {
+            setResponseHeader(response);
+            exceptionHandler.createCustomTokenExpiredException(response, e);
         }
     }
 
