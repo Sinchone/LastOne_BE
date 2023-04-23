@@ -54,8 +54,11 @@ public enum ErrorCode {
   INVALID_CLAIM_EXCEPTION(400, "VT002", "토큰의 클레임 정보가 유효하지 않습니다."),
   JWT_DECODE_EXCEPTION(401, "VT003", "토큰을 해독할 수 없습니다."),
   SIGNATURE_VERIFICATION_EXCEPTION(401, "VT004", "토큰에 등로된 서명이 일치하지 않습니다."),
-  TOKEN_EXPIRED_EXCEPTION(401, "VT005", "만료된 토큰입니다."),
-  JWT_DECODING_DEFAULT_EXCEPTION(401, "VT006", "JWT 해독 과정 중 에러가 발생하였습니다."),
+  ACCESS_TOKEN_EXPIRED_EXCEPTION(401, "VT005", "만료된 어세스 토큰입니다."),
+  REFRESH_TOKEN_EXPIRED_EXCEPTION(401, "VT006", "만료된 리프레시 토큰입니다."),
+  JWT_DECODING_DEFAULT_EXCEPTION(401, "VT007", "JWT 해독 과정 중 에러가 발생하였습니다."),
+  REFRESH_TOKEN_TYPE_IS_NEEDED(401, "VT008", "해당 API 호출에 필요한 토큰 타입은 리프레시 토큰입니다."),
+  ACCESS_TOKEN_TYPE_IS_NEEDED(401, "VT009", "해당 API 호출에 필요한 토큰 타입은 어세스 토큰입니다."),
 
   /* Recruitment 예외 */
   RECRUITMENT_IMG_COUNT(400, "R001", "모집글 이미지 등록은 최대 3개까지 가능합니다."),
