@@ -1,9 +1,6 @@
 package com.lastone.apiserver.service.application;
 
-import com.lastone.apiserver.exception.application.ApplicantIsEqualToWriterException;
-import com.lastone.apiserver.exception.application.ApplicationNotEqualRequestIdException;
-import com.lastone.apiserver.exception.application.ApplicationNotFoundException;
-import com.lastone.apiserver.exception.application.ApplyToClosedRecruitmentException;
+import com.lastone.apiserver.exception.application.*;
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.core.domain.application.Application;
@@ -20,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -48,6 +46,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (isRecruitmentClosed(recruitment)) {
             throw new ApplyToClosedRecruitmentException();
         }
+        if (isRecruitmentAlreadyApplied(member, recruitment)) {
+            throw new AlreadyAppliedException();
+        }
+    }
+
+    private boolean isSameUser(Member applicant, Member writer) {
+        return applicant.getId().equals(writer.getId());
     }
 
     private boolean isRecruitmentClosed(Recruitment recruitment) {
@@ -58,10 +63,15 @@ public class ApplicationServiceImpl implements ApplicationService {
         return true;
     }
 
-    private boolean isSameUser(Member applicant, Member writer) {
-        return applicant.getId().equals(writer.getId());
+    private boolean isRecruitmentAlreadyApplied(Member member, Recruitment recruitment) {
+        List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitment.getId());
+        List<Long> applicantIdList = applications.stream()
+                .map(application -> application.getApplicant().getId()).collect(Collectors.toList());
+        if (applicantIdList.contains(member.getId())) {
+            return true;
+        }
+        return false;
     }
-
 
     @Override
     public List<ApplicationReceivedDto> getReceivedListByMemberId(Long memberId) {

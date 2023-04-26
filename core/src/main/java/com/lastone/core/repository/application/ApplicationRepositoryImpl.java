@@ -1,5 +1,6 @@
 package com.lastone.core.repository.application;
 
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.*;
@@ -96,6 +97,15 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                                         .and(application.recruitment.startedAt.loe(now.plusDays(ONE_DAY)))),
                         application.recruitment.startedAt.goe(now))
                 .orderBy(application.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Application> findAllByRecruitmentId(Long recruitmentId) {
+        return queryFactory
+                .select(application)
+                .from(application)
+                .where(application.recruitment.id.eq(recruitmentId))
                 .fetch();
     }
 
