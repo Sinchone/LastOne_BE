@@ -114,7 +114,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     private BooleanExpression eqPreferGender(PreferGender preferGender) {
-        if (ObjectUtils.isEmpty(preferGender)) {
+        if (ObjectUtils.isEmpty(preferGender) || preferGender.equals(PreferGender.BOTH)) {
             return null;
         }
         return recruitment.preferGender.eq(preferGender);
