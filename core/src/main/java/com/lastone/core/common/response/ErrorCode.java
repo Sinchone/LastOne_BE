@@ -72,6 +72,7 @@ public enum ErrorCode {
   APPLICANT_EQUAL_TO_WRITER(400, "A004", "모집글 작성자와 신청자가 일치합니다"),
   APPLY_TO_CLOSED_RECRUITMENT(400, "A005", "이미 모집 마감되어 신청이 불가합니다."),
   ALREADY_APPLIED_RECRUITMENT(400, "A006", "동일한 모집글에 중복 신청은 불가능합니다."),
+  ALREADY_MATCHING_COMPLETE(400, "A007", "이미 매칭이 완료된 모집글의 신청 취소는 불가능합니다."),
 
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),

@@ -86,13 +86,20 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void cancel(Long applicationId, Long requestMemberId) {
         Application application = applicationRepository.findById(applicationId).orElseThrow(ApplicationNotFoundException::new);
-        validateRequestMember(application.getApplicant().getId(), requestMemberId);
+        validateApplicationCancelable(application, requestMemberId);
         application.cancel();
     }
 
-    private void validateRequestMember(Long applicantId, Long requestMemberId) {
-        if (!applicantId.equals(requestMemberId)) {
+    private void validateApplicationCancelable(Application application, Long requestMemberId) {
+        if (isDifferent(application.getApplicant().getId(), requestMemberId)) {
             throw new ApplicationNotEqualRequestIdException();
         }
+        if (isRecruitmentClosed(application.getRecruitment())) {
+            throw new AlreadyMatchingCompleteException();
+        }
+    }
+
+    private boolean isDifferent(Long applicantId, Long requestMemberId) {
+        return !applicantId.equals(requestMemberId);
     }
 }
