@@ -1,12 +1,15 @@
 package com.lastone.apiserver.service.application;
 
+import com.lastone.apiserver.exception.application.ApplicantIsEqualToWriterException;
 import com.lastone.apiserver.exception.application.ApplicationNotEqualRequestIdException;
 import com.lastone.apiserver.exception.application.ApplicationNotFoundException;
+import com.lastone.apiserver.exception.application.ApplyToClosedRecruitmentException;
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
+import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.ApplicationReceivedDto;
 import com.lastone.core.dto.applicaation.ApplicationRequestedDto;
 import com.lastone.core.repository.application.ApplicationRepository;
@@ -34,10 +37,31 @@ public class ApplicationServiceImpl implements ApplicationService {
         Recruitment recruitment = recruitmentRepository
                 .findByIdAndDeletedIsFalse(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
-
-        Application application = new Application(recruitment, member);
-        applicationRepository.save(application);
+        validateApplication(member, recruitment);
+        applicationRepository.save(new Application(recruitment, member));
     }
+
+    private void validateApplication(Member member, Recruitment recruitment) {
+        if (isSameUser(member, recruitment.getMember())) {
+            throw new ApplicantIsEqualToWriterException();
+        }
+        if (isRecruitmentClosed(recruitment)) {
+            throw new ApplyToClosedRecruitmentException();
+        }
+    }
+
+    private boolean isRecruitmentClosed(Recruitment recruitment) {
+        RecruitmentStatus recruitmentStatus = recruitment.getRecruitmentStatus();
+        if (recruitmentStatus.equals(RecruitmentStatus.RECRUITING)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isSameUser(Member applicant, Member writer) {
+        return applicant.getId().equals(writer.getId());
+    }
+
 
     @Override
     public List<ApplicationReceivedDto> getReceivedListByMemberId(Long memberId) {

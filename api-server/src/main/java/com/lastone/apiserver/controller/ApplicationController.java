@@ -22,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationController {
     private final ApplicationService applicationService;
+    private final static String RECRUITMENT_ID = "recruitmentId";
 
     @GetMapping("/received")
     @PreAuthorize("isAuthenticated()")
@@ -41,7 +42,7 @@ public class ApplicationController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CommonResponse> createApplication(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                             @RequestBody HashMap<String, Long> recruitmentInfo) {
-        Long recruitmentId = recruitmentInfo.get("recruitmentId");
+        Long recruitmentId = recruitmentInfo.get(RECRUITMENT_ID);
         applicationService.createApplication(userDetails.getId(), recruitmentId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(SuccessCode.APPLICATION_CREATE));
