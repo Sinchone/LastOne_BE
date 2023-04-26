@@ -45,14 +45,14 @@ public class JwtProvider {
                 .withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenDuration))
                 .withIssuer(requestUri)
-                .withClaim("type", "access")
+                .withClaim("type", "accessToken")
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenDuration))
                 .withIssuer(requestUri)
-                .withClaim("type", "refresh")
+                .withClaim("type", "refreshToken")
                 .sign(algorithm);
 
         return TokenResponse.builder()
