@@ -2,6 +2,7 @@ package com.lastone.core.dto.recruitment;
 
 import com.lastone.core.domain.recruitment.PreferGender;
 import com.lastone.core.domain.recruitment.WorkoutPart;
+import com.lastone.core.util.validator.enumerated.Enum;
 import com.lastone.core.util.validator.recruitment.RecruitmentDate;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +19,10 @@ import java.time.format.DateTimeFormatter;
 @ToString
 public class RecruitmentSearchCondition {
 
-    @Enumerated
-    private WorkoutPart workoutPart;
-    @Enumerated
-    private PreferGender preferGender;
+    @Enum(enumClass = WorkoutPart.class)
+    private String workoutPart;
+    @Enum(enumClass = PreferGender.class)
+    private String preferGender;
     @RecruitmentDate
     private String date;
     @Size(max = 20)
@@ -40,5 +41,13 @@ public class RecruitmentSearchCondition {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return LocalDate.parse(this.date, formatter).atStartOfDay();
+    }
+
+    public WorkoutPart getWorkoutPart() {
+        return WorkoutPart.from(this.workoutPart);
+    }
+
+    public PreferGender getPreferGender() {
+        return PreferGender.from(this.preferGender);
     }
 }
