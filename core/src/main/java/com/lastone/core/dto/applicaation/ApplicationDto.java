@@ -10,19 +10,22 @@ import java.time.LocalDateTime;
 
 @Getter
 @ToString
-public class ApplicantDto {
-    private Long id;
-    private String nickName;
-    private String profileUr;
-    private String gender;
+public class ApplicationDto {
+
+    private final Long applicationId;
+    private final Long applicantId;
+    private final String nickName;
+    private final String profileUr;
+    private final String gender;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
     private LocalDateTime applicationDate;
 
     @QueryProjection
-    public ApplicantDto(Long id, String nickName, String profileUr, String gender, LocalDateTime applicationDate) {
-        this.id = id;
+    public ApplicationDto(Long applicationId, Long applicantId, String nickName, String profileUr, String gender, LocalDateTime applicationDate) {
+        this.applicationId = applicationId;
+        this.applicantId = applicantId;
         this.nickName = nickName;
         this.profileUr = profileUr;
         this.gender = gender;

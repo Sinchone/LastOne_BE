@@ -1,12 +1,12 @@
 package com.lastone.apiserver.service.application;
 
-import com.lastone.apiserver.exception.application.ApplicationNotEqualRequestIdException;
-import com.lastone.apiserver.exception.application.ApplicationNotFoundException;
+import com.lastone.apiserver.exception.application.*;
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
+import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.ApplicationReceivedDto;
 import com.lastone.core.dto.applicaation.ApplicationRequestedDto;
 import com.lastone.core.repository.application.ApplicationRepository;
@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,9 +35,42 @@ public class ApplicationServiceImpl implements ApplicationService {
         Recruitment recruitment = recruitmentRepository
                 .findByIdAndDeletedIsFalse(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
+        validateApplication(member, recruitment);
+        applicationRepository.save(new Application(recruitment, member));
+    }
 
-        Application application = new Application(recruitment, member);
-        applicationRepository.save(application);
+    private void validateApplication(Member member, Recruitment recruitment) {
+        if (isSameUser(member, recruitment.getMember())) {
+            throw new ApplicantIsEqualToWriterException();
+        }
+        if (isRecruitmentClosed(recruitment)) {
+            throw new ApplyToClosedRecruitmentException();
+        }
+        if (isRecruitmentAlreadyApplied(member, recruitment)) {
+            throw new AlreadyAppliedException();
+        }
+    }
+
+    private boolean isSameUser(Member applicant, Member writer) {
+        return applicant.getId().equals(writer.getId());
+    }
+
+    private boolean isRecruitmentClosed(Recruitment recruitment) {
+        RecruitmentStatus recruitmentStatus = recruitment.getRecruitmentStatus();
+        if (recruitmentStatus.equals(RecruitmentStatus.RECRUITING)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isRecruitmentAlreadyApplied(Member member, Recruitment recruitment) {
+        List<Application> applications = applicationRepository.findAllByRecruitmentId(recruitment.getId());
+        List<Long> applicantIdList = applications.stream()
+                .map(application -> application.getApplicant().getId()).collect(Collectors.toList());
+        if (applicantIdList.contains(member.getId())) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -52,13 +86,20 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void cancel(Long applicationId, Long requestMemberId) {
         Application application = applicationRepository.findById(applicationId).orElseThrow(ApplicationNotFoundException::new);
-        validateRequestMember(application.getApplicant().getId(), requestMemberId);
+        validateApplicationCancelable(application, requestMemberId);
         application.cancel();
     }
 
-    private void validateRequestMember(Long applicantId, Long requestMemberId) {
-        if (!applicantId.equals(requestMemberId)) {
+    private void validateApplicationCancelable(Application application, Long requestMemberId) {
+        if (isDifferent(application.getApplicant().getId(), requestMemberId)) {
             throw new ApplicationNotEqualRequestIdException();
         }
+        if (isRecruitmentClosed(application.getRecruitment())) {
+            throw new AlreadyMatchingCompleteException();
+        }
+    }
+
+    private boolean isDifferent(Long applicantId, Long requestMemberId) {
+        return !applicantId.equals(requestMemberId);
     }
 }

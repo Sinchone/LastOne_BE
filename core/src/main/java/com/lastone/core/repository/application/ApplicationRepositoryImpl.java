@@ -1,16 +1,15 @@
 package com.lastone.core.repository.application;
 
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.lastone.core.domain.application.QApplication.application;
 import static com.lastone.core.domain.gym.QGym.gym;
 import static com.lastone.core.domain.member.QMember.member;
@@ -51,22 +50,23 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
         List<ApplicationReceivedDto> removeList = new ArrayList<>();
         for (ApplicationReceivedDto applicationReceivedDto : applicationReceivedDtos) {
             Long recruitmentId = applicationReceivedDto.getId();
-            List<ApplicantDto> applicants = queryFactory
-                    .select(new QApplicantDto(
-                            member.id,
-                            member.nickname,
-                            member.profileUrl,
-                            member.gender,
+            List<ApplicationDto> applicantions = queryFactory
+                    .select(new QApplicationDto(
+                            application.id,
+                            application.applicant.id,
+                            application.applicant.nickname,
+                            application.applicant.profileUrl,
+                            application.applicant.gender,
                             application.createdAt))
                     .from(application)
                     .where(application.recruitment.id.eq(recruitmentId))
                     .leftJoin(application.applicant, member)
                     .orderBy(application.createdAt.desc())
                     .fetch();
-            if (applicants.isEmpty()) {
+            if (applicantions.isEmpty()) {
                 removeList.add(applicationReceivedDto);
             }
-            applicationReceivedDto.includeApplicants(applicants);
+            applicationReceivedDto.includeApplicants(applicantions);
         }
         applicationReceivedDtos.removeAll(removeList);
         return applicationReceivedDtos;
@@ -79,6 +79,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
         return queryFactory
                 .select(new QApplicationRequestedDto(
+                        application.id,
                         application.recruitment.id,
                         application.recruitment.title,
                         application.recruitment.gym.name,
@@ -96,6 +97,15 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                                         .and(application.recruitment.startedAt.loe(now.plusDays(ONE_DAY)))),
                         application.recruitment.startedAt.goe(now))
                 .orderBy(application.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Application> findAllByRecruitmentId(Long recruitmentId) {
+        return queryFactory
+                .select(application)
+                .from(application)
+                .where(application.recruitment.id.eq(recruitmentId))
                 .fetch();
     }
 
