@@ -74,6 +74,9 @@ public enum ErrorCode {
   ALREADY_APPLIED_RECRUITMENT(400, "A006", "동일한 모집글에 중복 신청은 불가능합니다."),
   ALREADY_MATCHING_COMPLETE(400, "A007", "이미 매칭이 완료된 모집글의 신청 취소는 불가능합니다."),
 
+  /* 파트너 예외 */
+  TODAY_PARTNER_NOT_FOUND(404, "P001", "오늘 파트너와의 약속이 존재하지 않습니다."),
+
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),
   HTTP_MEDIA_TYPE_EXCEPTION(415, "G002", "지원하지 않는 미디어 타입입니다. Json 혹은 Form-Data 형식인지 확인해주세요."),
