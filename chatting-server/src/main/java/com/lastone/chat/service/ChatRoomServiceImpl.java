@@ -3,6 +3,8 @@ package com.lastone.chat.service;
 import com.lastone.chat.dto.ChatRoomDetailDto;
 import com.lastone.chat.dto.ChatRoomFindDto;
 import com.lastone.chat.dto.ChatRoomResDto;
+import com.lastone.chat.dto.NewMessageResponseDto;
+import com.lastone.chat.exception.CannotFoundChatMember;
 import com.lastone.chat.exception.CannotFountChatRoom;
 import com.lastone.chat.persistence.ChatMessage;
 import com.lastone.chat.persistence.MessageColumn;
@@ -19,8 +21,6 @@ import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -150,8 +150,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<ChatRoomResDto> getList(Long userId, Pageable pageable) {
-        Long totalCount = getCount(userId);
+    public List<ChatRoomResDto> getList(Long userId, Pageable pageable) {
         List<ChatRoomResDto> resDtos = new ArrayList<>();
         Aggregation roomSearchAggregation = makeRoomSearchAggregation(userId, pageable);
 
@@ -189,7 +188,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 //                continue;
             }
         }
-        return new PageImpl<>(resDtos, pageable, totalCount);
+        return resDtos;
     }
 
     /**
@@ -208,17 +207,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if(chatRoom.getStatus().equals(ChatStatus.DELETED)) throw new ChatException(ErrorCode.NOT_FOUNT_ROOM);
 
         Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
-//        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
-        /**
-         * Todo - 회원로그인 완료시 삭제할 로직
-         */
-        long randomUserNumber = (long)(Math.random() * 100 + 1);
-        Member otherUser = Member.builder()
-                .id(randomUserNumber)
-                .email("테스트 Email" + randomUserNumber)
-                .gender("남성")
-                .nickname("테스트 닉네임" + randomUserNumber)
-                .build();
+        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
 
         List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
 
@@ -236,19 +225,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     /**
-     * 회원이 참여한 정상인 채팅방의 갯수를 반환한다.
-     * @param userId
-     * @return 채팅방 갯수
+     * userId가 참여자가 맞는지 검증 후 참여자의 번호 가져와
+     * 상대방의 정보를 가져와 메시지와 함께 반환
      */
-    private Long getCount(Long userId) {
-        Criteria countCriteria = Criteria.where(RoomColumn.STATUS.getWord())
-                .is(ChatStatus.NORMAL.name())
-                .orOperator(Criteria.where(RoomColumn.PARTICIPATIONS.getWord())
-                        .is(userId)
-                );
-        Query countQuery = new Query(countCriteria);
-        long count = mongoTemplate.count(countQuery, RoomColumn.COLLECTION_NAME.getWord());
-        return count;
+    @Override
+    public NewMessageResponseDto getChatRoomInfoByRoomId(String chatRoomId, Long userId) {
+        ChatRoom chatRoom = mongoTemplate.findById(chatRoomId, ChatRoom.class);
+
+        chatRoom.getParticipations().stream()
+            .filter(participantId -> userId == participantId)
+            .findFirst()
+            .orElseThrow(NotParticipantChatRoom::new);
+        Long otherUserId = chatRoom.getParticipations().stream()
+                .filter(participantId -> userId != participantId)
+                .findFirst()
+                .orElseThrow(CannotFoundChatMember::new);
+        Member member = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
+
+        return new NewMessageResponseDto(member);
     }
 
     /**
