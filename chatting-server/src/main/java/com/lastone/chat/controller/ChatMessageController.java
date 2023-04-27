@@ -25,7 +25,7 @@ public class ChatMessageController {
         ChatMessageResDto message = messageService.createMessage(chatRoomId, chatMessage);
 
         NewMessageResponseDto newMessageResponseDto = chatRoomService.getChatRoomInfoByRoomId(chatRoomId, chatMessage.getSenderId());
-        newMessageResponseDto.setMessage(message);
+        newMessageResponseDto.setMessage(message, chatRoomId);
         template.convertAndSend("/sub/chat/room/" + chatRoomId, message);
         template.convertAndSend("/sub/chat-list", newMessageResponseDto);
     }
@@ -34,7 +34,7 @@ public class ChatMessageController {
     public void testSendMessage(@DestinationVariable String chatRoomId, ChatMessageReqDto chatMessage) {
         ChatMessageResDto message = messageService.createMessage(chatRoomId, chatMessage);
         NewMessageResponseDto newMessageResponseDto = chatRoomService.getChatRoomInfoByRoomId(chatRoomId, chatMessage.getSenderId());
-        newMessageResponseDto.setMessage(message);
+        newMessageResponseDto.setMessage(message, chatRoomId);
         template.convertAndSend("/sub/chat/room/" + chatRoomId, message);
         template.convertAndSend("/sub/chat-list", newMessageResponseDto);
     }
