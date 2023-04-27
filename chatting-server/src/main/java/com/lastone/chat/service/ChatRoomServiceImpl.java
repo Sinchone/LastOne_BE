@@ -3,6 +3,8 @@ package com.lastone.chat.service;
 import com.lastone.chat.dto.ChatRoomDetailDto;
 import com.lastone.chat.dto.ChatRoomFindDto;
 import com.lastone.chat.dto.ChatRoomResDto;
+import com.lastone.chat.dto.NewMessageResponseDto;
+import com.lastone.chat.exception.CannotFoundChatMember;
 import com.lastone.chat.exception.CannotFountChatRoom;
 import com.lastone.chat.persistence.ChatMessage;
 import com.lastone.chat.persistence.MessageColumn;
@@ -208,17 +210,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if(chatRoom.getStatus().equals(ChatStatus.DELETED)) throw new ChatException(ErrorCode.NOT_FOUNT_ROOM);
 
         Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
-//        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
-        /**
-         * Todo - 회원로그인 완료시 삭제할 로직
-         */
-        long randomUserNumber = (long)(Math.random() * 100 + 1);
-        Member otherUser = Member.builder()
-                .id(randomUserNumber)
-                .email("테스트 Email" + randomUserNumber)
-                .gender("남성")
-                .nickname("테스트 닉네임" + randomUserNumber)
-                .build();
+        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
 
         List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
 
@@ -233,6 +225,27 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 MessageColumn.COLLECTION_NAME.getWord()
         );
         return new ChatRoomDetailDto(messages, otherUser);
+    }
+
+    /**
+     * userId가 참여자가 맞는지 검증 후 참여자의 번호 가져와
+     * 상대방의 정보를 가져와 메시지와 함께 반환
+     */
+    @Override
+    public NewMessageResponseDto getChatRoomInfoByRoomId(String chatRoomId, Long userId) {
+        ChatRoom chatRoom = mongoTemplate.findById(chatRoomId, ChatRoom.class);
+
+        chatRoom.getParticipations().stream()
+            .filter(participantId -> userId == participantId)
+            .findFirst()
+            .orElseThrow(NotParticipantChatRoom::new);
+        Long otherUserId = chatRoom.getParticipations().stream()
+                .filter(participantId -> userId != participantId)
+                .findFirst()
+                .orElseThrow(CannotFoundChatMember::new);
+        Member member = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
+
+        return new NewMessageResponseDto(member);
     }
 
     /**
