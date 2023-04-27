@@ -129,4 +129,22 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
         em.flush();
         em.clear();
     }
+
+    @Override
+    public Application findMyTodaySuccessApplication(Long memberId) {
+
+        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime tomorrow = today.plusDays(1);
+
+        return queryFactory
+                .selectFrom(application)
+                .where(
+                        application.applicant.id.eq(memberId),
+                        application.status.eq(ApplicationStatus.SUCCESS),
+                        application.recruitment.startedAt.between(today, tomorrow))
+                .leftJoin(application.recruitment, recruitment).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.member, member).fetchJoin()
+                .fetchFirst();
+    }
 }
