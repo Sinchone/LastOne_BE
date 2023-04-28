@@ -16,4 +16,6 @@ public interface ApplicationRepositoryCustom {
     void updateStatus(Long recruitmentId, Long applicationId);
 
     Application findMyTodaySuccessApplication(Long memberId);
+
+    List<Application> findAllSuccessStatusBeforeToday(Long memberId);
 }
