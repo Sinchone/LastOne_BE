@@ -1,17 +1,20 @@
 package com.lastone.apiserver.service.partner;
 
+import com.lastone.apiserver.exception.partner.PartnerHistoryNotFoundException;
 import com.lastone.apiserver.exception.partner.TodayPartnerNotFoundException;
 import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
+import com.lastone.core.dto.partner.PartnerHistoryDto;
 import com.lastone.core.dto.partner.TodayPartnerDto;
 import com.lastone.core.repository.application.ApplicationRepository;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -61,5 +64,60 @@ public class PartnerServiceImpl implements PartnerService {
                 .map(Application::getApplicant)
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public List<PartnerHistoryDto> findPartnerHistoryList(Long memberId) {
+
+        /* 파트너 정보의 중복 입력을 막기 위해 HashMap 선언 */
+        HashMap<Member, LocalDateTime> partnersInfoMap = new HashMap<>();
+        List<PartnerHistoryDto> partnerHistoryDtoList = new ArrayList<>();
+
+        /* 내가 작성한 모집글에서 매칭된 파트너 조회 */
+        List<Recruitment> recruitments = recruitmentRepository.findAllCompleteStatusBeforeToday(memberId);
+        for (Recruitment recruitment : recruitments) {
+            for (Application application : recruitment.getApplications()) {
+                if (application.getStatus().equals(ApplicationStatus.SUCCESS)) {
+                    Member applicant = application.getApplicant();
+                    partnersInfoMap.put(applicant, recruitment.getStartedAt());
+                }
+            }
+        }
+
+        /* 내가 신청한 것 중에서 매칭된 파트너 조회 */
+        List<Application> applications = applicationRepository.findAllSuccessStatusBeforeToday(memberId);
+        for (Application application : applications) {
+            Member writer = application.getRecruitment().getMember();
+            if (partnersInfoMap.containsKey(writer)) {
+                LocalDateTime startedAtInMap = partnersInfoMap.get(writer);
+                LocalDateTime startedAt = application.getRecruitment().getStartedAt();
+                if (startedAtInMap.compareTo(startedAt) < 0) {
+                    partnersInfoMap.put(writer, startedAt);
+                    continue;
+                }
+            }
+            partnersInfoMap.put(writer, application.getRecruitment().getStartedAt());
+        }
+
+
+        /* 매칭된 파트너 목록이 없을 경우 예외 처리 */
+        if (partnersInfoMap.isEmpty()) {
+            throw new PartnerHistoryNotFoundException();
+        }
+
+        for (Member member : partnersInfoMap.keySet()) {
+            partnerHistoryDtoList.add(
+                    PartnerHistoryDto.builder()
+                            .id(member.getId())
+                            .nickname(member.getNickname())
+                            .gender(member.getGender())
+                            .profileUrl(member.getProfileUrl())
+                            .workoutDate(partnersInfoMap.get(member))
+                            .build());
+        }
+
+        /* 운동한 날짜 기준 최신순으로 파트너 목록 정렬 */
+        partnerHistoryDtoList.sort((o1, o2) -> o2.getWorkoutDate().compareTo(o1.getWorkoutDate()));
+        return partnerHistoryDtoList;
     }
 }
