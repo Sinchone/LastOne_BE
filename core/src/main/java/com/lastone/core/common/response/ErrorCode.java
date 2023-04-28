@@ -76,6 +76,7 @@ public enum ErrorCode {
 
   /* 파트너 예외 */
   TODAY_PARTNER_NOT_FOUND(404, "P001", "오늘 파트너와의 약속이 존재하지 않습니다."),
+  PARTNER_HISTORY_NOT_FOUND(404, "P002", "매칭된 파트너 목록이 없습니다."),
 
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),

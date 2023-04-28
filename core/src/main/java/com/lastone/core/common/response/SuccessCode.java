@@ -35,8 +35,7 @@ public enum SuccessCode {
 
     /* 파트너 */
     TODAY_APPOINTMENT_INFO("오늘의 약속 정보가 조회되었습니다."),
-
-
+    PARTNER_HISTORY_LIST("운동 파트너 목록 조회가 완료되었습니다."),
     ;
 
     private String message;
