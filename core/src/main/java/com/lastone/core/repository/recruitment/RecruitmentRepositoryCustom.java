@@ -16,4 +16,6 @@ public interface RecruitmentRepositoryCustom {
     List<RecruitmentListDto> getListDtoInMainPage();
 
     Recruitment findOneCompleteStatusAtTodayByMemberId(Long memberId);
+
+    List<Recruitment> findAllCompleteStatusBeforeToday(Long memberId);
 }
