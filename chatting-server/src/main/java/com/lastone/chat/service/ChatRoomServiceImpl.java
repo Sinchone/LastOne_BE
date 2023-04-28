@@ -21,8 +21,6 @@ import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -152,8 +150,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<ChatRoomResDto> getList(Long userId, Pageable pageable) {
-        Long totalCount = getCount(userId);
+    public List<ChatRoomResDto> getList(Long userId, Pageable pageable) {
         List<ChatRoomResDto> resDtos = new ArrayList<>();
         Aggregation roomSearchAggregation = makeRoomSearchAggregation(userId, pageable);
 
@@ -191,7 +188,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 //                continue;
             }
         }
-        return new PageImpl<>(resDtos, pageable, totalCount);
+        return resDtos;
     }
 
     /**
@@ -246,22 +243,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         Member member = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
 
         return new NewMessageResponseDto(member);
-    }
-
-    /**
-     * 회원이 참여한 정상인 채팅방의 갯수를 반환한다.
-     * @param userId
-     * @return 채팅방 갯수
-     */
-    private Long getCount(Long userId) {
-        Criteria countCriteria = Criteria.where(RoomColumn.STATUS.getWord())
-                .is(ChatStatus.NORMAL.name())
-                .orOperator(Criteria.where(RoomColumn.PARTICIPATIONS.getWord())
-                        .is(userId)
-                );
-        Query countQuery = new Query(countCriteria);
-        long count = mongoTemplate.count(countQuery, RoomColumn.COLLECTION_NAME.getWord());
-        return count;
     }
 
     /**
