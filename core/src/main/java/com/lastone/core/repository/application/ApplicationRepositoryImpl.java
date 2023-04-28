@@ -115,13 +115,16 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
         queryFactory
                 .update(application)
                 .set(application.status, ApplicationStatus.SUCCESS)
-                .where(application.id.eq(successApplicationId))
+                .where(
+                        application.id.eq(successApplicationId),
+                        application.recruitment.id.eq(recruitmentId))
                 .execute();
 
         queryFactory
                 .update(application)
                 .set(application.status, ApplicationStatus.FAILURE)
                 .where(
+                        application.recruitment.id.eq(recruitmentId),
                         application.id.ne(successApplicationId),
                         application.status.ne(ApplicationStatus.CANCLE))
                 .execute();
@@ -146,5 +149,22 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                 .leftJoin(recruitment.gym, gym).fetchJoin()
                 .leftJoin(recruitment.member, member).fetchJoin()
                 .fetchFirst();
+    }
+
+    @Override
+    public List<Application> findAllSuccessStatusBeforeToday(Long memberId) {
+
+        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+        return queryFactory
+                .selectFrom(application)
+                .where(
+                        application.applicant.id.eq(memberId),
+                        application.status.eq(ApplicationStatus.SUCCESS),
+                        application.recruitment.startedAt.loe(today))
+                .leftJoin(application.recruitment, recruitment).fetchJoin()
+                .leftJoin(recruitment.member, member).fetchJoin()
+                .orderBy(application.recruitment.startedAt.asc())
+                .fetch();
     }
 }

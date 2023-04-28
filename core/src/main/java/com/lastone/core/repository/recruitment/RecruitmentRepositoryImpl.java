@@ -1,5 +1,6 @@
 package com.lastone.core.repository.recruitment;
 
+import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.recruitment.*;
 import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
@@ -119,6 +120,22 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                 .leftJoin(recruitment.applications, application).fetchJoin()
                 .leftJoin(recruitment.gym, gym).fetchJoin()
                 .fetchFirst();
+    }
+
+    @Override
+    public List<Recruitment> findAllCompleteStatusBeforeToday(Long memberId) {
+
+        LocalDateTime now = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+        return queryFactory
+                .selectFrom(recruitment)
+                .where(
+                        recruitment.member.id.eq(memberId),
+                        recruitment.recruitmentStatus.eq(RecruitmentStatus.COMPLETE),
+                        recruitment.startedAt.loe(now))
+                .leftJoin(recruitment.applications, application).fetchJoin()
+                .orderBy(recruitment.startedAt.asc())
+                .fetch();
     }
 
     private BooleanExpression eqWorkoutPart(WorkoutPart workoutPart) {
