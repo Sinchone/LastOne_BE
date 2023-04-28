@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/test/chat-room")
+@RequestMapping("/chat/test/chat-room")
 @RequiredArgsConstructor
 public class TestChattingController {
     private final ChatRoomService chatRoomService;
