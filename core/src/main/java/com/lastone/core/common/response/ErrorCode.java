@@ -38,10 +38,10 @@ public enum ErrorCode {
 
   /* Securty 예외 */
   AUTHORIZATION_NOT_FOUND(404, "SH001", "해당 Authorization Header 값은 지원하지 않는 형식입니다."),
-  ALREADY_LOGOUT_TOKEN(401, "ST001", "해당 토큰은 이미 로그아웃 처리 된 토큰입니다."),
-  MEMBER_NOT_FOUND_IN_TOKEN(404, "ST002", "해당 토큰 안에 등록된 멤버 정보가 없습니다."),
-  NOT_FOUND_REFRESH_TOKEN(404, "ST003", "서버에 해당 리프레시 토큰이 존재하지 않습니다."),
-  UN_AUTHENTICATION_MEMBER(401, "ST004", "해당 API는 토큰을 필요로합니다. 로그인 후 이용해주세요."),
+  ALREADY_LOGOUT_TOKEN(401, "ST002", "해당 토큰은 이미 로그아웃 처리 된 토큰입니다."),
+  MEMBER_NOT_FOUND_IN_TOKEN(404, "ST003", "해당 토큰 안에 등록된 멤버 정보가 없습니다."),
+  NOT_FOUND_REFRESH_TOKEN(404, "ST004", "서버에 해당 리프레시 토큰이 존재하지 않습니다."),
+  UN_AUTHENTICATION_MEMBER(401, "ST005", "해당 API는 토큰을 필요로합니다. 로그인 후 이용해주세요."),
 
   /* Oauth2 예외 */
   OAUTH2_REGISTER_NOT_FOUND(404, "OA001", "해당 registerId는 지원되지 않습니다."),
@@ -54,13 +54,28 @@ public enum ErrorCode {
   INVALID_CLAIM_EXCEPTION(400, "VT002", "토큰의 클레임 정보가 유효하지 않습니다."),
   JWT_DECODE_EXCEPTION(401, "VT003", "토큰을 해독할 수 없습니다."),
   SIGNATURE_VERIFICATION_EXCEPTION(401, "VT004", "토큰에 등로된 서명이 일치하지 않습니다."),
-  TOKEN_EXPIRED_EXCEPTION(401, "VT005", "만료된 토큰입니다."),
-  JWT_DECODING_DEFAULT_EXCEPTION(401, "VT006", "JWT 해독 과정 중 에러가 발생하였습니다."),
+  ACCESS_TOKEN_EXPIRED_EXCEPTION(401, "VT005", "만료된 어세스 토큰입니다."),
+  REFRESH_TOKEN_EXPIRED_EXCEPTION(401, "VT006", "만료된 리프레시 토큰입니다."),
+  JWT_DECODING_DEFAULT_EXCEPTION(401, "VT007", "JWT 해독 과정 중 에러가 발생하였습니다."),
+  REFRESH_TOKEN_TYPE_IS_NEEDED(401, "VT008", "해당 API 호출에 필요한 토큰 타입은 리프레시 토큰입니다."),
+  ACCESS_TOKEN_TYPE_IS_NEEDED(401, "VT009", "해당 API 호출에 필요한 토큰 타입은 어세스 토큰입니다."),
 
   /* Recruitment 예외 */
   RECRUITMENT_IMG_COUNT(400, "R001", "모집글 이미지 등록은 최대 3개까지 가능합니다."),
   RECRUITMENT_NOT_FOUND(404, "R002", "존재하지 않는 모집글입니다."),
   INCORRECT_WRITER(403, "R003", "모집글 작성자와 요청 회원의 정보가 일치하지 않습니다."),
+
+  /* Application 예외 */
+  APPLICATION_NOT_FOUND(404, "A001", "존재하지 않는 신청입니다."),
+  APPLICATION_NOT_EQUAL_REQUEST_ID(403, "A002", "신청 유저와 신청 취소 유저 정보가 일치하지 않습니다."),
+  APPLICATION_STATUS_INCORRECT(402, "A003", "신청 상태가 매칭 성공인 상태여야 취소가 가능합니다."),
+  APPLICANT_EQUAL_TO_WRITER(400, "A004", "모집글 작성자와 신청자가 일치합니다"),
+  APPLY_TO_CLOSED_RECRUITMENT(400, "A005", "이미 모집 마감되어 신청이 불가합니다."),
+  ALREADY_APPLIED_RECRUITMENT(400, "A006", "동일한 모집글에 중복 신청은 불가능합니다."),
+  ALREADY_MATCHING_COMPLETE(400, "A007", "이미 매칭이 완료된 모집글의 신청 취소는 불가능합니다."),
+
+  /* 파트너 예외 */
+  TODAY_PARTNER_NOT_FOUND(404, "P001", "오늘 파트너와의 약속이 존재하지 않습니다."),
 
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),

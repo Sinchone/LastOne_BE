@@ -23,7 +23,20 @@ public enum SuccessCode {
     RECRUITMENT_DETAIL("모집글 상세 정보 조회에 성공하였습니다."),
     RECRUITMENT_CREATE("모집글 작성이 완료되었습니다."),
     RECRUITMENT_UPDATE("모집글 수정이 완료되었습니다."),
-    RECRUITMENT_DELETE("모집글 삭제가 완료되었습니다.")
+    RECRUITMENT_DELETE("모집글 삭제가 완료되었습니다."),
+
+    /* 신청 */
+    APPLICATION_CREATE("신청 처리가 완료되었습니다."),
+    APPLICATION_RECEIVED_LIST("받은 신청 리스트 조회가 완료되었습니다."),
+    APPLICATION_REQUESTED_LIST("요청한 신청 리스트 조회가 완료되었습니다."),
+    APPLICATION_MATCHING_COMPLETE("파트너 매칭이 완료되었습니다."),
+    APPLICATION_MATCHING_CANCEL("매칭된 파트너와의 운동을 취소하였습니다."),
+    APPLICATION_REQUEST_CANCEL("요청한 신청이 취소되었습니다."),
+
+    /* 파트너 */
+    TODAY_APPOINTMENT_INFO("오늘의 약속 정보가 조회되었습니다."),
+
+
     ;
 
     private String message;

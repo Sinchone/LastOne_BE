@@ -1,9 +1,6 @@
 package com.lastone.core.repository.recruitment;
 
-import com.lastone.core.domain.recruitment.PreferGender;
-import com.lastone.core.domain.recruitment.Recruitment;
-import com.lastone.core.domain.recruitment.RecruitmentStatus;
-import com.lastone.core.domain.recruitment.WorkoutPart;
+import com.lastone.core.domain.recruitment.*;
 import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
@@ -15,6 +12,7 @@ import org.springframework.data.domain.*;
 import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.List;
+import static com.lastone.core.domain.application.QApplication.application;
 import static com.lastone.core.domain.gym.QGym.gym;
 import static com.lastone.core.domain.member.QMember.member;
 import static com.lastone.core.domain.recruitment.QRecruitment.recruitment;
@@ -106,6 +104,23 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
         return checkLastPage(pageable, content);
     }
 
+    @Override
+    public Recruitment findOneCompleteStatusAtTodayByMemberId(Long memberId) {
+
+        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime tomorrow = today.plusDays(1);
+
+        return queryFactory
+                .selectFrom(recruitment)
+                .where(
+                        recruitment.member.id.eq(memberId),
+                        recruitment.recruitmentStatus.eq(RecruitmentStatus.COMPLETE),
+                        recruitment.startedAt.between(today, tomorrow))
+                .leftJoin(recruitment.applications, application).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .fetchFirst();
+    }
+
     private BooleanExpression eqWorkoutPart(WorkoutPart workoutPart) {
         if (ObjectUtils.isEmpty(workoutPart)) {
             return null;
@@ -114,7 +129,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     private BooleanExpression eqPreferGender(PreferGender preferGender) {
-        if (ObjectUtils.isEmpty(preferGender)) {
+        if (ObjectUtils.isEmpty(preferGender) || preferGender.equals(PreferGender.BOTH)) {
             return null;
         }
         return recruitment.preferGender.eq(preferGender);

@@ -1,13 +1,17 @@
 package com.lastone.core.security.jwt;
 
-import lombok.Getter;
-
-@Getter
 public enum TokenType {
-    TEST_TOKEN("test"),
-    BEARER_TOKEN("Bearer ");
-    private final String tokenHeader;
-    TokenType(String tokenHeader) {
-        this.tokenHeader = tokenHeader;
+
+    ACCESS_TOKEN("accessToken"),
+    REFRESH_TOKEN("refreshToken");
+
+    private final String tokenType;
+
+    TokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public String getTokenType() {
+        return tokenType;
     }
 }

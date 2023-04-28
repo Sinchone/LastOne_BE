@@ -14,8 +14,8 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     private String frontEndURL;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stomp/chat")
-                .setAllowedOrigins(frontEndURL)
+        registry.addEndpoint("/chat/stomp")
+                .setAllowedOrigins(frontEndURL, "http://localhost:8082")
                 .withSockJS();
     }
 

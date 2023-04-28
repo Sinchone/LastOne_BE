@@ -12,7 +12,6 @@ public enum WorkoutPart {
     CORE("코어", "core-main.jpg", "core-list.jpg");
 
     private final String text;
-
     private final String mainDefaultImgUrl;
     private final String listDefaultImgUrl;
 

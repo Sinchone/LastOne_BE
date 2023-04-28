@@ -15,7 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = false)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -49,9 +49,9 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/test").permitAll()
                 .antMatchers("/test/chat-room/**").permitAll()
-                .antMatchers("/stomp/**").permitAll()
+                .antMatchers("/chat/stomp/**").permitAll()
                 .antMatchers("/pub/chat/message/**").permitAll()
-                .antMatchers("/sub/chat/message/**").permitAll()
+                .antMatchers("/sub/**").permitAll()
                 .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated();
 

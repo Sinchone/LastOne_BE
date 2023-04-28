@@ -7,7 +7,7 @@ import com.lastone.core.security.exception.AlreadyLogoutException;
 import com.lastone.core.security.exception.AuthorizationHeaderException;
 import com.lastone.core.security.exception.NotFoundMemberException;
 import com.lastone.core.security.jwt.JwtProvider;
-import com.lastone.core.security.jwt.TokenType;
+import com.lastone.core.security.jwt.TokenHeaderType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -57,10 +57,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private UsernamePasswordAuthenticationToken getAuthorizeToken(String header) {
-        if (header.contains(TokenType.TEST_TOKEN.getTokenHeader())) {
+        if (header.contains(TokenHeaderType.TEST_TOKEN.getTokenHeader())) {
             return createTestToken(header);
         }
-        if (header.startsWith(TokenType.BEARER_TOKEN.getTokenHeader())) {
+        if (header.startsWith(TokenHeaderType.BEARER_TOKEN.getTokenHeader())) {
             return createBearerToken(header);
         }
         else {
@@ -69,12 +69,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private UsernamePasswordAuthenticationToken createBearerToken(String header) {
-        String token = header.substring(TokenType.BEARER_TOKEN.getTokenHeader().length());
+        String token = header.substring(TokenHeaderType.BEARER_TOKEN.getTokenHeader().length());
         String isLogout = (String) redisTemplate.opsForValue().get(token);
         if (StringUtils.hasText(isLogout)) {
             throw new AlreadyLogoutException();
         }
-        String email = jwtProvider.verifyToken(token).getSubject();
+        String email = jwtProvider.verifyAccessToken(token).getSubject();
         UserDetails userdetails = UserDetailsImpl.convert(memberRepository.findByEmail(email)
                 .orElseThrow(NotFoundMemberException::new));
         Collection<SimpleGrantedAuthority> authorities = createMemberAuthorities();

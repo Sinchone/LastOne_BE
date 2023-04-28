@@ -186,7 +186,7 @@
             </div>`;
     }
   }
-  const sockJS = new SockJS("/stomp/chat");
+  const sockJS = new SockJS("/chat/stomp");
   const stomp = Stomp.over(sockJS);
 
   stomp.heartbeat.outgoing = 0; //Rabbit에선 heartbeat 안먹힌다고 함
@@ -206,11 +206,22 @@
     console.log('STOMP Connected');
     /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
     stomp.subscribe("/sub/chat/room/" + chatRoomId, function (content) {
-      console.log("구독 좋아요----좋댓구---")
+      console.log("구독 좋아요----좋댓구---");
       const payload = JSON.parse(content.body);
       let sender = payload.senderId == myId ? 'mine' : 'others';
       const html = getMessageBox(sender, payload.content, payload.sendTime);
       chatBox.insertAdjacentHTML('beforeend',html);
+    },{'auto-delete':true, 'durable':false, 'exclusive':false});
+
+    stomp.subscribe("/sub/chat-list", function (content) {
+      const payload = JSON.parse(content.body);
+      console.log("구독 좋아요222----좋댓구222---");
+      console.log("otherUserId ---- :" + payload.otherUserId);
+      console.log("profileUrl ---- :" + payload.profileUrl);
+      console.log("nickname ---- :" + payload.nickname);
+      console.log("gender ---- :" + payload.gender);
+      console.log("messages ---- :" + payload.messages);
+
     },{'auto-delete':true, 'durable':false, 'exclusive':false});
   }, onError, '/');
 

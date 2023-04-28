@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class TokenServiceImpl implements TokenService {
 
     private final JwtProvider jwtProvider;
-
     private final RedisTemplate<String, String> redisTemplate;
+
     @Override
     public void logout(TokenLogoutDto tokenLogoutDto) {
         logoutAccessToken(tokenLogoutDto.getAccessToken());
@@ -28,13 +28,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenResponse refresh(String refreshToken, String requestUri) {
-        TokenInfo tokenInfo = jwtProvider.verifyToken(refreshToken);
-        logoutRefreshToken(refreshToken);
+        TokenInfo tokenInfo = jwtProvider.verifyRefreshToken(refreshToken);
+        logoutRefreshToken(tokenInfo.getSubject());
         return jwtProvider.createToken(tokenInfo.getSubject(), requestUri);
     }
 
-    private void logoutRefreshToken(String refreshToken) {
-        String email = jwtProvider.verifyToken(refreshToken).getSubject();
+    private void logoutRefreshToken(String email) {
         if (redisTemplate.opsForValue().get("refresh_token:" + email) == null) {
             throw new NotFoundRefreshTokenException();
         }
@@ -42,7 +41,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     private void logoutAccessToken(String accessToken) {
-        TokenInfo tokenInfo = jwtProvider.verifyToken(accessToken);
+        TokenInfo tokenInfo = jwtProvider.verifyAccessToken(accessToken);
         Long remainingTime = calRemainingTime(tokenInfo.getExpiredAt());
         redisTemplate.opsForValue().set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
     }

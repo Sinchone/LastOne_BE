@@ -3,8 +3,8 @@ package com.lastone.core.dto.member;
 import com.lastone.core.util.validator.member.WorkoutDay;
 import com.lastone.core.util.validator.member.WorkoutTime;
 import lombok.*;
-
 import javax.validation.constraints.*;
+import java.util.List;
 
 @Getter
 @Builder
@@ -27,12 +27,11 @@ public class MemberUpdateDto {
     private String workoutTime;
 
     @WorkoutDay
-    private String workoutDay;
+    private List<String> workoutDay;
 
     private String profileUrl;
 
     public void setProfileUrl(String url) {
         this.profileUrl = url;
     }
-
 }

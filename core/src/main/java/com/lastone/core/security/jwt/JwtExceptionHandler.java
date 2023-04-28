@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.ErrorCode;
+import com.lastone.core.security.exception.CustomTokenException;
 import com.lastone.core.security.exception.SecurityException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,20 +18,26 @@ public class JwtExceptionHandler {
     private static final String INVALID_CLAIM_EXCEPTION = "InvalidClaimException";
     private static final String JWT_DECODE_EXCEPTION = "JWTDecodeException";
     private static final String SIGNATURE_VERIFICATION_EXCEPTION = "SignatureVerificationException";
-    private static final String TOKEN_EXPIRED_EXCEPTION = "TokenExpiredException";
     private final ObjectMapper objectMapper;
 
-    public void createJwtVerificationResponse(HttpServletResponse response, JWTVerificationException exception) throws IOException {
-        ErrorCode errorCode = findJwtVerificationErrorCode(exception);
+    public void createJwtVerificationResponse(HttpServletResponse response, JWTVerificationException e) throws IOException {
+        ErrorCode errorCode = findJwtVerificationErrorCode(e);
         response.setStatus(errorCode.getStatus());
         response.getWriter().write(objectMapper.writeValueAsString(CommonResponse.fail(errorCode)));
+    }
+
+    public void createCustomTokenExpiredException(HttpServletResponse response, CustomTokenException e) throws IOException {
+        ErrorCode errorCode = e.getErrorCode();
+        response.setStatus(errorCode.getStatus());
+        response.getWriter()
+                .write(objectMapper.writeValueAsString(CommonResponse.fail(errorCode)));
     }
 
     public void createSecurityErrorResponse(HttpServletResponse response, SecurityException e) throws IOException {
         ErrorCode errorCode = e.getErrorCode();
         response.setStatus(errorCode.getStatus());
         response.getWriter()
-                .write(objectMapper.writeValueAsString(CommonResponse.fail(e.getErrorCode())));
+                .write(objectMapper.writeValueAsString(CommonResponse.fail(errorCode)));
     }
 
     public ErrorCode findJwtVerificationErrorCode(JWTVerificationException e) {
@@ -47,9 +54,6 @@ public class JwtExceptionHandler {
                 break;
             case SIGNATURE_VERIFICATION_EXCEPTION:
                 errorCode = ErrorCode.SIGNATURE_VERIFICATION_EXCEPTION;
-                break;
-            case TOKEN_EXPIRED_EXCEPTION:
-                errorCode = ErrorCode.TOKEN_EXPIRED_EXCEPTION;
                 break;
         }
         return errorCode;

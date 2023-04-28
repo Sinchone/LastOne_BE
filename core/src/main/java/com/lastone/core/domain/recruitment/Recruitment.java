@@ -1,5 +1,6 @@
 package com.lastone.core.domain.recruitment;
 
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
@@ -29,17 +30,20 @@ public class Recruitment extends BaseTime {
     @Column(name = "recruitment_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<RecruitmentImg> recruitmentImgs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recruitment")
+    private List<Application> applications = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private WorkoutPart workoutPart;
@@ -91,5 +95,9 @@ public class Recruitment extends BaseTime {
     public void delete() {
         this.recruitmentImgs.clear();
         this.isDeleted = true;
+    }
+
+    public void cancelMatching() {
+        this.recruitmentStatus = RecruitmentStatus.RECRUITING;
     }
 }
