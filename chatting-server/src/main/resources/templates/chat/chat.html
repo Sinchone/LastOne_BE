@@ -212,10 +212,17 @@
       const html = getMessageBox(sender, payload.content, payload.sendTime);
       chatBox.insertAdjacentHTML('beforeend',html);
     },{'auto-delete':true, 'durable':false, 'exclusive':false});
-
-    stomp.subscribe("/sub/chat-list", function (content) {
+    stomp.subscribe("/topic/" + chatRoomId, function (content) {
+      console.log("구독 좋아요----좋댓구---");
       const payload = JSON.parse(content.body);
-      console.log("구독 좋아요222----좋댓구222---");
+      let sender = payload.senderId == myId ? 'mine' : 'others';
+      const html = getMessageBox(sender, payload.content, payload.sendTime);
+      chatBox.insertAdjacentHTML('beforeend',html);
+    },{'auto-delete':true, 'durable':false, 'exclusive':false});
+
+    stomp.subscribe("/topic/chat-room", function (content) {
+      const payload = JSON.parse(content.body);
+      console.log("구독 좋아요332----좋댓구3322---");
       console.log("otherUserId ---- :" + payload.otherUserId);
       console.log("profileUrl ---- :" + payload.profileUrl);
       console.log("nickname ---- :" + payload.nickname);

@@ -19,7 +19,7 @@ public class TestChattingController {
     @GetMapping("/{roomId}")
     @PreAuthorize("permitAll()")
     public String getRoom(@PathVariable String roomId, Model model, @RequestParam Long userId, @RequestParam Long otherId) {
-        ChatRoomDetailDto chatRoomDetail = chatRoomService.getOne(roomId, userId);
+        ChatRoomDetailDto chatRoomDetail = chatRoomService.testGetOne(roomId, userId);
         model.addAttribute("userId", userId);
         model.addAttribute("otherId", otherId);
         model.addAttribute("roomId", roomId);
