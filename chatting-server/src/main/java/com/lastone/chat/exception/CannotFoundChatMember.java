@@ -12,6 +12,6 @@ public class CannotFoundChatMember extends ChatException {
         super(errorCode);
     }
     public CannotFoundChatMember() {
-        super(ErrorCode.NOT_FOUND_USER);
+        super(ErrorCode.NOT_CHAT_USER);
     }
 }

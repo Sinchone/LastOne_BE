@@ -14,5 +14,6 @@ public interface ChatRoomService {
     void deleteRoom(String roomId, Long userId);
     List<ChatRoomResDto> getList(Long userId, Pageable pageable);
     ChatRoomDetailDto getOne(String roomId, Long userId);
+    ChatRoomDetailDto testGetOne(String roomId, Long userId);
     NewMessageResponseDto getChatRoomInfoByRoomId(String chatRoomId, Long userId);
 }

@@ -225,6 +225,42 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     /**
+     * Todo - 배포시에 지우기
+     * 서버측에서 채팅을 실행할 때 쓰는
+     */
+    @Override
+    @Transactional
+    public ChatRoomDetailDto testGetOne(String roomId, Long userId) {
+        ChatRoom chatRoom = roomRepository.findById(roomId).orElseThrow(CannotFountChatRoom::new);
+        isRoomValidation(chatRoom.getStatus());
+        if(chatRoom.getStatus().equals(ChatStatus.DELETED)) throw new ChatException(ErrorCode.NOT_FOUNT_ROOM);
+
+        Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
+//        Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
+        Member otherUser = Member.builder()
+                .nickname("테스트유저"+otherUserId)
+                .email("testUser"+otherUserId + "@gmail.com")
+                .id(otherUserId)
+                .profileUrl("테스트유저프로필URL")
+                .gender("남성")
+                .build();
+
+        List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
+
+        Query query = new Query();
+        query.addCriteria(
+                Criteria.where(MessageColumn.ROOMID.getWord()).is(roomId)
+                        .and(MessageColumn.SENDERID.getWord()).is(otherUserId)
+        );
+
+        mongoTemplate.updateMulti(
+                query, Update.update(MessageColumn.ISREAD.getWord(), true),
+                MessageColumn.COLLECTION_NAME.getWord()
+        );
+        return new ChatRoomDetailDto(messages, otherUser);
+    }
+
+    /**
      * userId가 참여자가 맞는지 검증 후 참여자의 번호 가져와
      * 상대방의 정보를 가져와 메시지와 함께 반환
      */
@@ -240,7 +276,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .filter(participantId -> userId != participantId)
                 .findFirst()
                 .orElseThrow(CannotFoundChatMember::new);
-        Member member = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
+        Member member = memberRepository.findById(otherUserId)
+                            .orElse(
+                                Member.builder()
+                                    .id(otherUserId)
+                                    .email("테스트유저이메일"+otherUserId)
+                                    .nickname("테스트유저닉네임"+otherUserId)
+                                    .gender("남성")
+                                    .build());
+//        Member member = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
 
         return new NewMessageResponseDto(member);
     }
