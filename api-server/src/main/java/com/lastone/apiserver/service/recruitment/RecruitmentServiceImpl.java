@@ -2,10 +2,11 @@ package com.lastone.apiserver.service.recruitment;
 
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.IncorrectWriterException;
-import com.lastone.apiserver.exception.recruitment.RecruitmentAlreadyDeleteException;
+import com.lastone.apiserver.exception.recruitment.RecruitmentStatusException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentImgCountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.apiserver.service.s3.S3Service;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
@@ -115,7 +116,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     public void deleteRecruitment(Long recruitmentId, Long memberId) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(RecruitmentNotFoundException::new);
         if (recruitment.isDeleted()) {
-            throw new RecruitmentAlreadyDeleteException();
+            throw new RecruitmentStatusException(ErrorCode.RECRUITMENT_ALREADY_DELETE);
         }
         validateWriterAndMember(recruitment.getMember().getId(), memberId);
         deleteImgFile(recruitment.getRecruitmentImgs());
