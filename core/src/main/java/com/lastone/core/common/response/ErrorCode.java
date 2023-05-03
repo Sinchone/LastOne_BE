@@ -66,6 +66,8 @@ public enum ErrorCode {
   RECRUITMENT_NOT_FOUND(404, "R002", "존재하지 않는 모집글입니다."),
   INCORRECT_WRITER(403, "R003", "모집글 작성자와 요청 회원의 정보가 일치하지 않습니다."),
   RECRUITMENT_ALREADY_DELETE(404, "R004", "해당 모집글을 이미 삭제 처리된 모집글입니다."),
+  RECRUITMENT_NOT_INCLUDE_APPLICATION(404, "R005", "해당 모집글에 신청된 요청이 아닙니다."),
+  IMPOSSIBLE_TO_MATCH_STATUS(403, "ROO6", "해당 모집글의 상태가 매칭을 완료할 수 없는 상태입니다."),
 
   /* Application 예외 */
   APPLICATION_NOT_FOUND(404, "A001", "존재하지 않는 신청입니다."),
