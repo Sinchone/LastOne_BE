@@ -65,6 +65,7 @@ public enum ErrorCode {
   RECRUITMENT_IMG_COUNT(400, "R001", "모집글 이미지 등록은 최대 3개까지 가능합니다."),
   RECRUITMENT_NOT_FOUND(404, "R002", "존재하지 않는 모집글입니다."),
   INCORRECT_WRITER(403, "R003", "모집글 작성자와 요청 회원의 정보가 일치하지 않습니다."),
+  RECRUITMENT_ALREADY_DELETE(404, "R004", "해당 모집글을 이미 삭제 처리된 모집글입니다."),
 
   /* Application 예외 */
   APPLICATION_NOT_FOUND(404, "A001", "존재하지 않는 신청입니다."),
