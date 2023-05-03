@@ -78,8 +78,9 @@ public class RecruitmentController {
 
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{recruitmentId}/application/{applicationId}")
-    public ResponseEntity<CommonResponse> changeApplicationStatus(@PathVariable Long recruitmentId, @PathVariable Long applicationId) {
-        matchingService.completeMatching(recruitmentId, applicationId);
+    public ResponseEntity<CommonResponse> changeApplicationStatus(@PathVariable Long recruitmentId, @PathVariable Long applicationId,
+                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        matchingService.completeMatching(recruitmentId, applicationId, userDetails.getId());
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.APPLICATION_MATCHING_COMPLETE));
     }
 
