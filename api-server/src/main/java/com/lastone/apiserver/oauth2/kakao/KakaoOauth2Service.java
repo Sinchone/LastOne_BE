@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lastone.apiserver.oauth2.Oauth2Service;
 import com.lastone.core.domain.member.Member;
+import com.lastone.core.dto.Oauth2LoginRequestDto;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.security.jwt.TokenResponse;
 import com.lastone.core.security.jwt.JwtProvider;
@@ -33,8 +34,8 @@ public class KakaoOauth2Service implements Oauth2Service {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public TokenResponse createToken(String code, String requestURI) throws JsonProcessingException {
-        String token = getToken(code);
+    public TokenResponse createToken(Oauth2LoginRequestDto loginRequestDto, String requestURI) throws JsonProcessingException {
+        String token = getToken(loginRequestDto);
         KakaoOauth2UserInfo profile = getProfile(token);
         Optional<Member> member = memberRepository.findByEmail(profile.getEmail());
         if(member.isEmpty()) {
@@ -49,11 +50,11 @@ public class KakaoOauth2Service implements Oauth2Service {
         return tokens;
     }
 
-    private String getToken(String authCode) throws JsonProcessingException {
+    private String getToken(Oauth2LoginRequestDto loginRequestDto) throws JsonProcessingException {
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(kakaoConfig.getTokenParams(authCode), header);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(kakaoConfig.getTokenParams(loginRequestDto), header);
 
         ResponseEntity<String> response = restTemplate.postForEntity(kakaoConfig.getTokenUrl(), request, String.class);
         KakaoToken kakaoToken = objectMapper.readValue(response.getBody(), KakaoToken.class);
