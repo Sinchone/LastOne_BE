@@ -11,8 +11,4 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long>,
 
     @Query("select r from Recruitment r where r.id = :id and r.isDeleted = false")
     Optional<Recruitment> findByIdAndDeletedIsFalse(Long id);
-
-    @Modifying
-    @Query("update Recruitment r set r.recruitmentStatus = 'COMPLETE' where r.id = :id")
-    int updateStatusToComplete(Long id);
 }
