@@ -30,7 +30,6 @@ public class MatchingServiceImpl implements MatchingService{
     private final RecruitmentRepository recruitmentRepository;
     private final ApplicationRepository applicationRepository;
     private final NotificationRepository notificationRepository;
-    private static final int RECRUITMENT_UPDATED_COUNT = 1;
 
     @Override
     public void completeMatching(Long recruitmentId, Long applicationId, Long requesterId) {
@@ -39,21 +38,17 @@ public class MatchingServiceImpl implements MatchingService{
         validateApplicationId(recruitment.getApplications(), applicationId);
         validateRecruitmentStatus(recruitment);
 
-        int updateCount = recruitmentRepository.updateStatusToComplete(recruitmentId);
-        if (updateCount != RECRUITMENT_UPDATED_COUNT) {
-            throw new RecruitmentNotFoundException();
-        }
-        applicationRepository.updateStatus(recruitmentId, applicationId);
         Application application = applicationRepository.findById(applicationId).orElseThrow(ApplicationNotFoundException::new);
-
         notificationRepository.save(
                 Notification.builder()
                         .recruitment(recruitment)
                         .member(application.getApplicant())
                         .senderNickname(recruitment.getMember().getNickname())
-                        .notificationType(NotificationType.MATCHING_COMPLETE)
+                        .notificationType(NotificationType.MATCHING_SUCCESS)
                         .build());
 
+        recruitment.completeMatching();
+        applicationRepository.updateStatus(recruitmentId, applicationId);
     }
 
     @Override
@@ -62,6 +57,7 @@ public class MatchingServiceImpl implements MatchingService{
         validateRequesterAuthorization(recruitment.getMember().getId(), requesterId);
         validateApplicationId(recruitment.getApplications(), applicationId);
         recruitment.cancelMatching();
+
         Application application = applicationRepository.findById(applicationId).orElseThrow(ApplicationNotFoundException::new);
         validateApplicationStatus(application);
         application.fail();
