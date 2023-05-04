@@ -5,12 +5,15 @@ import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.member.Member;
+import com.lastone.core.domain.notification.Notification;
+import com.lastone.core.domain.notification.NotificationType;
 import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.ApplicationReceivedDto;
 import com.lastone.core.dto.applicaation.ApplicationRequestedDto;
 import com.lastone.core.repository.application.ApplicationRepository;
 import com.lastone.core.repository.member.MemberRepository;
+import com.lastone.core.repository.notification.NotificationRepository;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final MemberRepository memberRepository;
     private final RecruitmentRepository recruitmentRepository;
 
+    private final NotificationRepository notificationRepository;
+
     @Override
     public void createApplication(Long applicantId, Long recruitmentId) {
         Member member = memberRepository.findById(applicantId).orElseThrow(MemberNotFountException::new);
@@ -37,6 +42,14 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .orElseThrow(RecruitmentNotFoundException::new);
         validateApplication(member, recruitment);
         applicationRepository.save(new Application(recruitment, member));
+
+        notificationRepository.save(
+                Notification.builder()
+                        .recruitment(recruitment)
+                        .member(recruitment.getMember())
+                        .senderNickname(member.getNickname())
+                        .notificationType(NotificationType.MATCHING_REQUEST)
+                        .build());
     }
 
     private void validateApplication(Member member, Recruitment recruitment) {
