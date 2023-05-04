@@ -45,7 +45,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         notificationRepository.save(
                 Notification.builder()
-                        .recruitmentId(recruitmentId)
+                        .recruitment(recruitment)
                         .member(recruitment.getMember())
                         .senderNickname(member.getNickname())
                         .notificationType(NotificationType.MATCHING_REQUEST)

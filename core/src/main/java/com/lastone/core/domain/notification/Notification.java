@@ -1,6 +1,7 @@
 package com.lastone.core.domain.notification;
 
 import com.lastone.core.domain.member.Member;
+import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.repository.BaseTime;
 import com.lastone.core.util.BooleanToYNConverter;
 import lombok.*;
@@ -20,7 +21,9 @@ public class Notification extends BaseTime {
     @Column(name = "notification_id")
     private Long id;
 
-    private Long recruitmentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruitment_id")
+    private Recruitment recruitment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

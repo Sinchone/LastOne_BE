@@ -48,7 +48,7 @@ public class MatchingServiceImpl implements MatchingService{
 
         notificationRepository.save(
                 Notification.builder()
-                        .recruitmentId(recruitmentId)
+                        .recruitment(recruitment)
                         .member(application.getApplicant())
                         .senderNickname(recruitment.getMember().getNickname())
                         .notificationType(NotificationType.MATCHING_COMPLETE)
@@ -68,7 +68,7 @@ public class MatchingServiceImpl implements MatchingService{
 
         notificationRepository.save(
                 Notification.builder()
-                        .recruitmentId(recruitmentId)
+                        .recruitment(recruitment)
                         .member(application.getApplicant())
                         .senderNickname(recruitment.getMember().getNickname())
                         .notificationType(NotificationType.MATCHING_CANCEL)
