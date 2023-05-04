@@ -1,11 +1,14 @@
 package com.lastone.core.domain.member;
 
+import com.lastone.core.domain.notification.Notification;
 import com.lastone.core.dto.member.MemberUpdateDto;
 import com.lastone.core.repository.BaseTime;
 import com.lastone.core.util.BooleanToYNConverter;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +39,9 @@ public class Member extends BaseTime {
     private String workoutDay;
 
     private String status;
+
+    @OneToMany(mappedBy = "member")
+    private List<Notification> notificationList = new ArrayList<>();
 
     @Convert(converter = BooleanToYNConverter.class)
     @ColumnDefault("false")
