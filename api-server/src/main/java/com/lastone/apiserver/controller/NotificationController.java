@@ -11,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
@@ -31,5 +28,13 @@ public class NotificationController {
                                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<NotificationResponseDto> notificationResponseDtoList = notificationService.getList(checkBoxCondition, userDetails.getId());
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.NOTIFICATION_LIST,notificationResponseDtoList));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/{notificationId}")
+    public ResponseEntity<CommonResponse> readNotification(@PathVariable Long notificationId,
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        notificationService.read(notificationId, userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.NOTIFICATION_READ));
     }
 }
