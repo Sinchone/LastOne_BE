@@ -1,5 +1,8 @@
 package com.lastone.apiserver.service.notification;
 
+import com.lastone.apiserver.exception.notification.NotificationAlreadyReadException;
+import com.lastone.apiserver.exception.notification.NotificationNotFoundException;
+import com.lastone.apiserver.exception.notification.NotificationUnauthorizedException;
 import com.lastone.core.domain.notification.Notification;
 import com.lastone.core.dto.notification.NotificationCheckBoxCondition;
 import com.lastone.core.dto.notification.NotificationResponseDto;
@@ -37,5 +40,25 @@ public class NotificationServiceImpl implements NotificationService {
             notificationResponseDtoList.add(notificationResponseDto);
         }
         return notificationResponseDtoList;
+    }
+
+    @Override
+    public void read(Long notificationId, Long requesterId) {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(NotificationNotFoundException::new);
+        validateNotificationStatus(notification.isRead());
+        validateAuthorization(notification.getMember().getId(), requesterId);
+        notification.read();
+    }
+
+    private void validateNotificationStatus(boolean isRead) {
+        if (isRead) {
+            throw new NotificationAlreadyReadException();
+        }
+    }
+
+    private void validateAuthorization(Long id, Long requesterId) {
+        if (!id.equals(requesterId)) {
+            throw new NotificationUnauthorizedException();
+        }
     }
 }
