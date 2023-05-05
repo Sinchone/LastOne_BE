@@ -4,6 +4,7 @@ import com.lastone.apiserver.service.notification.NotificationService;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.notification.NotificationCheckBoxCondition;
+import com.lastone.core.dto.notification.NotificationDeleteRequestDto;
 import com.lastone.core.dto.notification.NotificationResponseDto;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +37,13 @@ public class NotificationController {
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         notificationService.read(notificationId, userDetails.getId());
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.NOTIFICATION_READ));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping
+    public ResponseEntity<CommonResponse> deleteNotification(@RequestBody(required = false) NotificationDeleteRequestDto notificationDeleteRequestDto,
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        notificationService.delete(notificationDeleteRequestDto, userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.NOTIFICATION_DELETE));
     }
 }
