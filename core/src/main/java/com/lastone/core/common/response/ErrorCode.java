@@ -84,8 +84,9 @@ public enum ErrorCode {
 
   /* 알림 예외 */
   NOTIFICATION_NOT_FOUND(404, "N001", "존재하지 않는 알림입니다."),
-  NOTIFICATION_UNAUTHORIZED_REQUEST(403, "N002", "알림을 받은 회원의 정보와 요청자의 정보가 일치하지 않습니다."),
+  NOTIFICATION_UPDATE_FORBIDDEN(403, "N002", "알림을 받은 회원의 정보와 요청자의 정보가 일치하지 않아 읽기 처리가 불가합니다."),
   NOTIFICATION_ALREADY_READ(409, "N003", "이미 읽기 처리 된 알림입니다."),
+  NOTIFICATION_DELETE_FORBIDDEN(403, "N004", "알림 삭제 리스트 중에 권한이 없는 알림이 존재하여 삭제 처리가 불가합니다."),
 
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),
