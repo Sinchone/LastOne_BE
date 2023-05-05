@@ -15,13 +15,13 @@ public class SbdDto {
 
     @Min(value = 0)
     @Max(value = 999)
-    private int deadLift;
+    private Integer deadLift;
 
     @Min(value = 0)
     @Max(value = 999)
-    private int benchPress;
+    private Integer benchPress;
 
     @Min(value = 0)
     @Max(value = 999)
-    private int squat;
+    private Integer squat;
 }
