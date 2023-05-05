@@ -8,4 +8,6 @@ import java.util.List;
 public interface NotificationService {
 
     List<NotificationResponseDto> getList(NotificationCheckBoxCondition checkBoxCondition, Long memberId);
+
+    void read(Long notificationId, Long requesterId);
 }

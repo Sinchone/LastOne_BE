@@ -82,6 +82,11 @@ public enum ErrorCode {
   TODAY_PARTNER_NOT_FOUND(404, "P001", "오늘 파트너와의 약속이 존재하지 않습니다."),
   PARTNER_HISTORY_NOT_FOUND(404, "P002", "매칭된 파트너 목록이 없습니다."),
 
+  /* 알림 예외 */
+  NOTIFICATION_NOT_FOUND(404, "N001", "존재하지 않는 알림입니다."),
+  NOTIFICATION_UNAUTHORIZED_REQUEST(403, "N002", "알림을 받은 회원의 정보와 요청자의 정보가 일치하지 않습니다."),
+  NOTIFICATION_ALREADY_READ(409, "N003", "이미 읽기 처리 된 알림입니다."),
+
   /* 글로벌 예외 */
   HTTP_REQUEST_METHOD_NOT_SUPPORTED(405, "G001", "지원하지 않는 HTTP 메서드 형식입니다."),
   HTTP_MEDIA_TYPE_EXCEPTION(415, "G002", "지원하지 않는 미디어 타입입니다. Json 혹은 Form-Data 형식인지 확인해주세요."),
