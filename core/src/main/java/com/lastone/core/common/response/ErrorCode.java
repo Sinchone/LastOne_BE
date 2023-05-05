@@ -71,7 +71,7 @@ public enum ErrorCode {
 
   /* Application 예외 */
   APPLICATION_NOT_FOUND(404, "A001", "존재하지 않는 신청입니다."),
-  APPLICATION_NOT_EQUAL_REQUEST_ID(403, "A002", "신청 유저와 신청 취소 유저 정보가 일치하지 않습니다."),
+  APPLICATION_NOT_EQUAL_REQUEST_ID(403, "A002", "신청 유저와 신청 취소 요청 유저 정보가 일치하지 않습니다."),
   APPLICATION_STATUS_INCORRECT(402, "A003", "신청 상태가 매칭 성공인 상태여야 취소가 가능합니다."),
   APPLICANT_EQUAL_TO_WRITER(400, "A004", "모집글 작성자와 신청자가 일치합니다"),
   APPLY_TO_CLOSED_RECRUITMENT(400, "A005", "이미 모집 마감되어 신청이 불가합니다."),
