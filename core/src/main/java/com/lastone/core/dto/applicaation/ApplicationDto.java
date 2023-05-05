@@ -14,8 +14,8 @@ public class ApplicationDto {
 
     private final Long applicationId;
     private final Long applicantId;
-    private final String nickName;
-    private final String profileUr;
+    private final String nickname;
+    private final String profileUrl;
     private final String gender;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -23,11 +23,11 @@ public class ApplicationDto {
     private LocalDateTime applicationDate;
 
     @QueryProjection
-    public ApplicationDto(Long applicationId, Long applicantId, String nickName, String profileUr, String gender, LocalDateTime applicationDate) {
+    public ApplicationDto(Long applicationId, Long applicantId, String nickname, String profileUrl, String gender, LocalDateTime applicationDate) {
         this.applicationId = applicationId;
         this.applicantId = applicantId;
-        this.nickName = nickName;
-        this.profileUr = profileUr;
+        this.nickname = nickname;
+        this.profileUrl = profileUrl;
         this.gender = gender;
         this.applicationDate = applicationDate;
     }
