@@ -39,6 +39,7 @@ public enum SuccessCode {
 
     /* 알림 */
     NOTIFICATION_LIST("알림 목록 조회가 완료되었습니다."),
+    NOTIFICATION_READ("알림 읽기 처리가 완료되었습니다."),
     ;
 
     private String message;
