@@ -22,7 +22,7 @@ public class ApplicationRequestedDto {
     private final LocalDateTime startedAt;
     private final Long memberId;
     private final String profileUrl;
-    private final String nickName;
+    private final String nickname;
     private final String gender;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
@@ -39,7 +39,7 @@ public class ApplicationRequestedDto {
         this.startedAt = startedAt;
         this.memberId = memberId;
         this.profileUrl = profileUrl;
-        this.nickName = nickName;
+        this.nickname = nickName;
         this.gender = gender;
         this.applicationDate = applicationDate;
     }
