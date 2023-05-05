@@ -37,4 +37,8 @@ public class Notification extends BaseTime {
     @Convert(converter = BooleanToYNConverter.class)
     @ColumnDefault("false")
     private boolean isRead;
+
+    public void read() {
+        this.isRead = true;
+    }
 }
