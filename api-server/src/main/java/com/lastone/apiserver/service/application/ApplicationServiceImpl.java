@@ -3,6 +3,7 @@ package com.lastone.apiserver.service.application;
 import com.lastone.apiserver.exception.application.*;
 import com.lastone.apiserver.exception.mypage.MemberNotFountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
+import com.lastone.core.common.response.ErrorCode;
 import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.notification.Notification;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,11 +56,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     private void validateApplication(Member member, Recruitment recruitment) {
+
         if (isSameUser(member, recruitment.getMember())) {
             throw new ApplicantIsEqualToWriterException();
         }
         if (isRecruitmentClosed(recruitment)) {
-            throw new ApplyToClosedRecruitmentException();
+            throw new ApplyToIncorrectRecruitmentException(ErrorCode.APPLY_TO_CLOSED_RECRUITMENT);
+        }
+        if (isRecruitmentExpiration(recruitment)) {
+            throw new ApplyToIncorrectRecruitmentException(ErrorCode.APPLY_TO_EXPIRATION_RECRUITMENT);
         }
         if (isRecruitmentAlreadyApplied(member, recruitment)) {
             throw new AlreadyAppliedException();
@@ -66,6 +73,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private boolean isSameUser(Member applicant, Member writer) {
         return applicant.getId().equals(writer.getId());
+    }
+
+    private boolean isRecruitmentExpiration(Recruitment recruitment) {
+        LocalDateTime startedAt = recruitment.getStartedAt();
+        LocalDateTime now = LocalDateTime.now();
+        return startedAt.isBefore(now);
     }
 
     private boolean isRecruitmentClosed(Recruitment recruitment) {
