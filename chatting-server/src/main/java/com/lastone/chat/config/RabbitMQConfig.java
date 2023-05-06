@@ -63,8 +63,7 @@ public class RabbitMQConfig {
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory factory = new CachingConnectionFactory();
-        factory.setHost(host);
+        CachingConnectionFactory factory = new CachingConnectionFactory(host, port);
         factory.setUsername(username);
         factory.setPassword(password);
         return factory;
