@@ -25,6 +25,6 @@ public class TestChattingController {
         model.addAttribute("roomId", roomId);
         model.addAttribute("chatRoomId", roomId);
         model.addAttribute("info", chatRoomDetail);
-        return "chat/chat-test";
+        return "chat/chat";
     }
 }
