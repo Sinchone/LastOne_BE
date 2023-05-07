@@ -2,6 +2,7 @@ package com.lastone.chat.config;
 
 import com.lastone.chat.dto.ChatMessageResDto;
 import com.lastone.chat.dto.NewMessageResponseDto;
+import com.lastone.chat.exception.ChatException;
 import com.lastone.chat.service.ChatMessageService;
 import com.lastone.chat.service.ChatRoomService;
 import com.lastone.core.dto.message.ChatMessageReqDto;
@@ -21,17 +22,21 @@ public class ChatMessageListener {
     private final SimpMessagingTemplate simpMessagingTemplate;
     @RabbitListener(queues = "chat.queue")
     public void handleMessage(ChatMessageReqDto messageReqDto) {
-        String chatRoomId = messageReqDto.getRoomId();
-        /**
-         * Todo - 개발 완료시에는 지워야 하는 라인
-         */
-        if(!StringUtils.hasText(chatRoomId)) chatRoomId = "642da14657803f60253a39bf";
-        ChatMessageResDto message = messageService.createMessage(chatRoomId, messageReqDto);
+        try{
+            String chatRoomId = messageReqDto.getRoomId();
+            log.info("handleMessage      chatRoomId    :   {}", chatRoomId);
+            if(!StringUtils.hasText(chatRoomId)) chatRoomId = "642da14657803f60253a39bf";
+            ChatMessageResDto message = messageService.createMessage(chatRoomId, messageReqDto);
 
-        NewMessageResponseDto newMessageResponseDto = chatRoomService.getChatRoomInfoByRoomId(chatRoomId, messageReqDto.getSenderId());
-        newMessageResponseDto.setMessage(message, chatRoomId);
-
-        simpMessagingTemplate.convertAndSend("/topic/" + chatRoomId, message);
-        simpMessagingTemplate.convertAndSend("/topic/chat-room" , newMessageResponseDto);
+            NewMessageResponseDto newMessageResponseDto = chatRoomService.getChatRoomInfoByRoomId(chatRoomId, messageReqDto.getSenderId());
+            newMessageResponseDto.setMessage(message, chatRoomId);
+            log.info("newMessageResponseDto    :    {}", newMessageResponseDto);
+            log.info("message.getReceiverId()     :   {}", message.getReceiverId());
+            simpMessagingTemplate.convertAndSend("/topic/" + chatRoomId, message);
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverId().toString(), "/topic/chat-room" , newMessageResponseDto);
+        }
+        catch (ChatException e) {
+            log.info("e.getStackTrace()   :   {}", e.getMessage());
+        }
     }
 }

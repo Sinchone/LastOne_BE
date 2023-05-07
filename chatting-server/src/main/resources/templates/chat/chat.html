@@ -204,14 +204,6 @@
 
   stomp.connect('guest', 'guest', function (frame) {
     console.log('STOMP Connected');
-    /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
-    stomp.subscribe("/sub/chat/room/" + chatRoomId, function (content) {
-      console.log("구독 좋아요----좋댓구---");
-      const payload = JSON.parse(content.body);
-      let sender = payload.senderId == myId ? 'mine' : 'others';
-      const html = getMessageBox(sender, payload.content, payload.sendTime);
-      chatBox.insertAdjacentHTML('beforeend',html);
-    },{'auto-delete':true, 'durable':false, 'exclusive':false});
     stomp.subscribe("/topic/" + chatRoomId, function (content) {
       console.log("구독 좋아요----좋댓구---");
       const payload = JSON.parse(content.body);
@@ -220,7 +212,7 @@
       chatBox.insertAdjacentHTML('beforeend',html);
     },{'auto-delete':true, 'durable':false, 'exclusive':false});
 
-    stomp.subscribe("/topic/chat-room", function (content) {
+    stomp.subscribe(`/user/${myId}/topic/chat-room`, function (content) {
       const payload = JSON.parse(content.body);
       console.log("구독 좋아요332----좋댓구3322---");
       console.log("otherUserId ---- :" + payload.otherUserId);
@@ -230,7 +222,7 @@
       console.log("messages ---- :" + payload.messages);
 
     },{'auto-delete':true, 'durable':false, 'exclusive':false});
-  }, onError, '/');
+  }, onError);
 
   document.querySelector("#chat-send").addEventListener("click", (event) => {
     console.log("chatRoomId   : " + chatRoomId);
@@ -238,7 +230,8 @@
     const message = messageContent.value;
     messageContent.value = '';
 
-    stomp.send(`/pub/chat/message/test/${chatRoomId}`, {}, JSON.stringify({
+    stomp.send(`/pub/chat.message.test.${chatRoomId}`, {}, JSON.stringify({
+      roomId: chatRoomId,
       senderId: myId,
       receiverId: otherId,
       content: message
@@ -252,7 +245,8 @@
       const message = messageContent.value;
       messageContent.value = '';
 
-      stomp.send(`/pub/chat/message/test/${chatRoomId}`, {}, JSON.stringify({
+      stomp.send(`/pub/chat.message.test.${chatRoomId}`, {}, JSON.stringify({
+        roomId: chatRoomId,
         senderId: otherId,
         receiverId: myId,
         content: message

@@ -32,12 +32,14 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat/stomp")
                 .setAllowedOrigins(frontEndURL, "http://localhost:8082")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setPathMatcher(new AntPathMatcher("."));
+        registry.setApplicationDestinationPrefixes("/pub");
         StompBrokerRelayRegistration relayRegistration = registry.enableStompBrokerRelay("/topic")
                 .setRelayHost(host)
                 .setRelayPort(61613)
