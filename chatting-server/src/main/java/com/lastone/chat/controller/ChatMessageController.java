@@ -15,15 +15,8 @@ public class ChatMessageController {
     private final RabbitTemplate template;
     private final static String CHAT_EXCHANGE_NAME = "chat.exchange";
 
-    @MessageMapping("chat/message/{chatRoomId}")
-    public void sendMessage(ChatMessageReqDto chatMessage, @DestinationVariable String chatRoomId) {
-        chatMessage.setRoomId(chatRoomId);
-        template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + chatRoomId, chatMessage);
-    }
-
-    @MessageMapping("/chat/message/test/{chatRoomId}")
+    @MessageMapping("chat.message.test.{chatRoomId}")
     public void testSendMessage(@DestinationVariable String chatRoomId, ChatMessageReqDto chatMessage) {
-        chatMessage.setRoomId(chatRoomId);
-        template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + chatRoomId, chatMessage);
+        template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + chatMessage.getRoomId(), chatMessage);
     }
 }
