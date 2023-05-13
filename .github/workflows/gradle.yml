@@ -29,10 +29,10 @@ jobs:
 #        run: ./gradlew build -x test
 
       - name: Build Api-Server
-        run: ./gradlew api-server:build -x test
+        run: cd api-server && ./gradlew build -x test
 
       - name: Build Chatting - Server
-        run: ./gradlew chatting-server:build -x test
+        run: cd chatting-server && ./gradlew build -x test
 
       - name: Test with Gradle # test application build
         run: ./gradlew test
