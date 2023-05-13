@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Optional;
@@ -34,7 +35,9 @@ public class MemberServiceImpl implements MemberService {
         isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
 
         if (!ObjectUtils.isEmpty(profileImg)) {
-            s3Service.delete(member.getProfileUrl());
+            if (StringUtils.hasText(member.getProfileUrl())) {
+                s3Service.delete(member.getProfileUrl());
+            }
             memberUpdateDto.setProfileUrl(s3Service.upload(profileImg));
         }
         member.update(memberUpdateDto);
