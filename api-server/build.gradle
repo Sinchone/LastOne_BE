@@ -9,6 +9,15 @@ repositories {
     mavenCentral()
 }
 
+task copyPrivate(type: Copy) {
+    copy {
+        from "../yml"
+        include "application-api-local.yml"
+        include "application-api-prod.yml"
+        into "src/main/resources"
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     /* s3-bucket 설정 */

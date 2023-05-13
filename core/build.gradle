@@ -52,6 +52,7 @@ dependencies {
     testImplementation 'org.assertj:assertj-core'
 }
 
+
 bootJar {
     enabled = false
 }
