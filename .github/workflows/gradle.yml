@@ -25,8 +25,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle # 실제 application build(-x 옵션을 통해 test는 제외)
-        run: ./gradlew build -x test
+#      - name: Build with Gradle # 실제 application build(-x 옵션을 통해 test는 제외)
+#        run: ./gradlew build -x test
+
+      - name: Build Api-Server
+        run: ./gradlew api-server:build -x test
+
+      - name: Build Chatting - Server
+        run: ./gradlew chatting-server:build -x test
 
       - name: Test with Gradle # test application build
         run: ./gradlew test
