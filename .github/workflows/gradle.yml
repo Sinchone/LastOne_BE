@@ -23,13 +23,10 @@ jobs:
           distribution: temurin
 
       - name: Grant execute permission for gradlew
-        run: chmod +x api-server/gradlew
+        run: chmod +x gradlew
 
-      - name: Build Api-Server
-        run: cd api-server && ./gradlew build -x test
-
-      - name: Build Chatting - Server
-        run: cd chatting-server && ./gradlew build -x test
+      - name: Build with Gradle # 실제 application build(-x 옵션을 통해 test는 제외)
+        run: ./gradlew build -x test
 
       - name: Test with Gradle # test application build
         run: ./gradlew test
