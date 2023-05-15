@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
 
       - name: Grant execute permission for gradlew
-        run: chmod +x api-server/gradlew
+        run: chmod +x gradlew
 
       - name: Build API-SERVER # 실제 application build(-x 옵션을 통해 test는 제외)
         run: ./gradlew api-server:build -x test
