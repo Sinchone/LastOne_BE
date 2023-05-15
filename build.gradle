@@ -78,9 +78,3 @@ project(':chatting-server') {
     }
 }
 
-project(':notification-server') {
-    dependencies {
-        implementation project(':core')
-    }
-}
-

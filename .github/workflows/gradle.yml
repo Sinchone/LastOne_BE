@@ -26,10 +26,12 @@ jobs:
         run: chmod +x api-server/gradlew
 
       - name: Build API-SERVER # 실제 application build(-x 옵션을 통해 test는 제외)
-        run: cd api-server && ./gradlew build -x test
+        run: ./gradlew api-server:build -x test
+
 
       - name: Test with Gradle # test application build
-        run: ./gradlew test
+        run: ./gradlew chatting-server:build -x test
+
 
         # 디렉토리 생성
       - name: Make Directory
