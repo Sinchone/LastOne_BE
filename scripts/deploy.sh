@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT_ROOT="/home/ubuntu/app" # 프로젝트 루트
-JAR_FILE="$PROJECT_ROOT/api-server-0.0.1-SNAPSHOT.jar" # JAR_FILE (어쩌구저쩌구.jar)
+JAR_FILE="$PROJECT_ROOT/api-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=api-prod" # JAR_FILE (어쩌구저쩌구.jar)
 
 # 현재 nginx에서 서비스 하고 있는 WAS의 포트 번호 가져오기
 CURRENT_PORT=$(cat /etc/nginx/conf.d/api_service_url.inc | grep -Po '[0-9]+' | tail -1)
