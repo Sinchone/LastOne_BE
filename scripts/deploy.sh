@@ -4,7 +4,7 @@ PROJECT_ROOT="/home/ubuntu/app" # 프로젝트 루트
 JAR_FILE="$PROJECT_ROOT/api-server-0.0.1-SNAPSHOT.jar" # JAR_FILE (어쩌구저쩌구.jar)
 
 # 현재 nginx에서 서비스 하고 있는 WAS의 포트 번호 가져오기
-CURRENT_PORT=$(cat /etc/nginx/conf.d/service_url.inc | grep -Po '[0-9]+' | tail -1)
+CURRENT_PORT=$(cat /etc/nginx/conf.d/api_service_url.inc | grep -Po '[0-9]+' | tail -1)
 TARGET_PORT=0
 echo "> 현재 ngnix가 가르키고 있는 포트 번호는 ${CURRENT_PORT} 입니다."
 
@@ -28,5 +28,5 @@ fi
 
 # 타켓 포트에 jar파일을 이용해 새로운 서버 실행
 nohup java -jar -Dserver.port=${TARGET_PORT} ${JAR_FILE} > /home/ubuntu/nohup.out 2>&1 &
-echo "> 새로운 WAS 서버를 포트번호 ${TARGET_PORT}에 실행시  키겠습니다."
+echo "> 새로운 WAS 서버를 포트번호 ${TARGET_PORT}에 실행시 키겠습니다."
 exit 0
