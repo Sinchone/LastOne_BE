@@ -28,5 +28,5 @@ fi
 
 # 타켓 포트에 jar파일을 이용해 새로운 서버 실행
 nohup java -jar -Dserver.port=${TARGET_PORT} ${JAR_FILE} > /home/ubuntu/nohup.out 2>&1 &
-echo "> 새로운 WAS 서버를 포트번호 ${TARGET_PORT}에 실행시 키겠습니다."
+echo "> 새로운 WAS 서버를 포트번호 ${TARGET_PORT}에 실행시키겠습니다."
 exit 0

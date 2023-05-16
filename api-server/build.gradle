@@ -9,14 +9,7 @@ repositories {
     mavenCentral()
 }
 
-task copyPrivate(type: Copy) {
-    copy {
-        from "../../yml"
-        include "application-api-local.yml"
-        include "application-api-prod.yml"
-        into "src/main/resources"
-    }
-}
+
 
 jar {
     enabled = false

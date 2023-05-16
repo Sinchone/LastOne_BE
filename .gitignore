@@ -23,6 +23,7 @@
 hs_err_pid*
 
 ##yml 파일 추가
+*.yml
 
 # gradle 파일 추가
 **/build/
