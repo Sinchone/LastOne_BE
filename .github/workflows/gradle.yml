@@ -25,7 +25,7 @@ jobs:
       - name: Set YML
         run: |
           echo "${{ secrets.API_SERVER_YML }}" | base64 --decode > api-server/src/main/resources/application-api-prod.yml \
-          && echo "${{ secrets.CHATTING_SERVER_YML }}" | base64 --decode > chatting-server/src/main/resources/application-chatting-prod.yml
+          echo "${{ secrets.CHATTING_SERVER_YML }}" | base64 --decode > chatting-server/src/main/resources/application-chatting-prod.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
