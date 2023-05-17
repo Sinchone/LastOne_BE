@@ -16,3 +16,6 @@ hooks:
     - location: api-server-deploy.sh
       timeout: 240
       runas: ubuntu
+    - location: chatting-server-deploy.sh
+      timeout: 240
+      runas: ubuntu

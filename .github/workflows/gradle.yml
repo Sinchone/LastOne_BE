@@ -24,16 +24,16 @@ jobs:
 
       - name: Set YML
         run: |
-          echo "${{ secrets.API_SERVER_YML }}" | base64 --decode > api-server/src/main/resources/application-api-prod.yml
+          echo "${{ secrets.API_SERVER_YML }}" | base64 --decode > api-server/src/main/resources/application-api-prod.yml \
+          && echo "${{ secrets.CHATTING_SERVER_YML }}" | base64 --decode > chatting-server/src/main/resources/application-chatting-prod.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build API-SERVER # 실제 application build(-x 옵션을 통해 test는 제외)
+      - name: Build API-SERVER
         run: ./gradlew api-server:build -x test
 
-
-      - name: Test with Gradle # test application build
+      - name: Build CHATTING-SERVER
         run: ./gradlew chatting-server:build -x test
 
 
