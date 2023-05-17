@@ -46,7 +46,9 @@ jobs:
 
       # Jar 파일 복사
       - name: Copy Jar
-        run: cp ./api-server/build/libs/*.jar ./deploy
+        run: |
+          cp ./api-server/build/libs/*.jar ./deploy
+          cp ./chatting-server/build/libs/*.jar ./deploy
 
       # appspec.yml 파일 복사
       - name: Copy appspec.yml
