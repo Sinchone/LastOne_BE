@@ -17,7 +17,7 @@ hooks:
       timeout: 60
       runas: ubuntu
     - location: health.sh
-      timeout: 60
+      timeout: 180
       runas: ubuntu
     - location: switch.sh
       timeout: 60
