@@ -50,7 +50,6 @@ do
 	# RESPONSE_CODE의 http 상태가 200번인 경우 (10번 시도 하는 동안 200 코드가 와야한다)
     if [ ${RESPONSE_CODE} -eq 200 ]; then
         echo "새로운 WAS서버가 정상 구동됩니다."
-        exit 0
     elif [ ${RETRY_COUNT} -eq 10 ]; then
         echo "서버가 정상 작동하지 않습니다."
         exit 1
