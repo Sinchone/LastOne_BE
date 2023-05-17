@@ -22,9 +22,12 @@ jobs:
           java-version: '11'
           distribution: temurin
 
-      - name: Set YML
+      - name: Set API YML
         run: |
-          echo "${{ secrets.API_SERVER_YML }}" | base64 --decode > api-server/src/main/resources/application-api-prod.yml \
+          echo "${{ secrets.API_SERVER_YML }}" | base64 --decode > api-server/src/main/resources/application-api-prod.yml
+
+      - name: Set CHATTING YML
+        run: |
           echo "${{ secrets.CHATTING_SERVER_YML }}" | base64 --decode > chatting-server/src/main/resources/application-chatting-prod.yml
 
       - name: Grant execute permission for gradlew
