@@ -13,15 +13,6 @@ permissions:
 
 hooks:
   ApplicationStart:
-    - location: deploy.sh
-      timeout: 60
-      runas: ubuntu
-    - location: health.sh
-      timeout: 180
-      runas: ubuntu
-    - location: switch.sh
-      timeout: 60
-      runas: ubuntu
-    - location: termination.sh
-      timeout: 60
+    - location: api-server-deploy.sh
+      timeout: 240
       runas: ubuntu
