@@ -26,10 +26,8 @@ hs_err_pid*
 *.yml
 
 # gradle 파일 추가
-.gradle
 **/build/
 !src/**/build/
-*.properties
 /.idea/
 
 .gradle

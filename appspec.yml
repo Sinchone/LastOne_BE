@@ -1,0 +1,21 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/app/
+    overwrite: yes
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  ApplicationStart:
+    - location: api-server-deploy.sh
+      timeout: 240
+      runas: ubuntu
+    - location: chatting-server-deploy.sh
+      timeout: 240
+      runas: ubuntu
