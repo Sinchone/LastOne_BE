@@ -1,5 +1,14 @@
+// 1. queryDsl version 정보 추가
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'java'
+    // 2. querydsl plugins 추가
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group 'last.one'
@@ -11,10 +20,38 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    //implementation project(':core')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    /* 시큐리티 관련 설정 */
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.auth0:java-jwt:4.2.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    /* redis 설정 */
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    /* querydsl 설정 */
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+    /* mapstruct 설정 */
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    /* bean 검증 설정 */
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.assertj:assertj-core'
 }
+
 
 bootJar {
     enabled = false
@@ -26,4 +63,34 @@ jar {
 
 test {
     useJUnitPlatform()
+}
+
+/*
+ * queryDSL 설정 추가
+ */
+// querydsl에서 사용할 경로 설정
+def querydslDir = "$buildDir/generated/querydsl"
+// JPA 사용 여부와 사용할 경로를 설정
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+// build 시 사용할 sourceSet 추가
+sourceSets {
+    main.java.srcDir querydslDir
+}
+// querydsl 컴파일시 사용할 옵션 설정
+compileQuerydsl{
+    options.annotationProcessorPath = configurations.querydsl
+}
+// querydsl 이 compileClassPath 를 상속하도록 설정
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+}
+
+clean.doLast {
+    delete file(querydslDir)
 }
