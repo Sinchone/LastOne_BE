@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Sbd extends BaseTime {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sbd_id")
     private Long id;
 

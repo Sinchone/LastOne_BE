@@ -2,7 +2,6 @@ package com.lastone.core.domain.gym;
 
 import com.lastone.core.repository.BaseTime;
 import lombok.*;
-
 import javax.persistence.*;
 
 @ToString
@@ -14,7 +13,7 @@ import javax.persistence.*;
 public class Gym extends BaseTime {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gym_id")
     private Long id;
 

@@ -2,6 +2,7 @@ package com.lastone.core.repository.recruitment;
 
 import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.recruitment.*;
+import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
@@ -9,9 +10,12 @@ import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.*;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import static com.lastone.core.domain.application.QApplication.application;
 import static com.lastone.core.domain.gym.QGym.gym;
@@ -87,7 +91,6 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                 .selectFrom(recruitment)
                 .leftJoin(recruitment.member, member).fetchJoin()
                 .leftJoin(recruitment.gym, gym).fetchJoin()
-                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
                 .where(
                         eqWorkoutPart(searchCondition.getWorkoutPart()),
                         eqPreferGender(searchCondition.getPreferGender()),
@@ -139,21 +142,21 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     private BooleanExpression eqWorkoutPart(WorkoutPart workoutPart) {
-        if (ObjectUtils.isEmpty(workoutPart)) {
+        if (workoutPart == null) {
             return null;
         }
         return recruitment.workoutPart.eq(workoutPart);
     }
 
     private BooleanExpression eqPreferGender(PreferGender preferGender) {
-        if (ObjectUtils.isEmpty(preferGender) || preferGender.equals(PreferGender.BOTH)) {
+        if (preferGender == null || preferGender.equals(PreferGender.BOTH)) {
             return null;
         }
         return recruitment.preferGender.eq(preferGender);
     }
 
     private BooleanExpression isRecruitingOrNot(Boolean isRecruiting) {
-        if (!isRecruiting) {
+        if (isRecruiting == null || !isRecruiting) {
             return null;
         }
         return recruitment.recruitmentStatus.eq(RecruitmentStatus.RECRUITING)
@@ -161,7 +164,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     private BooleanExpression eqStartedAt(LocalDateTime time) {
-        if (ObjectUtils.isEmpty(time)) {
+        if (time == null) {
             return null;
         }
         return recruitment.startedAt.year().eq(time.getYear())
@@ -170,7 +173,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     }
 
     private BooleanExpression isMatchingTitleOrGymName(String searchText) {
-        if (ObjectUtils.isEmpty(searchText)) {
+        if (!StringUtils.hasText(searchText)) {
             return null;
         }
         return recruitment.title.contains(searchText)
