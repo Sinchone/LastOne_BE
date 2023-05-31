@@ -1,4 +1,4 @@
-package com.lastone.apiserver;
+package com.lastone.apiserver.query;
 
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
@@ -22,7 +22,7 @@ public class RecruitmentQueryTest {
     @Test
     void test1() {
         RecruitmentSearchCondition searchCondition = new RecruitmentSearchCondition(
-                "BACK", "남성", null, "02d36",
+                "BACK", "남성", "2023-05-20", "02d36",
                 null, null, null);
         System.out.println(searchCondition.getLocalDateTime());
         Slice<RecruitmentListDto> listDto = recruitmentRepository.getListDto(searchCondition);
@@ -50,4 +50,6 @@ public class RecruitmentQueryTest {
             System.out.println(recruitmentListDto.toString());
         }
     }
+
+
 }
