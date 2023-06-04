@@ -1,7 +1,6 @@
 package com.lastone.core.repository.recruitment;
 
 import com.lastone.core.domain.recruitment.*;
-import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
@@ -54,7 +53,6 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                 .selectFrom(recruitment)
                 .leftJoin(recruitment.member, member).fetchJoin()
                 .leftJoin(recruitment.gym, gym).fetchJoin()
-                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
                 .where(
                         isRecruitingOrNot(true),
                         recruitment.isDeleted.eq(false)
