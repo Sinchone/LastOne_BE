@@ -56,4 +56,8 @@ public class Member extends BaseTime {
         this.workoutDay = Day.sortListToString(memberUpdateDto.getWorkoutDay());
         this.isEdited = true;
     }
+
+    public void initNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
