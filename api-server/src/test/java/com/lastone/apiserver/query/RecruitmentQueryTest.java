@@ -1,8 +1,11 @@
 package com.lastone.apiserver.query;
 
+import com.lastone.core.domain.recruitment.Recruitment;
+import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,26 +23,8 @@ public class RecruitmentQueryTest {
     @Autowired
     private RecruitmentRepository recruitmentRepository;
     @Test
-    void test1() {
-        RecruitmentSearchCondition searchCondition = new RecruitmentSearchCondition(
-                "BACK", "남성", "2023-05-20", "02d36",
-                null, null, null);
-        System.out.println(searchCondition.getLocalDateTime());
-        Slice<RecruitmentListDto> listDto = recruitmentRepository.getListDto(searchCondition);
-    }
-
-    @Test
-    void test2() {
-        RecruitmentSearchCondition searchCondition = new RecruitmentSearchCondition(
-                "BACK", "남성", null, null,
-                null, null, null);
-
-        Slice<RecruitmentListDto> listDto = recruitmentRepository.getListDto(searchCondition);
-        System.out.println(listDto.getSize());
-    }
-
-    @Test
-    void test3() {
+    @DisplayName("아무 조건이 없을 경우 모집글 리스트 검색 성능 테스트")
+    void recruitmentListWithNoConditionTest() {
         RecruitmentSearchCondition searchCondition = new RecruitmentSearchCondition(
                 null, null, null, null,
                 null, null, null);
@@ -51,5 +36,28 @@ public class RecruitmentQueryTest {
         }
     }
 
+    @Test
+    @DisplayName("조건이 있을 경우 모집글 리스트 검색 성능 테스트")
+    void recruitmentListWithConditionTest() {
+        RecruitmentSearchCondition searchCondition = new RecruitmentSearchCondition(
+                null, null, null, "734e7adf-0087-11ee-8ece-005056c00001",
+                null, null, null);
+        Slice<RecruitmentListDto> listDto = recruitmentRepository.getListDto(searchCondition);
+    }
 
+    @Test
+    @DisplayName("모집글 상세 쿼리 성능 테스트")
+    void recruitmentDetailTest() {
+        RecruitmentDetailDto detailDto = recruitmentRepository.getDetailDto(500000L);
+        List<String> imgUrls = detailDto.getImgUrls();
+        for (String imgUrl : imgUrls) {
+            System.out.print(imgUrl + " ");
+        }
+    }
+
+    @Test
+    @DisplayName("메인페이지 모집글 리스트 쿼리 성능 테스트")
+    void recruitmentListInMainPageTest() {
+        List<RecruitmentListDto> listDtoInMainPage = recruitmentRepository.getListDtoInMainPage();
+    }
 }
