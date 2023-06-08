@@ -1,4 +1,4 @@
-package com.lastone.apiserver;
+package com.lastone.apiserver.query;
 
 import com.lastone.apiserver.service.mypage.MyPageService;
 import com.lastone.core.domain.member.Member;
@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("api-local")
 @SpringBootTest
-public class MypageTest {
+public class MypageQueryTest {
 
     @Autowired
     private MyPageService myPageService;

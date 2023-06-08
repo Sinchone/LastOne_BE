@@ -1,21 +1,19 @@
 package com.lastone.core.repository.recruitment;
 
-import com.lastone.core.domain.application.ApplicationStatus;
 import com.lastone.core.domain.recruitment.*;
-import com.lastone.core.domain.recruitment_img.RecruitmentImg;
-import com.lastone.core.dto.recruitment.QRecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateTimeExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.*;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import static com.lastone.core.domain.application.QApplication.application;
 import static com.lastone.core.domain.gym.QGym.gym;
@@ -32,37 +30,22 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
 
     @Override
     public RecruitmentDetailDto getDetailDto(Long recruitmentId) {
-        RecruitmentDetailDto recruitmentDetailDto = queryFactory
-                .select(new QRecruitmentDetailDto(
-                        recruitment.member.id,
-                        recruitment.member.nickname,
-                        recruitment.member.profileUrl,
-                        recruitment.member.workoutPurpose,
-                        recruitment.gym,
-                        recruitment.id,
-                        recruitment.title,
-                        recruitment.description,
-                        recruitment.preferGender,
-                        recruitment.createdAt,
-                        recruitment.startedAt))
-                .from(recruitment)
+
+        Recruitment findRecruitment = queryFactory
+                .selectFrom(recruitment)
+                .leftJoin(recruitment.member, member).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
                 .where(
                         recruitment.id.eq(recruitmentId),
                         recruitment.isDeleted.eq(false)
                 )
                 .fetchOne();
 
-        if (ObjectUtils.isEmpty(recruitmentDetailDto)) {
+        if (findRecruitment == null) {
             return null;
         }
-
-        List<String> imgUrls = queryFactory.select(recruitmentImg.imgUrl)
-                .from(recruitmentImg)
-                .where(recruitmentImg.recruitment.id.eq(recruitmentId))
-                .fetch();
-
-        recruitmentDetailDto.setImgUrls(imgUrls);
-        return recruitmentDetailDto;
+        return RecruitmentDetailDto.toDto(findRecruitment);
     }
 
     @Override
@@ -71,7 +54,6 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                 .selectFrom(recruitment)
                 .leftJoin(recruitment.member, member).fetchJoin()
                 .leftJoin(recruitment.gym, gym).fetchJoin()
-                .leftJoin(recruitment.recruitmentImgs, recruitmentImg).fetchJoin()
                 .where(
                         isRecruitingOrNot(true),
                         recruitment.isDeleted.eq(false)
@@ -159,8 +141,9 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
         if (isRecruiting == null || !isRecruiting) {
             return null;
         }
+        DateTimeExpression<LocalDateTime> now = DateTimeExpression.currentDate(LocalDateTime.class);
         return recruitment.recruitmentStatus.eq(RecruitmentStatus.RECRUITING)
-                .and(recruitment.startedAt.goe(LocalDateTime.now()));
+                .and(recruitment.startedAt.goe(now));
     }
 
     private BooleanExpression eqStartedAt(LocalDateTime time) {
@@ -176,8 +159,11 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
         if (!StringUtils.hasText(searchText)) {
             return null;
         }
-        return recruitment.title.contains(searchText)
-                .or(recruitment.gym.name.contains(searchText));
+        NumberTemplate<Double> booleanTemplateForTitle = Expressions.numberTemplate(Double.class,
+                "function('match', {0}, {1})", recruitment.title, searchText);
+        NumberTemplate<Double> booleanTemplateForName = Expressions.numberTemplate(Double.class,
+                "function('match', {0}, {1})", gym.name, searchText);
+        return booleanTemplateForTitle.gt(0).or(booleanTemplateForName.gt(0));
     }
 
     private BooleanExpression eqGymName(String gymName) {
