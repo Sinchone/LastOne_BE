@@ -5,6 +5,7 @@ import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -140,8 +141,9 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
         if (isRecruiting == null || !isRecruiting) {
             return null;
         }
+        DateTimeExpression<LocalDateTime> now = DateTimeExpression.currentDate(LocalDateTime.class);
         return recruitment.recruitmentStatus.eq(RecruitmentStatus.RECRUITING)
-                .and(recruitment.startedAt.goe(LocalDateTime.now()));
+                .and(recruitment.startedAt.goe(now));
     }
 
     private BooleanExpression eqStartedAt(LocalDateTime time) {
@@ -157,13 +159,11 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
         if (!StringUtils.hasText(searchText)) {
             return null;
         }
-        NumberTemplate<Double> booleanTemplate = Expressions.numberTemplate(Double.class,
-                "function('match', {0}, {1})", recruitment.title, searchText + "*");
-        return booleanTemplate.gt(0);
-
-
-//        return recruitment.title.contains(searchText)
-//                .or(recruitment.gym.name.contains(searchText));
+        NumberTemplate<Double> booleanTemplateForTitle = Expressions.numberTemplate(Double.class,
+                "function('match', {0}, {1})", recruitment.title, searchText);
+        NumberTemplate<Double> booleanTemplateForName = Expressions.numberTemplate(Double.class,
+                "function('match', {0}, {1})", gym.name, searchText);
+        return booleanTemplateForTitle.gt(0).or(booleanTemplateForName.gt(0));
     }
 
     private BooleanExpression eqGymName(String gymName) {
