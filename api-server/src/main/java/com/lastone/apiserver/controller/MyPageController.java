@@ -42,8 +42,7 @@ public class MyPageController {
     public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
                                                @RequestPart(required = false) MultipartFile profileImg) throws IOException {
-        Long memberId = userDetails.getId();
-        myPageService.updateMyPage(memberId, myPage, profileImg);
+        myPageService.updateMyPage(userDetails.getId(), myPage, profileImg);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.UPDATE_MYPAGE.getMessage()));
     }
 }
