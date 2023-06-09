@@ -10,5 +10,5 @@ import java.util.List;
 public interface MemberGymRepository extends JpaRepository<MemberGym, Long> {
 
     @Query("select m from MemberGym m where m.member = :member and m.isDeleted = false")
-    List<MemberGym> findAllByMemberAndDelete(@Param("member") Member member);
+    List<MemberGym> findAllByMember(@Param("member") Member member);
 }

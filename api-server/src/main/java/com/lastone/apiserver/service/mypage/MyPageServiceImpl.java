@@ -13,9 +13,7 @@ import com.lastone.core.mapper.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -34,18 +32,18 @@ public class MyPageServiceImpl implements MyPageService {
 
     public MyPageDto getMyPage(Long memberId) {
         Member member = memberService.findById(memberId);
+        return getMyPageDtoByMember(member);
+    }
+
+    private MyPageDto getMyPageDtoByMember(Member member) {
         MemberDto memberDto = memberMapper.toDto(member);
-        List<GymDto> gymsDto = gymService.findAllByMember(member);
+        List<GymDto> gymDtoList = gymService.findAllByMember(member);
         SbdDto sbdDto = sbdService.findByMember(member);
-        if (ObjectUtils.isEmpty(sbdDto)) {
+
+        if (sbdDto == null) {
             sbdDto = new SbdDto();
         }
-
-        return MyPageDto.builder()
-                .member(memberDto)
-                .gyms(gymsDto)
-                .sbd(sbdDto)
-                .build();
+        return new MyPageDto(memberDto, gymDtoList, sbdDto);
     }
 
     @Transactional(rollbackFor = Exception.class)
