@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,20 +26,16 @@ public class GymServiceImpl implements GymService {
     private final GymMapper gymMapper;
 
     public List<GymDto> findAllByMember(Member member) {
-        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberAndDelete(member);
-        List<GymDto> gymDtos = new ArrayList<>();
-
-        for (MemberGym memberGym : memberGyms) {
-            GymDto gymDto = gymMapper.toDto(memberGym.getGym());
-            gymDtos.add(gymDto);
-        }
-        return gymDtos;
+        List<MemberGym> memberGymList = memberGymRepository.findAllByMember(member);
+        return memberGymList.stream()
+                .map(memberGym -> gymMapper.toDto(memberGym.getGym()))
+                .collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void updateByMember(Member member, List<GymDto> gymDtos) {
         List<Gym> gyms = saveAndGetGyms(gymDtos);
-        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberAndDelete(member);
+        List<MemberGym> memberGyms = memberGymRepository.findAllByMember(member);
         for (MemberGym memberGym : memberGyms) {
             Gym gym = memberGym.getGym();
             if (gyms.contains(gym)) {
