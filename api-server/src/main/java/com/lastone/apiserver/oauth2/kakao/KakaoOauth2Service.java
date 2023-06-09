@@ -39,10 +39,13 @@ public class KakaoOauth2Service implements Oauth2Service {
         KakaoOauth2UserInfo profile = getProfile(token);
         Optional<Member> member = memberRepository.findByEmail(profile.getEmail());
         if(member.isEmpty()) {
-            memberRepository.save(Member.builder()
+            Member saveMember = memberRepository.save(Member.builder()
                     .email(profile.getEmail())
                     .gender(profile.getGender())
                     .build());
+
+            String nickname = "#" + saveMember.getId();
+            saveMember.initNickname(nickname);
         }
         TokenResponse tokens = jwtProvider.createToken(profile.getEmail(), requestURI);
         redisTemplate.opsForValue()

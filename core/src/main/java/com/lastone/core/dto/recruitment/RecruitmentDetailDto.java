@@ -5,19 +5,20 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.recruitment.PreferGender;
+import com.lastone.core.domain.recruitment.Recruitment;
+import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.domain.sbd.Sbd;
 import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.dto.sbd.SbdDto;
-import com.querydsl.core.annotations.QueryProjection;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.util.ObjectUtils;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitmentDetailDto {
 
@@ -39,25 +40,25 @@ public class RecruitmentDetailDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
     private LocalDateTime createdAt;
 
-    @QueryProjection
-    public RecruitmentDetailDto(Long memberId, String nickname, String profileUrl,
-                                String workoutPurpose, Gym gym, Long recruitmentId,
-                                String title, String description, PreferGender preferGender,
-                                LocalDateTime startedAt, LocalDateTime createdAt) {
-        this.memberId = memberId;
-        this.nickname = nickname;
-        this.profileUrl = profileUrl;
-        this.workoutPurpose = workoutPurpose;
-        this.gym = buildGymDto(gym);
-        this.recruitmentId = recruitmentId;
-        this.title = title;
-        this.description = description;
-        this.preferGender = preferGender;
-        this.startedAt = startedAt;
-        this.createdAt = createdAt;
+
+    public static RecruitmentDetailDto toDto(Recruitment recruitment) {
+        return RecruitmentDetailDto.builder()
+                .recruitmentId(recruitment.getId())
+                .title(recruitment.getTitle())
+                .description(recruitment.getDescription())
+                .preferGender(recruitment.getPreferGender())
+                .startedAt(recruitment.getStartedAt())
+                .createdAt(recruitment.getCreatedAt())
+                .gym(toGymDto(recruitment.getGym()))
+                .memberId(recruitment.getMember().getId())
+                .nickname(recruitment.getMember().getNickname())
+                .profileUrl(recruitment.getMember().getProfileUrl())
+                .workoutPurpose(recruitment.getMember().getWorkoutPurpose())
+                .imgUrls(toImgUrls(recruitment.getRecruitmentImgs()))
+                .build();
     }
 
-    private GymDto buildGymDto(Gym gym) {
+    private static GymDto toGymDto(Gym gym) {
         return GymDto.builder()
                 .name(gym.getName())
                 .location(gym.getLocation())
@@ -66,9 +67,12 @@ public class RecruitmentDetailDto {
                 .build();
     }
 
-    public void setImgUrls(List<String> imgUrls) {
-        this.imgUrls = imgUrls;
+    private static List<String> toImgUrls(List<RecruitmentImg> recruitmentImgs) {
+        return recruitmentImgs.stream()
+                .map(RecruitmentImg::getImgUrl)
+                .collect(Collectors.toList());
     }
+
 
     public void setSbdDto(Sbd sbd) {
         if (ObjectUtils.isEmpty(sbd)) {

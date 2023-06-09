@@ -19,7 +19,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     /* s3-bucket 설정 */
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    
+
+    /* 쿼리 로그 설정 */
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'
+
+
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }

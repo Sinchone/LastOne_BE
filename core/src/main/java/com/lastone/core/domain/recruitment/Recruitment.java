@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ import java.util.List;
 public class Recruitment extends BaseTime {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruitment_id")
     private Long id;
 
@@ -38,8 +39,10 @@ public class Recruitment extends BaseTime {
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
-    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
+
     @Builder.Default
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitmentImg> recruitmentImgs = new ArrayList<>();
 
     @OneToMany(mappedBy = "recruitment")

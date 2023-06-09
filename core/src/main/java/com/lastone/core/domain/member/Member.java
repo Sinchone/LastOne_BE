@@ -18,7 +18,7 @@ import java.util.List;
 public class Member extends BaseTime {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -55,5 +55,9 @@ public class Member extends BaseTime {
         this.workoutTime = memberUpdateDto.getWorkoutTime();
         this.workoutDay = Day.sortListToString(memberUpdateDto.getWorkoutDay());
         this.isEdited = true;
+    }
+
+    public void initNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

@@ -18,7 +18,7 @@ import javax.persistence.*;
 public class MemberGym extends BaseTime {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_gym_id")
     private Long id;
 
