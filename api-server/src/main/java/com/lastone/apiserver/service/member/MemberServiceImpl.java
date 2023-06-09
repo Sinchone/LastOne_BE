@@ -31,7 +31,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(rollbackFor = Exception.class)
     public void update(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
-        isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
+        validateNickname(member.getNickname(), memberUpdateDto.getNickname());
         if (!profileImg.isEmpty() && StringUtils.hasText(member.getProfileUrl())) {
             s3Service.delete(member.getProfileUrl());
         }
@@ -42,13 +42,21 @@ public class MemberServiceImpl implements MemberService {
         member.update(memberUpdateDto);
     }
 
-    private void isDuplicatedNickname(String updateNickname, String nickname) {
-        if (updateNickname.equals(nickname)) {
+    private void validateNickname(String nickname, String updateNickname) {
+        if (isEqualToPrevious(nickname, updateNickname)) {
             return;
         }
-        Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
-        if (findMember.isPresent()) {
+        if (isDuplicateNickname(updateNickname)) {
             throw new MemberAlreadyExistException();
         }
+    }
+
+    private boolean isEqualToPrevious(String nickname, String updateNickname) {
+        return nickname.equals(updateNickname);
+    }
+
+    private boolean isDuplicateNickname(String updateNickname) {
+        Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
+        return findMember.isPresent();
     }
 }
