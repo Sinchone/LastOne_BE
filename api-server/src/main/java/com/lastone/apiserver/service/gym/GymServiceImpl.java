@@ -10,8 +10,8 @@ import com.lastone.core.repository.member_gym.MemberGymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,49 +25,46 @@ public class GymServiceImpl implements GymService {
     private final GymMapper gymMapper;
 
     public List<GymDto> findAllByMember(Member member) {
-        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberAndDelete(member);
-        List<GymDto> gymDtos = new ArrayList<>();
-
-        for (MemberGym memberGym : memberGyms) {
-            GymDto gymDto = gymMapper.toDto(memberGym.getGym());
-            gymDtos.add(gymDto);
-        }
-        return gymDtos;
+        List<MemberGym> memberGymList = memberGymRepository.findAllByMember(member);
+        return memberGymList.stream()
+                .map(memberGym -> gymMapper.toDto(memberGym.getGym()))
+                .collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateByMember(Member member, List<GymDto> gymDtos) {
-        List<Gym> gyms = saveAndGetGyms(gymDtos);
-        List<MemberGym> memberGyms = memberGymRepository.findAllByMemberAndDelete(member);
-        for (MemberGym memberGym : memberGyms) {
-            Gym gym = memberGym.getGym();
-            if (gyms.contains(gym)) {
-                gyms.remove(gym);
-                continue;
-            }
-            memberGym.delete();
-        }
-        for (Gym gym : gyms) {
-            memberGymRepository.save(MemberGym.builder()
-                    .member(member)
-                    .gym(gym)
-                    .build());
-        }
+    public void updateByMember(Member member, List<GymDto> gymDtoList) {
+        List<Gym> gymList = saveGyms(gymDtoList);
+        List<MemberGym> memberGymList = memberGymRepository.findAllByMember(member);
+        updateMemberGym(gymList, memberGymList, member);
     }
 
-    private List<Gym> saveAndGetGyms(List<GymDto> gymDtos) {
-        List<Gym> gyms = new ArrayList<>();
-        for (GymDto gymDto : gymDtos) {
-            gyms.add(saveGym(gymDto));
-        }
-        return gyms;
+    private void updateMemberGym(List<Gym> gymList, List<MemberGym> memberGymList, Member member) {
+        memberGymList.stream()
+                .filter(memberGym -> isNotExistInGymList(gymList, memberGym.getGym()))
+                .forEach(MemberGym::delete);
+
+        gymList.forEach(gym -> memberGymRepository.save(MemberGym.builder()
+                .member(member)
+                .gym(gym)
+                .build()));
     }
 
-    private Gym saveGym(GymDto gymDto) {
+    private boolean isNotExistInGymList(List<Gym> gymList, Gym gym) {
+        return !gymList.contains(gym);
+    }
+
+    private List<Gym> saveGyms(List<GymDto> gymDtoList) {
+        List<GymDto> unSavedGyms = filterUnSavedGyms(gymDtoList);
+        unSavedGyms.forEach(gymDto -> gymRepository.save(gymMapper.toEntity(gymDto)));
+        return gymDtoList.stream().map(gymRepository::findByGymDto).collect(Collectors.toList());
+    }
+
+    private List<GymDto> filterUnSavedGyms(List<GymDto> gymDtoList) {
+        return gymDtoList.stream().filter(this::isNotExistInRepository).collect(Collectors.toList());
+    }
+
+    private boolean isNotExistInRepository(GymDto gymDto) {
         Gym gym = gymRepository.findByGymDto(gymDto);
-        if (gym == null) {
-            gym = gymRepository.save(gymMapper.toEntity(gymDto));
-        }
-        return gym;
+        return gym == null;
     }
 }

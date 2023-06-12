@@ -1,5 +1,6 @@
 package com.lastone.apiserver.oauth2.kakao;
 
+import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lastone.apiserver.oauth2.Oauth2Service;
@@ -39,11 +40,13 @@ public class KakaoOauth2Service implements Oauth2Service {
         KakaoOauth2UserInfo profile = getProfile(token);
         Optional<Member> member = memberRepository.findByEmail(profile.getEmail());
         if(member.isEmpty()) {
-            Member saveMember = memberRepository.save(Member.builder()
+            Member newMember = Member.builder()
                     .email(profile.getEmail())
-                    .gender(profile.getGender())
-                    .build());
-
+                    .build();
+            if (!StringUtils.isNullOrEmpty(profile.getGender())) {
+                newMember.initGender(profile.getGender());
+            }
+            Member saveMember = memberRepository.save(newMember);
             String nickname = "#" + saveMember.getId();
             saveMember.initNickname(nickname);
         }

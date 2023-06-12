@@ -1,11 +1,15 @@
 package com.lastone.apiserver.oauth2.kakao;
 
+import com.amazonaws.util.StringUtils;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map;
 
 @Getter
 @ToString
+@Slf4j
 public class KakaoOauth2UserInfo {
 
     protected final Map<String, Object> attributes;
@@ -21,13 +25,11 @@ public class KakaoOauth2UserInfo {
         return (String) kakaoAccount.get("email");
     }
 
-    public String getNickname() {
-        Map<String, String> profile = (Map<String, String>) kakaoAccount.get("profile");
-        return profile.get("nickname");
-    }
-
     public String getGender() {
         String gender = (String) kakaoAccount.get("gender");
+        if (StringUtils.isNullOrEmpty(gender)) {
+            return null;
+        }
         if (gender.equals("male")) {
             return "남성";
         }

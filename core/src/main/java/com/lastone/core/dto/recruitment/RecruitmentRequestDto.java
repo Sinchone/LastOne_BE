@@ -29,7 +29,7 @@ public class RecruitmentRequestDto {
     private String title;
 
     @NotBlank
-    @Size(max = 500)
+    @Size(max = 100)
     private String description;
 
     @Valid
