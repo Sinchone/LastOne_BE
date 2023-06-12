@@ -27,18 +27,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/recruitment")
 public class RecruitmentController {
+
     private final RecruitmentService recruitmentService;
+
     private final MatchingService matchingService;
+
     @GetMapping
     public ResponseEntity<CommonResponse> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
         Slice<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST, recruitmentList));
-    }
-
-    @GetMapping("/main")
-    public ResponseEntity<CommonResponse> getRecruitmentListInMain() {
-        List<RecruitmentListDto> recruitmentList = recruitmentService.getMainList();
-        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST_FOR_MAIN, recruitmentList));
     }
 
     @GetMapping("/{recruitmentId}")
@@ -47,11 +44,17 @@ public class RecruitmentController {
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_DETAIL, recruitmentDetail));
     }
 
+    @GetMapping("/main")
+    public ResponseEntity<CommonResponse> getRecruitmentListInMain() {
+        List<RecruitmentListDto> recruitmentList = recruitmentService.getMainList();
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST_FOR_MAIN, recruitmentList));
+    }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CommonResponse> createRecruitment(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                    @RequestPart @Validated RecruitmentRequestDto recruitment,
-                                                    @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
+                                                            @RequestPart @Validated RecruitmentRequestDto recruitment,
+                                                            @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
         recruitmentService.createRecruitment(userDetails.getId(), recruitment, imgFiles);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
