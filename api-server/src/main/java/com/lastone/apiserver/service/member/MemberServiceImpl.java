@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -32,24 +31,32 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(rollbackFor = Exception.class)
     public void update(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
-        isDuplicatedNickname(memberUpdateDto.getNickname(), member.getNickname());
-
-        if (!ObjectUtils.isEmpty(profileImg)) {
-            if (StringUtils.hasText(member.getProfileUrl())) {
-                s3Service.delete(member.getProfileUrl());
-            }
-            memberUpdateDto.setProfileUrl(s3Service.upload(profileImg));
+        validateNickname(member.getNickname(), memberUpdateDto.getNickname());
+        if (!profileImg.isEmpty() && StringUtils.hasText(member.getProfileUrl())) {
+            s3Service.delete(member.getProfileUrl());
+        }
+        if (!profileImg.isEmpty()) {
+            String profileUrl = s3Service.upload(profileImg);
+            memberUpdateDto.setProfileUrl(profileUrl);
         }
         member.update(memberUpdateDto);
     }
 
-    private void isDuplicatedNickname(String updateNickname, String nickname) {
-        if (updateNickname.equals(nickname)) {
+    private void validateNickname(String nickname, String updateNickname) {
+        if (isEqualToPrevious(nickname, updateNickname)) {
             return;
         }
-        Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
-        if (findMember.isPresent()) {
+        if (isDuplicateNickname(updateNickname)) {
             throw new MemberAlreadyExistException();
         }
+    }
+
+    private boolean isEqualToPrevious(String nickname, String updateNickname) {
+        return nickname.equals(updateNickname);
+    }
+
+    private boolean isDuplicateNickname(String updateNickname) {
+        Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
+        return findMember.isPresent();
     }
 }

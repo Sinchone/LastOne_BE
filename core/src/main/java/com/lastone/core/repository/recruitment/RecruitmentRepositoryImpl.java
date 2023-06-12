@@ -15,6 +15,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import static com.lastone.core.domain.application.QApplication.application;
 import static com.lastone.core.domain.gym.QGym.gym;
 import static com.lastone.core.domain.member.QMember.member;
@@ -23,13 +25,17 @@ import static com.lastone.core.domain.recruitment_img.QRecruitmentImg.recruitmen
 
 @RequiredArgsConstructor
 public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
+
     private final JPAQueryFactory queryFactory;
+
     private static final int DEFAULT_OFFSET = 0;
+
     private static final int DEFAULT_SIZE = 6;
+
     private static final int DEFAULT_MAIN_PAGE_SIZE = 9;
 
     @Override
-    public RecruitmentDetailDto getDetailDto(Long recruitmentId) {
+    public Optional<RecruitmentDetailDto> getDetailDto(Long recruitmentId) {
 
         Recruitment findRecruitment = queryFactory
                 .selectFrom(recruitment)
@@ -42,10 +48,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                 )
                 .fetchOne();
 
-        if (findRecruitment == null) {
-            return null;
-        }
-        return RecruitmentDetailDto.toDto(findRecruitment);
+        return Optional.of(RecruitmentDetailDto.toDto(findRecruitment));
     }
 
     @Override

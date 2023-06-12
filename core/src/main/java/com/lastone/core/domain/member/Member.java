@@ -60,4 +60,7 @@ public class Member extends BaseTime {
     public void initNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public void initGender(String gender) {
+    }
 }

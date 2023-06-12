@@ -31,6 +31,8 @@ public enum ErrorCode {
   NOT_CHAT_PARTICIPANT(403, "CR004", "채팅방에 참여한 사용자가 아닙니다."),
   NOT_CHAT_USER(404, "CR005", "채팅방에 참여한 사용자를 찾을 수 없습니다."),
 
+ /* 이미지 타입 예외 */
+  IMG_NOT_SUPPORTED(415, "I001", "해당 이미지 타입은 제공할 수 없는 타입입니다."),
 
   /* MyPage 예외 */
   MEMBER_NOT_FOUND(404, "M001", "해당 회원은 존재하지 않는 회원입니다."),

@@ -15,9 +15,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class MyPageDto {
+
     private MemberDto member;
 
     private List<GymDto> gyms;
 
     private SbdDto sbd;
+
 }

@@ -5,6 +5,7 @@ import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
+import com.lastone.core.dto.recruitment.StartedAtDto;
 import com.lastone.core.repository.BaseTime;
 import com.lastone.core.util.BooleanToYNConverter;
 import lombok.AccessLevel;
@@ -16,8 +17,10 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Getter
@@ -68,31 +71,46 @@ public class Recruitment extends BaseTime {
     @ColumnDefault("false")
     private boolean isDeleted;
 
-    public void setImgFiles(List<RecruitmentImg> recruitmentImgs) {
-        for (RecruitmentImg recruitmentImg : recruitmentImgs) {
-            recruitmentImg.setRecruitment(this);
-            this.recruitmentImgs.add(recruitmentImg);
-        }
+    public static Recruitment create(Member member, Gym gym, RecruitmentRequestDto recruitmentRequestDto) {
+        return Recruitment.builder()
+                .member(member)
+                .gym(gym)
+                .title(recruitmentRequestDto.getTitle())
+                .workoutPart(recruitmentRequestDto.getWorkoutPart())
+                .description(recruitmentRequestDto.getDescription())
+                .startedAt(startedAtToLocalDateTime(recruitmentRequestDto.getStartedAt()))
+                .recruitmentStatus(RecruitmentStatus.RECRUITING)
+                .preferGender(recruitmentRequestDto.getPreferGender())
+                .build();
     }
 
-    public void update(RecruitmentRequestDto recruitmentUpdateDto) {
-        workoutPart = recruitmentUpdateDto.getWorkoutPart();
-        title = recruitmentUpdateDto.getTitle();
-        description = recruitmentUpdateDto.getDescription();
-        preferGender = recruitmentUpdateDto.getPreferGender();
+    private static LocalDateTime startedAtToLocalDateTime(StartedAtDto startedAt) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm", Locale.KOREAN);
+        return LocalDateTime.parse(startedAt.toTime(), formatter);
+    }
+
+    public void update(RecruitmentRequestDto recruitmentRequestDto) {
+        workoutPart = recruitmentRequestDto.getWorkoutPart();
+        title = recruitmentRequestDto.getTitle();
+        description = recruitmentRequestDto.getDescription();
+        preferGender = recruitmentRequestDto.getPreferGender();
+        startedAt = startedAtToLocalDateTime(recruitmentRequestDto.getStartedAt());
+    }
+
+    public void setImgFiles(List<RecruitmentImg> recruitmentList) {
+        recruitmentList.forEach(recruitmentImg -> {
+            recruitmentImg.setRecruitment(this);
+            this.recruitmentImgs.add(recruitmentImg);
+        });
     }
 
     public void updateGym(Gym gym) {
         this.gym = gym;
     }
 
-    public void updateStartedAt(LocalDateTime startedAt) {
-        this.startedAt = startedAt;
-    }
-
-    public void updateImg(List<RecruitmentImg> recruitmentImgs) {
+    public void updateImg(List<RecruitmentImg> recruitmentImgList) {
         this.recruitmentImgs.clear();
-        setImgFiles(recruitmentImgs);
+        setImgFiles(recruitmentImgList);
     }
 
     public void delete() {

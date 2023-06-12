@@ -24,32 +24,25 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping
-    public ResponseEntity<Object> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Long memberId = userDetails.getId();
-        MyPageDto myPage = myPageService.getMyPage(memberId);
-
-        return ResponseEntity.ok().body(CommonResponse.success(myPage, SuccessCode.INQUIRE_MYPAGE.getMessage()));
-    }
-
-
     @GetMapping("{memberId}")
     public ResponseEntity<Object> getMyPageByMemberId(@PathVariable Long memberId) {
         MyPageDto myPage = myPageService.getMyPage(memberId);
-
         return ResponseEntity.ok().body(CommonResponse.success(myPage, SuccessCode.INQUIRE_MYPAGE.getMessage()));
-
     }
 
+    @GetMapping
     @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        MyPageDto myPagedto = myPageService.getMyPage(userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(myPagedto, SuccessCode.INQUIRE_MYPAGE.getMessage()));
+    }
+
     @PutMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
                                                @RequestPart(required = false) MultipartFile profileImg) throws IOException {
-        Long memberId = userDetails.getId();
-        myPageService.updateMyPage(memberId, myPage, profileImg);
-
+        myPageService.updateMyPage(userDetails.getId(), myPage, profileImg);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.UPDATE_MYPAGE.getMessage()));
     }
 }
