@@ -38,6 +38,6 @@ public class Application extends BaseTime {
     }
 
     public void cancel() {
-        this.status = ApplicationStatus.CANCLE;
+        this.status = ApplicationStatus.CANCEL;
     }
 }
