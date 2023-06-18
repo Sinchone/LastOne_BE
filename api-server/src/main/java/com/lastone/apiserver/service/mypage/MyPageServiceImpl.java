@@ -9,7 +9,7 @@ import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.mypage.MyPageDto;
 import com.lastone.core.dto.mypage.MyPageUpdateDto;
 import com.lastone.core.dto.sbd.SbdDto;
-import com.lastone.core.mapper.mapper.MemberMapper;
+import com.lastone.core.util.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

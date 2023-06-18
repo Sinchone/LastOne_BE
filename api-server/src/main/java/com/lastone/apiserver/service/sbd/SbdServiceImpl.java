@@ -3,7 +3,7 @@ package com.lastone.apiserver.service.sbd;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.sbd.Sbd;
 import com.lastone.core.dto.sbd.SbdDto;
-import com.lastone.core.mapper.mapper.SbdMapper;
+import com.lastone.core.util.mapper.SbdMapper;
 import com.lastone.core.repository.sbd.SbdRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
