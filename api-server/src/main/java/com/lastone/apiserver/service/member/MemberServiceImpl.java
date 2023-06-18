@@ -32,14 +32,19 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(rollbackFor = Exception.class)
     public void update(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
         validateNickname(member.getNickname(), memberUpdateDto.getNickname());
-        if (!profileImg.isEmpty() && StringUtils.hasText(member.getProfileUrl())) {
+        setProfileImg(member, memberUpdateDto, profileImg);
+        member.update(memberUpdateDto);
+    }
+
+    private void setProfileImg(Member member, MemberUpdateDto memberUpdateDto, MultipartFile profileImg) throws IOException {
+        if (profileImg == null) {
+            return;
+        }
+        if (StringUtils.hasText(member.getProfileUrl())) {
             s3Service.delete(member.getProfileUrl());
         }
-        if (!profileImg.isEmpty()) {
-            String profileUrl = s3Service.upload(profileImg);
-            memberUpdateDto.setProfileUrl(profileUrl);
-        }
-        member.update(memberUpdateDto);
+        String profileUrl = s3Service.upload(profileImg);
+        memberUpdateDto.setProfileUrl(profileUrl);
     }
 
     private void validateNickname(String nickname, String updateNickname) {
