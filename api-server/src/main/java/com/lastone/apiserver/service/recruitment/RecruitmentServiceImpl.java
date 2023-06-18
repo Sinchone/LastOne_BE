@@ -17,7 +17,7 @@ import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
 import com.lastone.core.dto.recruitment.RecruitmentListDto;
 import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
 import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
-import com.lastone.core.mapper.mapper.GymMapper;
+import com.lastone.core.util.mapper.GymMapper;
 import com.lastone.core.repository.gym.GymRepository;
 import com.lastone.core.repository.member.MemberRepository;
 import com.lastone.core.repository.recruitment.RecruitmentRepository;

@@ -1,4 +1,4 @@
-package com.lastone.core.mapper.mapper;
+package com.lastone.core.util.mapper;
 
 import com.lastone.core.domain.member.Day;
 import com.lastone.core.domain.member.Member;

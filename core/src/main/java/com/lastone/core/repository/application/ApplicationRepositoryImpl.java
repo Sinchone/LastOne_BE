@@ -91,6 +91,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                         application.recruitment.member.profileUrl,
                         application.recruitment.member.nickname,
                         application.recruitment.member.gender,
+                        application.status,
                         application.createdAt))
                 .from(application)
                 .where(
