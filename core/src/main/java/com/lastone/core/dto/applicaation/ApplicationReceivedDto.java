@@ -12,12 +12,17 @@ import java.util.List;
 @Getter
 @ToString
 public class ApplicationReceivedDto {
+
     private final Long id;
+
     private final String title;
+
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
     private final LocalDateTime startedAt;
+
     private final String gym;
+
     private List<ApplicationDto> applications;
 
     @QueryProjection
