@@ -33,7 +33,7 @@ public class RecruitmentController {
     private final MatchingService matchingService;
 
     @GetMapping
-    public ResponseEntity<CommonResponse> getRecruitmentList(RecruitmentSearchCondition searchCondition) {
+    public ResponseEntity<CommonResponse> getRecruitmentList(@Validated RecruitmentSearchCondition searchCondition) {
         Slice<RecruitmentListDto> recruitmentList = recruitmentService.getList(searchCondition);
         return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_LIST, recruitmentList));
     }
