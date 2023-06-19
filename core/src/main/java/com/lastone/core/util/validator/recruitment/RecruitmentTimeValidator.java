@@ -1,6 +1,7 @@
 package com.lastone.core.util.validator.recruitment;
 
 
+import org.springframework.util.StringUtils;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
@@ -16,6 +17,9 @@ public class RecruitmentTimeValidator implements ConstraintValidator<Recruitment
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (!StringUtils.hasText(value)) {
+            return false;
+        }
         String[] times = value.split(":");
         if (times.length != TIME_COUNT) {
             return false;
