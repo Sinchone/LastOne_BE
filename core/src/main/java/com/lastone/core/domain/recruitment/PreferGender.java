@@ -2,6 +2,7 @@ package com.lastone.core.domain.recruitment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
 
 public enum PreferGender {
 
@@ -30,5 +31,9 @@ public enum PreferGender {
     @JsonValue
     public String getText() {
         return text;
+    }
+
+    public static boolean isCorrectType(String text) {
+        return Arrays.stream(PreferGender.values()).anyMatch(preferGender -> preferGender.getText().equals(text));
     }
 }
