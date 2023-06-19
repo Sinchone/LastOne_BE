@@ -1,5 +1,7 @@
 package com.lastone.core.util.validator.recruitment;
 
+import org.springframework.util.StringUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
@@ -11,12 +13,17 @@ public class RecruitmentDateValidator implements ConstraintValidator<Recruitment
 
     @Override
     public boolean isValid(String date, ConstraintValidatorContext context) {
+        if (!StringUtils.hasText(date)) {
+            return true;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        LocalDate dateCondition;
         try {
-            LocalDate.parse(date, formatter);
+            dateCondition = LocalDate.parse(date, formatter);
         } catch (DateTimeParseException e) {
             return false;
         }
-        return true;
+        LocalDate now = LocalDate.now();
+        return !now.isAfter(dateCondition);
     }
 }

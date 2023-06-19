@@ -3,6 +3,8 @@ package com.lastone.core.domain.recruitment;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+
 public enum WorkoutPart {
     ALL("전신", "all-main.jpg", "all-list.jpg"),
     CHEST("가슴", "chest-main.jpg", "chest-list.jpg"),
@@ -42,5 +44,9 @@ public enum WorkoutPart {
 
     public String getMainDefaultImgUrl() {
         return mainDefaultImgUrl;
+    }
+
+    public static boolean isCorrectType(String text) {
+        return Arrays.stream(WorkoutPart.values()).anyMatch(workoutPart -> workoutPart.getText().equals(text));
     }
 }

@@ -19,7 +19,9 @@ import static com.lastone.core.domain.recruitment.QRecruitment.recruitment;
 public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
+
     private final EntityManager em;
+
     private static final int ONE_DAY = 1;
 
     @Override
@@ -57,6 +59,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                             application.applicant.nickname,
                             application.applicant.profileUrl,
                             application.applicant.gender,
+                            application.status,
                             application.createdAt))
                     .from(application)
                     .where(application.recruitment.id.eq(recruitmentId))
@@ -88,6 +91,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                         application.recruitment.member.profileUrl,
                         application.recruitment.member.nickname,
                         application.recruitment.member.gender,
+                        application.status,
                         application.createdAt))
                 .from(application)
                 .where(
@@ -126,7 +130,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                 .where(
                         application.recruitment.id.eq(recruitmentId),
                         application.id.ne(successApplicationId),
-                        application.status.ne(ApplicationStatus.CANCLE))
+                        application.status.ne(ApplicationStatus.CANCEL))
                 .execute();
 
         em.flush();

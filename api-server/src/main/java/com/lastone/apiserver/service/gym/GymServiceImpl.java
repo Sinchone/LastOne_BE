@@ -4,15 +4,17 @@ import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.member_gym.MemberGym;
 import com.lastone.core.dto.gym.GymDto;
-import com.lastone.core.mapper.mapper.GymMapper;
+import com.lastone.core.util.mapper.GymMapper;
 import com.lastone.core.repository.gym.GymRepository;
 import com.lastone.core.repository.member_gym.MemberGymRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -39,14 +41,25 @@ public class GymServiceImpl implements GymService {
     }
 
     private void updateMemberGym(List<Gym> gymList, List<MemberGym> memberGymList, Member member) {
+
+        log.info("memberGymListSize = {}", memberGymList.size());
+
         memberGymList.stream()
                 .filter(memberGym -> isNotExistInGymList(gymList, memberGym.getGym()))
                 .forEach(MemberGym::delete);
 
-        gymList.forEach(gym -> memberGymRepository.save(MemberGym.builder()
-                .member(member)
-                .gym(gym)
-                .build()));
+        List<Gym> alreadyExistGymList = memberGymList.stream()
+                .filter(memberGym -> !memberGym.isDeleted())
+                .map(MemberGym::getGym)
+                .collect(Collectors.toList());
+
+        gymList.stream()
+                .filter(gym -> !alreadyExistGymList.contains(gym))
+                .forEach(gym -> memberGymRepository.save(MemberGym.builder()
+                    .member(member)
+                    .gym(gym)
+                    .build())
+                );
     }
 
     private boolean isNotExistInGymList(List<Gym> gymList, Gym gym) {
