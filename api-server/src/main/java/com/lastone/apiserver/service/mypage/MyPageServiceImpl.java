@@ -8,6 +8,7 @@ import com.lastone.core.dto.gym.GymDto;
 import com.lastone.core.dto.member.MemberDto;
 import com.lastone.core.dto.mypage.MyPageDto;
 import com.lastone.core.dto.mypage.MyPageUpdateDto;
+import com.lastone.core.dto.mypage.NicknameCheckDto;
 import com.lastone.core.dto.sbd.SbdDto;
 import com.lastone.core.util.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,12 @@ public class MyPageServiceImpl implements MyPageService {
     private final SbdService sbdService;
 
     private final MemberMapper memberMapper;
+
+    @Override
+    public NicknameCheckDto isDuplicatedNickname(String nickname) {
+        boolean result = memberService.isDuplicateNickname(nickname);
+        return new NicknameCheckDto(result);
+    }
 
     public MyPageDto getMyPage(Long memberId) {
         Member member = memberService.findById(memberId);

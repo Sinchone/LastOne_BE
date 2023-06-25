@@ -9,6 +9,7 @@ public enum SuccessCode {
     GET_CHAT_ROOM_LIST("채팅방 목록 조회에 성공하였습니다."),
 
     /* My Page */
+    VALIDATE_NICKNAME("닉네임 중복 검증을 완료하였습니다."),
     INQUIRE_MYPAGE("마이페이지 정보 조회에 성공하였습니다."),
     UPDATE_MYPAGE("마이페이지 수정 작업에 성공하였습니다."),
 
