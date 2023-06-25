@@ -17,6 +17,7 @@ public class MemberUpdateDto {
     @Size(min = 2, max = 15)
     private String nickname;
 
+    @NotBlank
     @Pattern(regexp = "^(남성|여성)$", message = "성별은 남성 또는 여성만 가능합니다.")
     private String gender;
 
