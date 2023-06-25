@@ -1,6 +1,6 @@
 package com.lastone.core.dto.recruitment;
 
-import com.lastone.core.util.validator.recruitment.RecruitmentDate;
+import com.lastone.core.util.validator.recruitment.RecruitmentCreateDate;
 import com.lastone.core.util.validator.recruitment.RecruitmentTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class StartedAtDto {
 
     @NotBlank
-    @RecruitmentDate
+    @RecruitmentCreateDate
     private String date;
 
     @NotNull
