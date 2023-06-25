@@ -5,6 +5,7 @@ import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
 import com.lastone.core.dto.mypage.MyPageDto;
 import com.lastone.core.dto.mypage.MyPageUpdateDto;
+import com.lastone.core.dto.mypage.NicknameCheckDto;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,22 +25,28 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
+    @GetMapping("/nickname-check")
+    public ResponseEntity<Object> isDuplicatedNickname(String nickname) {
+        NicknameCheckDto result = myPageService.isDuplicatedNickname(nickname);
+        return ResponseEntity.ok().body(CommonResponse.success(result, SuccessCode.VALIDATE_NICKNAME.getMessage()));
+    }
+
     @GetMapping("{memberId}")
-    public ResponseEntity<Object> getMyPageByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<CommonResponse> getMyPageByMemberId(@PathVariable Long memberId) {
         MyPageDto myPage = myPageService.getMyPage(memberId);
         return ResponseEntity.ok().body(CommonResponse.success(myPage, SuccessCode.INQUIRE_MYPAGE.getMessage()));
     }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResponse> getMyPageByToken(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         MyPageDto myPagedto = myPageService.getMyPage(userDetails.getId());
         return ResponseEntity.ok().body(CommonResponse.success(myPagedto, SuccessCode.INQUIRE_MYPAGE.getMessage()));
     }
 
     @PutMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<CommonResponse> updateMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                @RequestPart(required = false) @Validated MyPageUpdateDto myPage,
                                                @RequestPart(required = false) MultipartFile profileImg) throws IOException {
         myPageService.updateMyPage(userDetails.getId(), myPage, profileImg);
