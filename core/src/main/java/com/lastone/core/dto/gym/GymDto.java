@@ -16,6 +16,7 @@ public class GymDto {
     @NotBlank(message = "헬스장 이름은 필수 입력 값입니다.")
     private String name;
 
+    @NotBlank(message = "헬스장 지역은 필수 입력 값입니다.")
     private String location;
 
     @Coordinate
