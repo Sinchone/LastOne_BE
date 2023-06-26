@@ -65,7 +65,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Override
     public RecruitmentDetailDto getDetail(Long recruitmentId) {
-        RecruitmentDetailDto recruitmentDetailDto = recruitmentRepository.getDetailDto(recruitmentId).orElseThrow(RecruitmentNotFoundException::new);
+        Recruitment recruitment = recruitmentRepository.getDetail(recruitmentId).orElseThrow(RecruitmentNotFoundException::new);
+        RecruitmentDetailDto recruitmentDetailDto = RecruitmentDetailDto.toDto(recruitment);
         recruitmentDetailDto.setSbdDto(sbdRepository.findLatestRecordByMemberId(recruitmentDetailDto.getMemberId()));
         return recruitmentDetailDto;
     }

@@ -35,7 +35,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
     private static final int DEFAULT_MAIN_PAGE_SIZE = 9;
 
     @Override
-    public Optional<RecruitmentDetailDto> getDetailDto(Long recruitmentId) {
+    public Optional<Recruitment> getDetail(Long recruitmentId) {
 
         Recruitment findRecruitment = queryFactory
                 .selectFrom(recruitment)
@@ -48,7 +48,7 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom{
                 )
                 .fetchOne();
 
-        return Optional.of(RecruitmentDetailDto.toDto(findRecruitment));
+        return Optional.ofNullable(findRecruitment);
     }
 
     @Override
