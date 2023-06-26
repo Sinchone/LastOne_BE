@@ -24,6 +24,7 @@ public class RecruitmentDetailDto {
 
     private Long memberId;
     private String nickname;
+    private String gender;
     private String profileUrl;
     private String workoutPurpose;
     private SbdDto sbd;
@@ -53,6 +54,7 @@ public class RecruitmentDetailDto {
                 .memberId(recruitment.getMember().getId())
                 .nickname(recruitment.getMember().getNickname())
                 .profileUrl(recruitment.getMember().getProfileUrl())
+                .gender(recruitment.getMember().getGender())
                 .workoutPurpose(recruitment.getMember().getWorkoutPurpose())
                 .imgUrls(toImgUrls(recruitment.getRecruitmentImgs()))
                 .build();
