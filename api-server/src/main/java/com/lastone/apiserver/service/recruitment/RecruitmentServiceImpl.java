@@ -77,7 +77,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void createRecruitment(Long memberId, RecruitmentRequestDto recruitmentRequestDto, List<MultipartFile> imgFiles) throws IOException {
+    public Long createRecruitment(Long memberId, RecruitmentRequestDto recruitmentRequestDto, List<MultipartFile> imgFiles) throws IOException {
         Gym gym = findGym(recruitmentRequestDto.getGym());
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
         Recruitment recruitment = Recruitment.create(member, gym, recruitmentRequestDto);
@@ -85,7 +85,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         if (imgFileIsExist(imgFiles)) {
             recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
         }
-        recruitmentRepository.save(recruitment);
+        Recruitment saveRecruitment = recruitmentRepository.save(recruitment);
+        return saveRecruitment.getId();
     }
 
     @Transactional(rollbackFor = Exception.class)

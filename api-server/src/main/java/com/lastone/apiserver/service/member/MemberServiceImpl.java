@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
         return nickname.equals(updateNickname);
     }
 
-    private boolean isDuplicateNickname(String updateNickname) {
+    public boolean isDuplicateNickname(String updateNickname) {
         Optional<Member> findMember = memberRepository.findByNickname(updateNickname);
         return findMember.isPresent();
     }

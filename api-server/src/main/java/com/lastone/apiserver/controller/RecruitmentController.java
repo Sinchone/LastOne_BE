@@ -4,10 +4,7 @@ import com.lastone.apiserver.service.matching.MatchingService;
 import com.lastone.apiserver.service.recruitment.RecruitmentService;
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.SuccessCode;
-import com.lastone.core.dto.recruitment.RecruitmentRequestDto;
-import com.lastone.core.dto.recruitment.RecruitmentDetailDto;
-import com.lastone.core.dto.recruitment.RecruitmentListDto;
-import com.lastone.core.dto.recruitment.RecruitmentSearchCondition;
+import com.lastone.core.dto.recruitment.*;
 import com.lastone.core.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +52,10 @@ public class RecruitmentController {
     public ResponseEntity<CommonResponse> createRecruitment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                             @RequestPart @Validated RecruitmentRequestDto recruitment,
                                                             @RequestPart(required = false) List<MultipartFile> imgFiles) throws IOException {
-        recruitmentService.createRecruitment(userDetails.getId(), recruitment, imgFiles);
+        Long recruitmentId = recruitmentService.createRecruitment(userDetails.getId(), recruitment, imgFiles);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(CommonResponse.success(SuccessCode.RECRUITMENT_CREATE));
+                .body(CommonResponse.success(SuccessCode.RECRUITMENT_CREATE, new RecruitmentIdDto(recruitmentId)));
     }
 
     @PreAuthorize("isAuthenticated()")

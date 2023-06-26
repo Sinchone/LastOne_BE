@@ -7,19 +7,20 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-
-public class RecruitmentDateValidator implements ConstraintValidator<RecruitmentDate, String> {
+public class RecruitmentCreateDateValidator implements ConstraintValidator<RecruitmentCreateDate, String> {
     @Override
     public boolean isValid(String date, ConstraintValidatorContext context) {
         if (!StringUtils.hasText(date)) {
-            return true;
+            return false;
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        LocalDate dateCondition;
         try {
-            LocalDate.parse(date, formatter);
+            dateCondition = LocalDate.parse(date, formatter);
         } catch (DateTimeParseException e) {
             return false;
         }
-        return true;
+        LocalDate now = LocalDate.now();
+        return !now.isAfter(dateCondition);
     }
 }
