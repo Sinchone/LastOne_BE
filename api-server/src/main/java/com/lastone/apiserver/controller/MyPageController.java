@@ -26,7 +26,7 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     @GetMapping("/nickname-check")
-    public ResponseEntity<Object> isDuplicatedNickname(String nickname) {
+    public ResponseEntity<Object> isDuplicatedNickname(@RequestParam String nickname) {
         NicknameCheckDto result = myPageService.isDuplicatedNickname(nickname);
         return ResponseEntity.ok().body(CommonResponse.success(result, SuccessCode.VALIDATE_NICKNAME.getMessage()));
     }
