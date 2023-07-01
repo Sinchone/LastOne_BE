@@ -6,11 +6,11 @@ import java.util.Arrays;
 
 public enum PreferGender {
 
-    BOTH("무관"),
+    BOTH("성별무관"),
 
-    MALE("남성"),
+    MALE("남성만"),
 
-    FEMALE("여성");
+    FEMALE("여성만");
 
     private final String text;
 
