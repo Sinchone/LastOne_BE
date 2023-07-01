@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import static com.lastone.core.domain.application.QApplication.application;
 import static com.lastone.core.domain.gym.QGym.gym;
 import static com.lastone.core.domain.member.QMember.member;
@@ -80,20 +81,12 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
         LocalDateTime now = LocalDateTime.now();
 
-        return queryFactory
-                .select(new QApplicationRequestedDto(
-                        application.id,
-                        application.recruitment.id,
-                        application.recruitment.title,
-                        application.recruitment.gym.name,
-                        application.recruitment.startedAt,
-                        application.recruitment.member.id,
-                        application.recruitment.member.profileUrl,
-                        application.recruitment.member.nickname,
-                        application.recruitment.member.gender,
-                        application.status,
-                        application.createdAt))
-                .from(application)
+        List<Application> applicationList = queryFactory
+                .selectFrom(application)
+                .leftJoin(application.applicant, member).fetchJoin()
+                .leftJoin(application.recruitment, recruitment).fetchJoin()
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.member, member).fetchJoin()
                 .where(
                         application.applicant.id.eq(memberId),
                         application.status.eq(ApplicationStatus.WAITING)
@@ -102,6 +95,8 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                         application.recruitment.startedAt.goe(now))
                 .orderBy(application.createdAt.desc())
                 .fetch();
+
+        return applicationList.stream().map(ApplicationRequestedDto::toDto).collect(Collectors.toList());
     }
 
     @Override
