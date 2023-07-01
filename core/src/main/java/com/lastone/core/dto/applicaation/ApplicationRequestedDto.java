@@ -26,7 +26,7 @@ public class ApplicationRequestedDto {
     private final String gym;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm")
     private final LocalDateTime startedAt;
 
     private final Long memberId;
@@ -40,7 +40,7 @@ public class ApplicationRequestedDto {
     private final ApplicationStatus status;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm")
     private final LocalDateTime applicationDate;
 
     public static ApplicationRequestedDto toDto(Application application) {

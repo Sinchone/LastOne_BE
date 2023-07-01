@@ -30,7 +30,7 @@ public class ApplicationDto {
     private ApplicationStatus status;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm")
     private LocalDateTime applicationDate;
 
     public static ApplicationDto toDto(Application application) {
