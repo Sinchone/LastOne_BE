@@ -2,6 +2,7 @@ package com.lastone.core.repository.application;
 
 import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.application.ApplicationStatus;
+import com.lastone.core.domain.recruitment.Recruitment;
 import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -30,13 +31,8 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
         LocalDateTime now = LocalDateTime.now();
 
-        List<ApplicationReceivedDto> applicationReceivedDtos = queryFactory
-                .select(new QApplicationReceivedDto(
-                        recruitment.id,
-                        recruitment.title,
-                        recruitment.startedAt,
-                        gym.name))
-                .from(recruitment)
+        List<Recruitment> recruitmentList = queryFactory
+                .selectFrom(recruitment)
                 .where(
                         recruitment.member.id.eq(memberId),
                         recruitment.isDeleted.eq(false),
@@ -46,34 +42,16 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                                         .and(recruitment.startedAt.lt(now.plusDays(ONE_DAY)))),
                         recruitment.startedAt.goe(now)
                 )
-                .leftJoin(recruitment.gym, gym)
+                .leftJoin(recruitment.gym, gym).fetchJoin()
+                .leftJoin(recruitment.applications, application).fetchJoin()
+                .leftJoin(application.applicant, member).fetchJoin()
                 .orderBy(recruitment.startedAt.desc())
                 .fetch();
 
-        List<ApplicationReceivedDto> removeList = new ArrayList<>();
-        for (ApplicationReceivedDto applicationReceivedDto : applicationReceivedDtos) {
-            Long recruitmentId = applicationReceivedDto.getId();
-            List<ApplicationDto> applicantions = queryFactory
-                    .select(new QApplicationDto(
-                            application.id,
-                            application.applicant.id,
-                            application.applicant.nickname,
-                            application.applicant.profileUrl,
-                            application.applicant.gender,
-                            application.status,
-                            application.createdAt))
-                    .from(application)
-                    .where(application.recruitment.id.eq(recruitmentId))
-                    .leftJoin(application.applicant, member)
-                    .orderBy(application.createdAt.desc())
-                    .fetch();
-            if (applicantions.isEmpty()) {
-                removeList.add(applicationReceivedDto);
-            }
-            applicationReceivedDto.includeApplicants(applicantions);
-        }
-        applicationReceivedDtos.removeAll(removeList);
-        return applicationReceivedDtos;
+        return recruitmentList.stream()
+                .filter(r -> r.getApplications().size() > 0)
+                .map(ApplicationReceivedDto::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
