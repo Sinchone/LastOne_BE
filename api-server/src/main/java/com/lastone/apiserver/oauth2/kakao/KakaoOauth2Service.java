@@ -39,7 +39,8 @@ public class KakaoOauth2Service implements Oauth2Service {
         String token = getToken(loginRequestDto);
         KakaoOauth2UserInfo profile = getProfile(token);
         Optional<Member> member = memberRepository.findByEmail(profile.getEmail());
-        if(member.isEmpty()) {
+        boolean isFirstSignUp = false;
+        if (member.isEmpty()) {
             Member newMember = Member.builder()
                     .email(profile.getEmail())
                     .build();
@@ -49,8 +50,12 @@ public class KakaoOauth2Service implements Oauth2Service {
             Member saveMember = memberRepository.save(newMember);
             String nickname = "#" + saveMember.getId();
             saveMember.initNickname(nickname);
+            isFirstSignUp = true;
         }
         TokenResponse tokens = jwtProvider.createToken(profile.getEmail(), requestURI);
+        if (isFirstSignUp) {
+            tokens.setFirstSignUp();
+        }
         redisTemplate.opsForValue()
                 .set("refresh_token:" + profile.getEmail(), tokens.getRefreshToken(), jwtProvider.getRefreshTokenDuration(), TimeUnit.MILLISECONDS);
         return tokens;

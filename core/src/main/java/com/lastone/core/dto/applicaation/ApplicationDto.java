@@ -3,14 +3,18 @@ package com.lastone.core.dto.applicaation;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.application.ApplicationStatus;
-import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 @ToString
+@AllArgsConstructor
 public class ApplicationDto {
 
     private final Long applicationId;
@@ -26,17 +30,18 @@ public class ApplicationDto {
     private ApplicationStatus status;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm")
     private LocalDateTime applicationDate;
 
-    @QueryProjection
-    public ApplicationDto(Long applicationId, Long applicantId, String nickname, String profileUrl, String gender, ApplicationStatus status, LocalDateTime applicationDate) {
-        this.applicationId = applicationId;
-        this.applicantId = applicantId;
-        this.nickname = nickname;
-        this.profileUrl = profileUrl;
-        this.gender = gender;
-        this.status = status;
-        this.applicationDate = applicationDate;
+    public static ApplicationDto toDto(Application application) {
+        return ApplicationDto.builder()
+                .applicantId(application.getId())
+                .applicantId(application.getApplicant().getId())
+                .nickname(application.getApplicant().getNickname())
+                .profileUrl(application.getApplicant().getProfileUrl())
+                .gender(application.getApplicant().getGender())
+                .status(application.getStatus())
+                .applicationDate(application.getCreatedAt())
+                .build();
     }
 }

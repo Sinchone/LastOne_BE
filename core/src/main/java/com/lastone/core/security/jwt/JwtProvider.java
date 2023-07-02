@@ -58,6 +58,7 @@ public class JwtProvider {
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .isFirstSignUp(false)
                 .build();
     }
 

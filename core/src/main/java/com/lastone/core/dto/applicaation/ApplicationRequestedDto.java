@@ -3,15 +3,18 @@ package com.lastone.core.dto.applicaation;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.application.ApplicationStatus;
-import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-
 import java.time.LocalDateTime;
 
 @Getter
 @ToString
+@Builder
+@AllArgsConstructor
 public class ApplicationRequestedDto {
 
     private final Long applicationId;
@@ -23,7 +26,7 @@ public class ApplicationRequestedDto {
     private final String gym;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm")
     private final LocalDateTime startedAt;
 
     private final Long memberId;
@@ -37,24 +40,22 @@ public class ApplicationRequestedDto {
     private final ApplicationStatus status;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd 'T' HH:mm")
-    private LocalDateTime applicationDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm")
+    private final LocalDateTime applicationDate;
 
-    @QueryProjection
-    public ApplicationRequestedDto(Long applicationId, Long recruitmentId, String title, String gym,
-                                   LocalDateTime startedAt, Long memberId, String profileUrl,
-                                   String nickName, String gender, ApplicationStatus status,
-                                   LocalDateTime applicationDate) {
-        this.applicationId = applicationId;
-        this.recruitmentId = recruitmentId;
-        this.title = title;
-        this.gym = gym;
-        this.startedAt = startedAt;
-        this.memberId = memberId;
-        this.profileUrl = profileUrl;
-        this.nickname = nickName;
-        this.gender = gender;
-        this.status = status;
-        this.applicationDate = applicationDate;
+    public static ApplicationRequestedDto toDto(Application application) {
+        return ApplicationRequestedDto.builder()
+                .applicationId(application.getId())
+                .status(application.getStatus())
+                .applicationDate(application.getCreatedAt())
+                .recruitmentId(application.getRecruitment().getId())
+                .title(application.getRecruitment().getTitle())
+                .gym(application.getRecruitment().getGym().getName())
+                .startedAt(application.getRecruitment().getStartedAt())
+                .memberId(application.getApplicant().getId())
+                .profileUrl(application.getApplicant().getProfileUrl())
+                .nickname(application.getApplicant().getNickname())
+                .gender(application.getApplicant().getGender())
+                .build();
     }
 }
