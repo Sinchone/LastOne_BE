@@ -48,6 +48,14 @@ public class RecruitmentController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{recruitmentId}/application")
+    public ResponseEntity<CommonResponse> checkApplyStatusForMember(@PathVariable Long recruitmentId,
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        RecruitmentApplyStatusForMember applyStatus = recruitmentService.isAlreadyApplyRecruitment(recruitmentId, userDetails.getId());
+        return ResponseEntity.ok().body(CommonResponse.success(SuccessCode.RECRUITMENT_APPLY_STATUS_FOR_MEMBER, applyStatus));
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CommonResponse> createRecruitment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                             @RequestPart @Validated RecruitmentRequestDto recruitment,
