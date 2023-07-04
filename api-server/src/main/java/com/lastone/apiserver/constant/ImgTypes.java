@@ -1,29 +1,31 @@
 package com.lastone.apiserver.constant;
 
 import com.lastone.apiserver.exception.global.ImgTypeNotSupportedException;
+import lombok.extern.slf4j.Slf4j;
 import java.util.Arrays;
 
+@Slf4j
 public enum ImgTypes {
 
-    TYPE1("jpg"),
+    JPG("jpg"),
 
-    TYPE2("jpeg"),
+    JPEG("jpeg"),
 
-    TYPE3("png"),
+    PNG("png"),
 
-    TYPE4("gif"),
+    GIF("gif"),
 
-    TYPE5("bmp");
+    BMP("bmp");
 
-    private final String type;
+    private final String name;
 
     ImgTypes(String type) {
-        this.type = type;
+        this.name = type;
     }
 
     public static void isSupport(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-        boolean isSupported = Arrays.stream(ImgTypes.values()).anyMatch(type -> extension.equalsIgnoreCase(type.name()));
+        boolean isSupported = Arrays.stream(ImgTypes.values()).anyMatch(imgTypes -> extension.equalsIgnoreCase(imgTypes.name));
         if (!isSupported) {
             throw new ImgTypeNotSupportedException();
         }

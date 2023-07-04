@@ -80,7 +80,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
         Recruitment recruitment = Recruitment.create(member, gym, recruitmentRequestDto);
 
-        if (imgFileIsExist(imgFiles)) {
+        if (validateImgFiles(imgFiles)) {
             recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
         }
         Recruitment saveRecruitment = recruitmentRepository.save(recruitment);
@@ -119,7 +119,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     private void updateImgFiles(Recruitment recruitment, List<MultipartFile> imgFiles) throws IOException {
-        if (imgFileIsExist(imgFiles)) {
+        if (validateImgFiles(imgFiles)) {
             return;
         }
         deleteImgFile(recruitment.getRecruitmentImgs());
@@ -131,13 +131,24 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitmentImgList.forEach(recruitmentImg -> s3Service.delete(recruitmentImg.getImgUrl()));
     }
 
-    private boolean imgFileIsExist(List<MultipartFile> imgFiles) {
-        if (ObjectUtils.isEmpty(imgFiles)) {
+    private boolean validateImgFiles(List<MultipartFile> imgFiles) {
+        if (isEmptyFile(imgFiles)) {
             return false;
         }
         /* 각각의 이미지 파일 형식 검증 */
         imgFiles.forEach(imgFile -> ImgTypes.isSupport(Objects.requireNonNull(imgFile.getOriginalFilename())));
         return true;
+    }
+
+    private boolean isEmptyFile(List<MultipartFile> imgFiles) {
+        if (ObjectUtils.isEmpty(imgFiles)) {
+            return true;
+        }
+        boolean isEmptyFileExist = imgFiles.stream().anyMatch(MultipartFile::isEmpty);
+        if (isEmptyFileExist) {
+            return true;
+        }
+        return false;
     }
 
     private void updateGym(Recruitment recruitment, GymDto gymDto) {
