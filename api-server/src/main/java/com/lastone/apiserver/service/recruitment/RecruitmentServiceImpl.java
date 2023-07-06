@@ -8,6 +8,7 @@ import com.lastone.apiserver.exception.recruitment.RecruitmentImgCountException;
 import com.lastone.apiserver.exception.recruitment.RecruitmentNotFoundException;
 import com.lastone.apiserver.service.s3.S3Service;
 import com.lastone.core.common.response.ErrorCode;
+import com.lastone.core.domain.application.Application;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.member.Member;
 import com.lastone.core.domain.recruitment.Recruitment;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -113,9 +115,10 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     public RecruitmentApplyStatusForMember isAlreadyApplyRecruitment(Long recruitmentId, Long memberId) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(RecruitmentNotFoundException::new);
-        boolean result = recruitment.getApplications().stream()
-                .anyMatch(application -> application.getApplicant().getId().equals(memberId));
-        return new RecruitmentApplyStatusForMember(result);
+        Optional<Application> applicationInfo = recruitment.getApplications().stream()
+                .filter(application -> application.getApplicant().getId().equals(memberId))
+                .findFirst();
+        return applicationInfo.map(application -> new RecruitmentApplyStatusForMember(true, application.getId())).orElseGet(() -> new RecruitmentApplyStatusForMember(false));
     }
 
     private void updateImgFiles(Recruitment recruitment, List<MultipartFile> imgFiles) throws IOException {

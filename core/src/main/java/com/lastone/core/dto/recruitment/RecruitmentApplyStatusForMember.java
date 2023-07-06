@@ -5,9 +5,18 @@ import lombok.Getter;
 @Getter
 public class RecruitmentApplyStatusForMember {
 
-    Boolean isApply;
+    private final Boolean isApply;
+
+    private final Long applicationId;
+
 
     public RecruitmentApplyStatusForMember(boolean isApply) {
         this.isApply = isApply;
+        this.applicationId = null;
+    }
+
+    public RecruitmentApplyStatusForMember(boolean isApply, Long applicationId) {
+        this.isApply = isApply;
+        this.applicationId = applicationId;
     }
 }

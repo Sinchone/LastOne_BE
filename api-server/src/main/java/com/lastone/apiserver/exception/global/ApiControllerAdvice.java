@@ -2,6 +2,7 @@ package com.lastone.apiserver.exception.global;
 
 import com.lastone.core.common.response.CommonResponse;
 import com.lastone.core.common.response.ErrorCode;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.Ordered;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -97,6 +99,11 @@ public class ApiControllerAdvice extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return handleExceptionInternal(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<Object> globalExceptionHandler() {
+        return handleExceptionInternal(ErrorCode.IMG_SIZE_LIMIT_EXCEED);
     }
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
