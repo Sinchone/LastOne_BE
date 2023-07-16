@@ -29,8 +29,15 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public TokenResponse refresh(String refreshToken, String requestUri) {
         TokenInfo tokenInfo = jwtProvider.verifyRefreshToken(refreshToken);
+        TokenResponse newToken = jwtProvider.createToken(tokenInfo.getSubject(), requestUri);
         logoutRefreshToken(tokenInfo.getSubject());
-        return jwtProvider.createToken(tokenInfo.getSubject(), requestUri);
+        saveNewRefreshToken(newToken.getRefreshToken(), tokenInfo.getSubject());
+        return newToken;
+    }
+
+    private void saveNewRefreshToken(String refreshToken, String email) {
+        redisTemplate.opsForValue()
+                .set("refresh_token:" + email, refreshToken, jwtProvider.getRefreshTokenDuration(), TimeUnit.MILLISECONDS);
     }
 
     private void logoutRefreshToken(String email) {
@@ -38,6 +45,7 @@ public class TokenServiceImpl implements TokenService {
             throw new NotFoundRefreshTokenException();
         }
         redisTemplate.delete("refresh_token:" + email);
+
     }
 
     private void logoutAccessToken(String accessToken) {
