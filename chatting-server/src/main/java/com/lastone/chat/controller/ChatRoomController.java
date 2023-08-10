@@ -20,16 +20,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/chat-room")
+@RequestMapping("/chat/room")
 @RequiredArgsConstructor
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
+
     @GetMapping("/{roomId}")
     public ResponseEntity<CommonResponse> getRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String roomId) {
         ChatRoomDetailDto chatRoomDetail = chatRoomService.getOne(roomId, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(chatRoomDetail));
     }
+
     @PostMapping
     public ResponseEntity<CommonResponse> createChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ChatRoomCreateReqDto chatRoomCreateReqDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -39,6 +41,7 @@ public class ChatRoomController {
                 )
         );
     }
+
     @DeleteMapping("/{roomId}")
     public ResponseEntity<CommonResponse> deleteChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String roomId) {
         chatRoomService.deleteRoom(roomId, userDetails.getId());
