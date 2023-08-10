@@ -40,10 +40,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 
@@ -98,7 +95,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         isRoomValidation(chatRoom.getStatus());
 
         chatRoom.getParticipations().stream()
-                .filter(paticipant -> paticipant == userId )
+                .filter(participantId -> Objects.equals(participantId, userId))
                 .findFirst().orElseThrow(NotParticipantChatRoom::new);
         chatRoom.delete();
         mongoTemplate.save(chatRoomOptional.get());
@@ -163,29 +160,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         for (ChatRoomFindDto roomFindDto : roomFindDtos) {
             Long otherUserId = roomFindDto.getOther().get(0).stream()
-                    .filter(membersId -> userId != membersId)
-                    .findFirst().get();
+                    .filter(membersId -> !Objects.equals(userId, membersId))
+                    .findFirst().orElse(null);
             if(otherUserId == null) continue;
             Optional<Member> otherUserInfo = memberRepository.findById(otherUserId);
             ChatRoomResDto roomResDto;
             if(otherUserInfo.isPresent()) {
                 roomResDto = new ChatRoomResDto(roomFindDto, otherUserInfo.get());
                 resDtos.add(roomResDto);
-            }else {
-                /**
-                 * Todo
-                 * 회원 가입 전 테스트용 코드
-                 * 배포 때에는 else 분기 없앨 예정
-                 */
-                Member testMember = Member.builder()
-                        .id(otherUserId)
-                        .email("테스트 Email" + otherUserId)
-                        .gender("남성")
-                        .nickname("테스트 닉네임" + otherUserId)
-                        .build();
-                roomResDto = new ChatRoomResDto(roomFindDto, testMember);
-                resDtos.add(roomResDto);
-//                continue;
             }
         }
         return resDtos;
@@ -311,5 +293,4 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         userMap.add(otherMemberId);
         return userMap;
     }
-
 }
