@@ -24,16 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
-import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.LimitOperation;
-import org.springframework.data.mongodb.core.aggregation.LookupOperation;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.SkipOperation;
-import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -132,8 +123,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                                             .last(JOIN_AS + "." + RoomColumn.PARTICIPATIONS.getWord()).as("other")
                                             .last(content).as(content)
                                             .last(createdAt).as(createdAt)
-                                            .sum(ArithmeticOperators.Subtract.valueOf(1)
-                                                    .subtract(ConvertOperators.ToLong.toLong("$"+ isRead))
+                                            .sum(
+                                                ConditionalOperators.when(Criteria.where(senderId).ne(userId))
+                                                        .then(ArithmeticOperators.Subtract.valueOf(1)
+                                                                .subtract(ConvertOperators.ToLong.toLong("$" + isRead)))
+                                                        .otherwise(0)
                                             ).as("notReadCount");
         SortOperation latestSort = Aggregation.sort(Sort.Direction.DESC, createdAt);
         SkipOperation skipItem = Aggregation.skip(elementsToSkip);
@@ -188,10 +182,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         isRoomValidation(chatRoom.getStatus());
         if(chatRoom.getStatus().equals(ChatStatus.DELETED)) throw new ChatException(ErrorCode.NOT_FOUNT_ROOM);
 
-        Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> participationId != userId).findFirst().get();
+        Long otherUserId = chatRoom.getParticipations().stream().filter(participationId -> !Objects.equals(participationId, userId)).findFirst().get();
         Member otherUser = memberRepository.findById(otherUserId).orElseThrow(CannotFoundChatMember::new);
 
-        List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
+        List<ChatMessage> messages = messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
 
         Query query = new Query();
         query.addCriteria(
@@ -227,7 +221,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .gender("남성")
                 .build();
 
-        List<ChatMessage> messages = messageRepository.findByRoomId(roomId);
+        List<ChatMessage> messages = messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
 
         Query query = new Query();
         query.addCriteria(
