@@ -50,7 +50,7 @@ public class Member extends BaseTime {
     public void update(MemberUpdateDto memberUpdateDto) {
         this.nickname = memberUpdateDto.getNickname();
         this.gender = memberUpdateDto.getGender();
-        this.profileUrl = memberUpdateDto.getProfileUrl();
+        this.profileUrl = memberUpdateDto.getProfileUrl() == null? this.profileUrl : memberUpdateDto.getProfileUrl();
         this.workoutPurpose = memberUpdateDto.getWorkoutPurpose();
         this.workoutTime = memberUpdateDto.getWorkoutTime();
         this.workoutDay = Day.sortListToString(memberUpdateDto.getWorkoutDay());
