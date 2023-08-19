@@ -22,6 +22,7 @@ public interface MemberMapper extends GenericMapper<MemberDto, Member> {
     MemberDto toDto(Member member);
 
     @Mapping(target = "workoutDay", source = "workoutDay", qualifiedByName = "toWorkoutDayListAsString")
+    @Mapping(target = "notificationList", ignore = true)
     @Override
     Member toEntity(MemberDto dto);
 
