@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.lastone.core.domain.gym.Gym;
 import com.lastone.core.domain.recruitment.PreferGender;
 import com.lastone.core.domain.recruitment.Recruitment;
+import com.lastone.core.domain.recruitment.WorkoutPart;
 import com.lastone.core.domain.recruitment_img.RecruitmentImg;
 import com.lastone.core.domain.sbd.Sbd;
 import com.lastone.core.dto.gym.GymDto;
@@ -32,6 +33,7 @@ public class RecruitmentDetailDto {
     private Long recruitmentId;
     private String title;
     private String description;
+    private WorkoutPart workoutPart;
     private PreferGender preferGender;
     private List<String> imgUrls;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -48,6 +50,7 @@ public class RecruitmentDetailDto {
                 .title(recruitment.getTitle())
                 .description(recruitment.getDescription())
                 .preferGender(recruitment.getPreferGender())
+                .workoutPart(recruitment.getWorkoutPart())
                 .startedAt(recruitment.getStartedAt())
                 .createdAt(recruitment.getCreatedAt())
                 .gym(toGymDto(recruitment.getGym()))
