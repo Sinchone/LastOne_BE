@@ -82,7 +82,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
         Recruitment recruitment = Recruitment.create(member, gym, recruitmentRequestDto);
 
-        if (validateImgFiles(imgFiles)) {
+        if (isInValidateImgFiles(imgFiles)) {
             recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
         }
         Recruitment saveRecruitment = recruitmentRepository.save(recruitment);
@@ -122,7 +122,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     private void updateImgFiles(Recruitment recruitment, List<MultipartFile> imgFiles) throws IOException {
-        if (validateImgFiles(imgFiles)) {
+        if (isInValidateImgFiles(imgFiles)) {
             return;
         }
         deleteImgFile(recruitment.getRecruitmentImgs());
@@ -134,13 +134,13 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitmentImgList.forEach(recruitmentImg -> s3Service.delete(recruitmentImg.getImgUrl()));
     }
 
-    private boolean validateImgFiles(List<MultipartFile> imgFiles) {
+    private boolean isInValidateImgFiles(List<MultipartFile> imgFiles) {
         if (isEmptyFile(imgFiles)) {
-            return false;
+            return true;
         }
         /* 각각의 이미지 파일 형식 검증 */
         imgFiles.forEach(imgFile -> ImgTypes.isSupport(Objects.requireNonNull(imgFile.getOriginalFilename())));
-        return true;
+        return false;
     }
 
     private boolean isEmptyFile(List<MultipartFile> imgFiles) {
