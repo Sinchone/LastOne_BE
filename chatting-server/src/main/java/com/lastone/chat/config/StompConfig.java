@@ -14,8 +14,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @Slf4j
 public class StompConfig implements WebSocketMessageBrokerConfigurer {
-    @Value("${lastOne.front.url}")
-    private String frontEndURL;
+    @Value("${lastOne.front.localURL}")
+    private String localEndURL;
+    @Value("${lastOne.front.prodURL}")
+    private String prodEndURL;
     @Value("${spring.rabbitmq.host}")
     private String host;
     @Value("${lastOne.rabbitmq.username}")
@@ -31,7 +33,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat/stomp")
-                .setAllowedOrigins(frontEndURL, "http://localhost:8082")
+                .setAllowedOrigins(localEndURL, prodEndURL, "http://localhost:8082")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
