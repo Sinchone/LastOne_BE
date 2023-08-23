@@ -33,7 +33,7 @@ public class ChatMessageListener {
             log.info("newMessageResponseDto    :    {}", newMessageResponseDto);
             log.info("message.getReceiverId()     :   {}", message.getReceiverId());
             simpMessagingTemplate.convertAndSend("/topic/" + chatRoomId, message);
-            simpMessagingTemplate.convertAndSendToUser(message.getReceiverId().toString(), "/topic/chat-room" , newMessageResponseDto);
+            simpMessagingTemplate.convertAndSend("/topic/" + message.getReceiverId(), newMessageResponseDto);
         }
         catch (ChatException e) {
             log.info("e.getStackTrace()   :   {}", e.getMessage());
