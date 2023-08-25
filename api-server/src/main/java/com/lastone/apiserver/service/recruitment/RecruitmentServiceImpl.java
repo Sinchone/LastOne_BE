@@ -82,7 +82,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFountException::new);
         Recruitment recruitment = Recruitment.create(member, gym, recruitmentRequestDto);
 
-        if (isInValidateImgFiles(imgFiles)) {
+        if (!isInValidateImgFiles(imgFiles)) {
             recruitment.setImgFiles(saveRecruitmentImg(imgFiles));
         }
         Recruitment saveRecruitment = recruitmentRepository.save(recruitment);
