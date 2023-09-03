@@ -19,7 +19,6 @@ import static com.lastone.core.domain.gym.QGym.gym;
 import static com.lastone.core.domain.member.QMember.member;
 import static com.lastone.core.domain.recruitment.QRecruitment.recruitment;
 
-@Slf4j
 @RequiredArgsConstructor
 public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
@@ -51,8 +50,6 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                 .leftJoin(application.applicant, member).fetchJoin()
                 .orderBy(recruitment.startedAt.desc())
                 .fetch();
-
-        log.info("list size ======= {}", recruitmentList.size());
 
         return recruitmentList.stream()
                 .filter(r -> !r.getApplications().isEmpty())
