@@ -7,6 +7,8 @@ import com.lastone.core.domain.recruitment.RecruitmentStatus;
 import com.lastone.core.dto.applicaation.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
 
         List<Recruitment> recruitmentList = queryFactory
                 .selectFrom(recruitment)
+                .distinct()
                 .where(
                         recruitment.member.id.eq(memberId),
                         recruitment.isDeleted.eq(false),
@@ -49,7 +52,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom{
                 .fetch();
 
         return recruitmentList.stream()
-                .filter(r -> r.getApplications().size() > 0)
+                .filter(r -> !r.getApplications().isEmpty())
                 .map(ApplicationReceivedDto::toDto)
                 .collect(Collectors.toList());
     }
