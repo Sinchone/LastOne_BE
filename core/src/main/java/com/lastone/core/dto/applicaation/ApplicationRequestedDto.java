@@ -52,10 +52,10 @@ public class ApplicationRequestedDto {
                 .title(application.getRecruitment().getTitle())
                 .gym(application.getRecruitment().getGym().getName())
                 .startedAt(application.getRecruitment().getStartedAt())
-                .memberId(application.getApplicant().getId())
-                .profileUrl(application.getApplicant().getProfileUrl())
-                .nickname(application.getApplicant().getNickname())
-                .gender(application.getApplicant().getGender())
+                .memberId(application.getRecruitment().getMember().getId())
+                .profileUrl(application.getRecruitment().getMember().getProfileUrl())
+                .nickname(application.getRecruitment().getMember().getNickname())
+                .gender(application.getRecruitment().getMember().getGender())
                 .build();
     }
 }
