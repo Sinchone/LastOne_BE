@@ -35,7 +35,7 @@ public class ApplicationDto {
 
     public static ApplicationDto toDto(Application application) {
         return ApplicationDto.builder()
-                .applicantId(application.getId())
+                .applicationId(application.getId())
                 .applicantId(application.getApplicant().getId())
                 .nickname(application.getApplicant().getNickname())
                 .profileUrl(application.getApplicant().getProfileUrl())
